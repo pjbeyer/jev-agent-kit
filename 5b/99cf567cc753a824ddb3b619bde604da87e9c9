@@ -1,0 +1,20 @@
+tools/calibration/hook_fp/measure.py
+  s_5c29cf94de1cce::t_d6d66cb2e7d05f 1-206,208-231
+  s_5c29cf94de1cce::t_a3799541d904ea 207
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "5b99cf567cc753a824ddb3b619bde604da87e9c9",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
