@@ -1,0 +1,41 @@
+src/jev_kit/hooks/hermes.py
+  s_5c29cf94de1cce::t_7886512060a2a4 40
+  s_5c29cf94de1cce::t_d798b4b3776cec 136-137,145-147,154-156,170-171
+tests/test_destination.py
+  s_5c29cf94de1cce::t_412adbcff57acb 382
+  s_5c29cf94de1cce::t_0713fde8cea0d2 25,27,274,278-279,282-284,287-290,299,301-308,310,362,366,377-381,383-386,435,449-450,463,465
+  s_5c29cf94de1cce::t_d03c607d9bdcf6 1-24,26,28-273,275-277,280-281,285-286,291-298,300,309,311-361,363-365,367-376,387-434,436-448,451-462,464,466-506
+  s_5c29cf94de1cce::t_9e896b79873f38 507-509
+docs/upstream/gate-augmentation-contract-v1.md
+  s_5c29cf94de1cce::t_864241be2a50a0 105,112-137
+src/jev_kit/destination.py
+  s_5c29cf94de1cce::t_76bbb4c999e1ba 118-119,126-128
+  s_5c29cf94de1cce::t_e86ff5e80dc17a 9,16-23,48,52-54,56-59
+  s_5c29cf94de1cce::t_f293e52996d3d2 175-176
+  s_5c29cf94de1cce::t_6b2555f0365633 103-108
+  s_5c29cf94de1cce::t_1b6acfe8e359c0 1-8,10-15,24-47,49-51,55,60-73,78-102,109-117,120-125,129-174,177-311
+  s_5c29cf94de1cce::t_332e1f15087263 74-77
+src/jev_kit/hooks/core.py
+  s_5c29cf94de1cce::t_6eef649ef19b3d 73-84
+  s_5c29cf94de1cce::t_394ab21a8d4ee9 16-20,34
+  s_5c29cf94de1cce::t_d4a671a25745c2 130-131,143-144,147-148
+  s_5c29cf94de1cce::t_9039bb40b1a5cc 165-166,181-185,197
+src/jev_kit/hooks/claude.py
+  s_5c29cf94de1cce::t_7f39d78d045f65 174-175
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "f25bf83abb3286a80394f6dc268c7ae1a6b3cd6e",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
