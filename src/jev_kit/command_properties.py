@@ -827,6 +827,11 @@ def _python_like(program: str, args: list[str], found: _Found) -> None:
 def _check_name_aliases(token: str, found: _Found) -> None:
     """Windows reads GIT~1 as an 8.3 alias and drops a trailing dot or space, so the name on
     disk may differ from the name written here. Checked on the literal word only."""
+    # `--opt=./value` splits into '--opt=.' + 'value', and the first fragment reads as a
+    # filename ending in a dot when it is really the option name plus a path component.
+    # Strip the option prefix so the value is checked as a path.
+    if "=" in token[:token.find("=") + 1] and token.startswith("-"):
+        token = token.split("=", 1)[1]
     for seg in _segments(token):
         if seg not in {".", ".."} and (_SHORT_NAME.search(seg) or seg.endswith((".", " "))):
             found.unsure("windows_name_alias")

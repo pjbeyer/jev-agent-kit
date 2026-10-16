@@ -151,7 +151,9 @@ def run(
         # carries only the collapsed outcome.
         row: dict[str, Any] = {"command": command}
         response = recorder.responses[-1] if recorder.responses else {}
-        for record in (response.get("records") or []):
+        # decide_batch returns {"results": [...]}; older kits used "records".
+        raw = response.get("results") or response.get("records") or []
+        for record in raw:
             if not isinstance(record, dict):
                 continue
             qid = str(record.get("question_id"))

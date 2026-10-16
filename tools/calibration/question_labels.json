@@ -1,0 +1,566 @@
+{
+  "rm-root": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-root-glob": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-usr": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-var-log": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-home-hermes": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-home-ssh": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-abs-project": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-abs-other-user": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-scoped-build": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-scoped-glob": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-node-modules": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-single-file": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-in-tree-then-echo": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rmdir-empty": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-cache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-pytest-cache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-var": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-root": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-hermes": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-chmod-root": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-ls": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudo-whoami": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-etc-passwd": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-root": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-scoped": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-x-script": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-file": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chown-self": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-push-force-main": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-push-force-with-lease": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-reset-hard": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-clean-fdx": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-filter-branch": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-checkout-dot": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-branch-D": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-push-normal": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-reset-soft": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-clean-dry-run": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-log": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-status": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-branch-delete-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-sh": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-sudo-bash": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "wget-pipe-sh": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-python": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-file": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-download": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-head": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "install-brew-global": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "install-npm-global": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "pip-install-user": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "pip-install-broken-env": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "dd-to-device": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "dd-to-file": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mkfs-usb": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "diskutil-erase": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "truncate-device": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "truncate-log": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "drop-database": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "drop-table": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "truncate-table": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "delete-no-where": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "delete-with-where": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "select-query": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "redirect-truncate-config": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "redirect-overwrite-source": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "redirect-append": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-system": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-in-tree": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "unlink-system": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "unlink-temp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "python-rmtree": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "python-rmtree-root": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "python-print": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "perl-inline-unlink": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "perl-print": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "base64-decode-pipe-sh": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "base64-encode": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-exec-rm": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-print": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-root-delete": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ls-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "pwd-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "grep-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cat-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "pytest-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mkdir-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "touch-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-commit-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sequence-safe": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-opt-tools": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-opt-cache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-usr-local-bin": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-usr-local-src": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-etc-apache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-etc-letsencrypt": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-var-lib-db": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-var-lib-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rmdir-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rmdir-tmp-empty": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-passwd": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-system-onto-dev": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-cfg-in-tree": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "touch-etc-fstab": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "touch-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-build": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-pycache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-t-etc-passwd": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-t-notes": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "wget-post-shadows": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "wget-post-log": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "scp-etc-shadow": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "scp-photos": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "chmod-777-passwd": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-644-passwd": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-755-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-plus-w-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-minus-w-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-tmp-share": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-boot": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-lib-firmware": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-sbin": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-share-doc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-run": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-var-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-away-sshd": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-in-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-dist": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-venv": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-src": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  }
+}
