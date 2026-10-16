@@ -1,0 +1,14 @@
+UPSTREAM.md
+  h_c5be3b3dad7ca8 97
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "7d6df1e85967afd09bcbdea702ae248493effe50",
+  "prompts": {},
+  "humans": {
+    "h_c5be3b3dad7ca8": {
+      "author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
