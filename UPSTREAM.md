@@ -89,9 +89,13 @@ is general (a candidate to offer upstream) or specific to this installation.
 | `aug/dest-trust` | Compute destination trust in code and supply it to the question set as state. | Yes. General. |
 | `aug/unattended` | Detect unattended (cron) sessions and stop emitting escalations that presume a human. | Yes. General. |
 | `aug/enforce-unmodeled` | In `enforce`, an unreadable command no longer hard-blocks routine work, without ever reaching ALLOW. | Yes. General. |
-| `aug/receipt-replay` | Persist enough state in receipts to re-judge recorded traffic offline. | Yes. General. |
 | `aug/hook-calibration` | Measure the hook's false-positive floor on real traffic, with the corpus built locally. | Yes. General. |
 | `aug/flex-gateway` | Let an operator route live calls through their own gateway, without relaxing finding C23. | Yes. General. |
+
+The receipt-replay idea below is **not implemented** and has no branch. It is recorded as a
+candidate rather than a change, because this file must not claim work that does not exist:
+
+| candidate (no branch) | Persist enough state in receipts to re-judge recorded traffic offline. | Probably. Design not settled. |
 
 Nothing in this fork hardcodes an installation-specific host, path or credential. The
 destination allowlist is operator configuration with no shipped default, which is what
