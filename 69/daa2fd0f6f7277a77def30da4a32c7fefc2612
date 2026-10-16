@@ -1,0 +1,29 @@
+src/jev_kit/unattended.py
+  s_5c29cf94de1cce::t_c3a737f658dfc3 32
+  s_5c29cf94de1cce::t_271455a5f90807 95-128
+  s_5c29cf94de1cce::t_9a23851f92c584 1-31,33-94,129-156
+src/jev_kit/hooks/core.py
+  s_5c29cf94de1cce::t_199ac2169637a2 27,31,37
+  s_5c29cf94de1cce::t_6730b0156883fd 237-259,263-286
+  s_5c29cf94de1cce::t_69a50435f0291b 287-289
+tests/test_unattended.py
+  s_5c29cf94de1cce::t_71ee61f9be56e8 282-300
+  s_5c29cf94de1cce::t_e704f7ece88800 1-281,301-335,339-394
+  s_5c29cf94de1cce::t_70841c1af234c6 336-338
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "69daa2fd0f6f7277a77def30da4a32c7fefc2612",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
