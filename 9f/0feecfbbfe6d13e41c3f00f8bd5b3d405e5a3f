@@ -1,0 +1,14 @@
+docs/upstream/gate-augmentation-contract-v1.md
+  h_c5be3b3dad7ca8 105,107-108,110,113-123,127,129-133
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "9f0feecfbbfe6d13e41c3f00f8bd5b3d405e5a3f",
+  "prompts": {},
+  "humans": {
+    "h_c5be3b3dad7ca8": {
+      "author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
