@@ -1,0 +1,21 @@
+tools/calibration/shadow_pilot/run_pilot.py
+  s_5c29cf94de1cce::t_3403e5790a5cb3 1-11,13,15-18,20-22,24,29,35,40,45-46,48-70,101,107,115-120,122-124,126-129,131,133-137,145-153,155-158,164,168-173,175,179-200
+  s_5c29cf94de1cce::t_7247acc9fe6917 12,14,19,23,25-28,30-34,36-39,41-44,47,71-100,102-106,108-114,121,125,130,132,138-144,154,159-163,165-167,174,176-178
+  s_5c29cf94de1cce::t_1dbd7a5c8e32dd 201-202
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "68c1a501cfbd15a9b59a1c420d1b8d7161598cb5",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
