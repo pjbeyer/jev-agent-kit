@@ -102,31 +102,35 @@ is correct there because a `cmd_*` fact is a hazard and `null` should be read as
   grammar above) and therefore sets `dest_known = false`. Recorded as a v2 candidate.
 - A host that fails the grammar is **never** passed through in a modified form.
 
-### 1.5 Egress classification
+### 1.5 What goes on the wire
 
-The kit's egress policy transforms declared state by content kind and drops undeclared
-fields. This contract therefore fixes the declared kinds:
+**Both forks transmit exactly two fields: `dest_known` and `dest_allowlisted`. Neither
+transmits `dest_host`.**
 
-- `dest_known` and `dest_allowlisted` are declared with kind `flag`, which the kit already
-  restricts to a JSON boolean or null (ADR 0005).
-- **`dest_host` is computed but is NOT declared and is NOT transmitted.** It is a hostname
-  taken from the command line, which makes it a raw command argument, and this kit's central
-  egress invariant is that no raw command argument leaves the machine. Transmitting it would
-  also have needed a new egress content kind, which needs an ADR.
-
-This is a deliberate deviation from the naive reading of Contract 1, and the reason is
+This is a deliberate narrowing of the naive reading of Contract 1, and the reason is
 measured rather than aesthetic. The separation the fix produces comes from the allowlist
 **verdict**, not from the hostname: intended egress scores <= 0.08 and genuine exfiltration
->= 0.98 once the verdict is supplied. The hostname adds nothing the question needs.
+>= 0.98 once the verdict is supplied. The hostname adds nothing the question needs, so
+sending it would buy no accuracy.
+
+Why this matters more for one fork than the other, stated honestly:
+
+- The kit's central egress invariant is that no raw command argument leaves the machine. A
+  hostname taken from the command line is exactly such an argument, so transmitting it would
+  have broken that invariant and needed a new egress content kind (which needs an ADR).
+- Nerve already transmits the redacted tool arguments, so the hostname would not have been a
+  new exposure for it. It is excluded anyway, for the reason above: it buys nothing, and one
+  wire shape across both forks is the point of this document.
 
 Consequences, stated plainly:
 
-- The wire state for the kit is `dest_known` and `dest_allowlisted` only. A consumer must
-  not expect `dest_host` in the kit's state.
-- The kit keeps the host locally, for receipts, diagnostics and operator tooling
-  (`Destination.as_local()`).
-- `dest_host` is still computed and still normalized to the same grammar in 1.4, so the
+- `dest_host` is computed and normalized to the grammar in 1.4 in both forks, so the
   allowlist verdict is derived from a checked host rather than from raw text.
+- The host stays local in both forks, for receipts, gate events, diagnostics and operator
+  tooling. The kit exposes it as `Destination.as_local()`; nerve records it on its gate event.
+- A consumer must not expect `dest_host` in either fork's request state.
+- The kit declares the two fields with content kind `flag`, which it already restricts to a
+  JSON boolean or null (ADR 0005). Nerve passes them in its gate state directly.
 
 **Implementation freedom on the allowlist verdict.** The contract fixes the *verdict* field,
 not the mechanism that produces it. The kit resolves the allowlist verdict from the parsed
