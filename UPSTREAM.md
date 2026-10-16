@@ -90,6 +90,7 @@ is general (a candidate to offer upstream) or specific to this installation.
 | `aug/unattended` | Detect unattended (cron) sessions and stop emitting escalations that presume a human. | Yes. General. |
 | `aug/enforce-unmodeled` | In `enforce`, an unreadable command no longer hard-blocks routine work, without ever reaching ALLOW. | Yes. General. |
 | `aug/receipt-replay` | Persist enough state in receipts to re-judge recorded traffic offline. | Yes. General. |
+| `aug/hook-calibration` | Measure the hook's false-positive floor on real traffic, with the corpus built locally. | Yes. General. |
 
 Nothing in this fork hardcodes an installation-specific host, path or credential. The
 destination allowlist is operator configuration with no shipped default, which is what
