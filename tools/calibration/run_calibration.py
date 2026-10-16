@@ -79,7 +79,8 @@ if not fit or not confirm:
 print(f"\nBrier raw:  {brier_score(confirm):.4f}")
 print(f"ECE raw:    {expected_calibration_error(confirm):.4f}")
 model = pav_fit(fit)
-print(f"ECE isotonic: {expected_calibration_error([(model.predict(p), y) for p, y in confirm]):.4f}")
+isotonic = expected_calibration_error([(model.predict(p), y) for p, y in confirm])
+print(f"ECE isotonic: {isotonic:.4f}")
 
 # ------------------------------------------------------------------ the kit's evaluator
 print("\n=== the kit's promotion evaluator (reference_accuracy=0.95, tolerance=0.0) ===")
@@ -90,7 +91,7 @@ print(f"  confirm coverage={result.coverage}  accuracy={result.accuracy}")
 
 # ------------------------------------------------------------------ sufficiency
 smaller = min(confirm_pos, len(confirm) - confirm_pos)
-print(f"\n=== sufficiency (the walkthrough's own rule) ===")
+print("\n=== sufficiency (the walkthrough's own rule) ===")
 print(f"  confirm items in the smaller class: {smaller}  (this procedure requires "
       f"{MIN_PER_CLASS_CONFIRM})")
 
