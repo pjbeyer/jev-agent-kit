@@ -1,0 +1,25 @@
+tests/test_enforce_unmodeled.py
+  s_5c29cf94de1cce::t_fe6c29e6d8b211 1-129,140-294
+  s_5c29cf94de1cce::t_20659bc3e157ff 130-139
+src/jev_kit/command_properties.py
+  s_5c29cf94de1cce::t_bcc4964bec3939 319-325
+  s_5c29cf94de1cce::t_3a21a56f836682 520-531
+  s_5c29cf94de1cce::t_a7f9f64e65780c 589-608
+  s_5c29cf94de1cce::t_1ca1a61b93bd13 609
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "bdcfbb58651c71f0b91e4e8ac9dc3add7d5dd5de",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
