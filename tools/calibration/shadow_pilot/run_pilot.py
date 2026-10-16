@@ -112,9 +112,16 @@ class Recorder:
         return response
 
 
-def run(commands: list[str], *, live: bool, limit: int | None) -> dict[str, Any]:
+def run(
+    commands: list[str], *, live: bool, limit: int | None, skip: int = 0
+) -> dict[str, Any]:
     selected = confident_commands(commands)
     total_confident = len(selected)
+    # `skip` exists because the engine shares one rate budget per process (RateBudget defaults
+    # to max_calls=100, and the default budget is process-wide). A corpus larger than that must
+    # be walked in chunks across processes; each chunk is an honest subset rather than a run that
+    # silently reports the throttled remainder as failures.
+    selected = selected[skip:]
     if limit is not None:
         selected = selected[:limit]
 
@@ -215,13 +222,14 @@ def main() -> int:
     parser.add_argument("--corpus", required=True, help="JSON list of commands")
     parser.add_argument("--live", action="store_true", help="make real model calls (costs money)")
     parser.add_argument("--limit", type=int, help="cap the number of calls")
+    parser.add_argument("--skip", type=int, default=0, help="skip the first N confident commands")
     parser.add_argument("--json", help="write the aggregate result here")
     parser.add_argument("--out", help="write per-command rows (JSONL) here")
     args = parser.parse_args()
 
     raw = json.loads(Path(args.corpus).expanduser().read_text(encoding="utf-8"))
     commands = [r["command"] if isinstance(r, dict) else r for r in raw]
-    result = run(commands, live=args.live, limit=args.limit)
+    result = run(commands, live=args.live, limit=args.limit, skip=args.skip)
     report(result)
     if args.out:
         # Per-command probabilities, kept local: this is the calibration input, and it carries
