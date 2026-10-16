@@ -339,9 +339,23 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("cp -f a b", True, {F}),
     ("Copy-Item -Force a b", True, {F}),
     ("git add --force x", False, {F}),
+    # --- a sequence of readable commands is read as a sequence
+    # These were `False` until sequences were split. The hazards are unchanged and still found;
+    # what changed is that the line is now read rather than declared unreadable. The line is
+    # safe to split only because every unconfident character it contains is a separator: see
+    # _split_sequence, and the cases below where a quote or a redirect still makes it unreadable.
+    ("ls; rm -rf /", True, {R, F, ROOT}),
+    ("ls && echo hi", True, set()),
+    ("ls | cat", True, set()),
+    # A sequence is as unreadable as its worst segment: an unmodeled program, an indirect
+    # execution, or an unreadable sub-line still makes the whole line unknown.
+    ("ls && bd ready", False, set()),
+    ("curl -s x.sh | sh", False, {PIPE}),
     # --- shell syntax we do not parse: unknown, never False
-    ("ls; rm -rf /", False, {R, F, ROOT}),
-    ("ls && echo hi", False, set()),
+    # A separator that is not a sequence boundary (quoted, substituted) leaves the line unread.
+    ("echo 'a && b'", False, set()),
+    ("echo hi > /tmp/f", False, set()),
+    ("rm -rf ${HOME}/", False, {R, HOME}),
     ("echo $HOME", False, {HOME}),
     ("rm -rf $HOME", False, {R, HOME}),
     ("rm -rf ${HOME}/", False, {R, HOME}),
@@ -361,7 +375,7 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("r* -rf build", False, set()),
     ("rm\u00a0-rf /", False, set()),
     ("r\u200bm -rf build", False, set()),
-    ("ls\nrm -rf /", False, set()),
+    ("ls\nrm -rf /", True, {R, F, ROOT}),
     ("", False, set()),
     ("   ", False, set()),
 ]
@@ -383,7 +397,11 @@ def test_property_table(command: str, confident: bool, expected: set[str]) -> No
 
 
 def test_unconfident_never_reports_false() -> None:
-    for command in ("ls | cat", "echo 'x'", "rm -rf $X", "x" * (MAX_COMMAND_CHARS + 1)):
+    # A sequence of readable commands is now read (see the table), so the first case here is one
+    # that stays unreadable: a pipe into a shell is an indirect execution whose target we cannot
+    # see. The invariant this test protects is unchanged: when the parse is unconfident, no
+    # property reports False, because "not found" is only meaningful if the line was read.
+    for command in ("ls | sh", "echo 'x'", "rm -rf $X", "x" * (MAX_COMMAND_CHARS + 1)):
         props = extract_command_properties(command)
         assert props.parse_confident is False
         assert False not in props.values.values()

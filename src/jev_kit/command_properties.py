@@ -189,6 +189,40 @@ def extract_command_properties(command: object) -> CommandProperties:
 # --------------------------------------------------------------------------- analysis
 
 
+#: Separators a sequence may be split on at the top level. Deliberately only the ones whose
+#: meaning is "run these in order": `&&`, `||`, `;`, `|` and a newline. Nothing else is split,
+#: and a line is only split when every unconfident character it contains is one of these, so a
+#: quote, a redirect, a substitution or a variable expansion still makes the whole line
+#: unconfident. That restriction is what makes splitting safe: without it, a separator inside a
+#: quoted string would be read as a sequence boundary and the segments would not be the commands
+#: that actually run.
+_SPLITTABLE = frozenset("&|;\n")
+
+#: The separators as a regex, longest first so `&&` is not read as two `&`.
+_SEPARATOR = re.compile(r"\s*(?:&&|\|\||;|\||\n)\s*")
+
+
+def _split_sequence(command: str) -> list[str] | None:
+    """Split a command into the top-level commands it runs in sequence, or None if unsafe.
+
+    Returns None whenever the line cannot be split with confidence, which leaves the caller's
+    existing conservative behaviour in place. It declines for:
+
+    - any unconfident character other than a separator (quoting, redirects, substitution,
+      expansion, grouping), because a separator inside one of those is not a sequence boundary;
+    - an empty segment, such as a trailing `&&` or a leading `;`, which means the line is
+      incomplete rather than a sequence of readable commands;
+    - fewer than two segments, which is not a sequence at all.
+    """
+    present = {ch for ch in command if ch in _UNCONFIDENT_CHARS or _CONTROL.match(ch)}
+    if present - _SPLITTABLE:
+        return None
+    parts = [part.strip() for part in _SEPARATOR.split(command)]
+    if len(parts) < 2 or any(not part for part in parts):
+        return None
+    return parts
+
+
 def _analyze(command: object, found: _Found) -> None:
     if not isinstance(command, str):
         found.unsure("not_text")
@@ -214,6 +248,31 @@ def _analyze(command: object, found: _Found) -> None:
         tokens = tokens[:MAX_TOKENS]
     _analyze_tokens(tokens, found, depth=0)
     if found.unconfident_reason is not None:
+        # A line that runs several commands in sequence is readable as a sequence even though it
+        # is not readable as one command. Try that before giving up: this is the shape most real
+        # invocations take (`a && b`, `a | b`, multi-line scripts), and treating it as unreadable
+        # is what made enforce escalate almost all traffic.
+        parts = _split_sequence(command)
+        if parts is not None:
+            merged = _Found()
+            for part in parts:
+                segment = _Found()
+                _analyze(part, segment)
+                # A sequence is as hazardous as its worst command, so a property found in ANY
+                # segment is a property of the line.
+                merged.true |= segment.true
+                if segment.unconfident_reason is not None:
+                    # One unreadable segment makes the whole line unreadable: we would otherwise
+                    # report the readable segments as if they were the whole line.
+                    merged.unsure(segment.unconfident_reason)
+            # Adopt the sequence reading either way. The line WAS split, so the reason the
+            # unsplit analysis produced ("shell_syntax", because the line contains a separator)
+            # no longer describes it. When a segment is unreadable, that segment's reason is the
+            # accurate one and is what an operator needs to see.
+            found.true = merged.true
+            found.unconfident_reason = merged.unconfident_reason
+            if merged.unconfident_reason is None:
+                return
         # Pattern checks over the raw text find properties in lines we cannot parse. They only
         # add True; on a confident parse the word analysis above is authoritative.
         _raw_scan(command, found)
