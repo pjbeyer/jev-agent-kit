@@ -1,0 +1,14 @@
+.gitignore
+  h_c5be3b3dad7ca8 35-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "d72208dc8cf2b97b6b69365b75ed0be9349a47f9",
+  "prompts": {},
+  "humans": {
+    "h_c5be3b3dad7ca8": {
+      "author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
