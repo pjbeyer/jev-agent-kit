@@ -123,6 +123,11 @@ def run(commands: list[str], *, live: bool, limit: int | None) -> dict[str, Any]
     reasons: collections.Counter = collections.Counter()
     per_question: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
     routes: collections.Counter = collections.Counter()
+    # The raw probability per question, which is the calibration datum. The kit ships no
+    # registry, so every question routes `no_advice` and `label` is null: the probability is
+    # the only thing a run can compare against an independent label. Collecting it is the
+    # point of the pilot, not the collapsed route.
+    rows: list[dict[str, Any]] = []
 
     for command in selected:
         result = decide_tool_call(
@@ -137,11 +142,21 @@ def run(commands: list[str], *, live: bool, limit: int | None) -> dict[str, Any]
             reasons[result.reason] += 1
         # Per-question detail comes from the response the runner saw, not from HookResult, which
         # carries only the collapsed outcome.
-        for response in (recorder.responses[-1:] or []):
-            for record in (response.get("records") or []):
-                if isinstance(record, dict):
-                    qid = str(record.get("question_id"))
-                    per_question[qid][str(record.get("label"))] += 1
+        row: dict[str, Any] = {"command": command}
+        response = recorder.responses[-1] if recorder.responses else {}
+        for record in (response.get("records") or []):
+            if not isinstance(record, dict):
+                continue
+            qid = str(record.get("question_id"))
+            per_question[qid][str(record.get("label"))] += 1
+            row[qid] = {
+                "noul": record.get("noul"),
+                "value": record.get("value"),
+                "label": record.get("label"),
+                "route": record.get("route"),
+                "fail_reason": record.get("fail_reason"),
+            }
+        rows.append(row)
 
     return {
         "live": live,
@@ -152,6 +167,7 @@ def run(commands: list[str], *, live: bool, limit: int | None) -> dict[str, Any]
         "would_route": dict(routes),
         "reasons": dict(reasons.most_common()),
         "per_question_labels": {k: dict(v) for k, v in sorted(per_question.items())},
+        "rows": rows,
     }
 
 
@@ -174,6 +190,20 @@ def report(result: dict[str, Any]) -> None:
         print("\nper-question labels (what the model answered):")
         for qid, labels in result["per_question_labels"].items():
             print(f"  {qid:<20}{labels}")
+    rows = result.get("rows") or []
+    if rows:
+        print("\nprobability spread per question (the calibration datum):")
+        for qid in sorted({k for row in rows for k in row if k != "command"}):
+            values = [
+                row[qid]["noul"] for row in rows
+                if isinstance(row.get(qid), dict) and isinstance(row[qid].get("noul"), (int, float))
+            ]
+            if not values:
+                continue
+            values.sort()
+            mid = values[len(values) // 2]
+            print(f"  {qid:<20} n={len(values):<5} min={values[0]:.3f} "
+                  f"median={mid:.3f} max={values[-1]:.3f}")
     if not result["live"]:
         print("\nEvery outcome above is the fail-closed path, so this run says nothing about")
         print("the gate. It confirms the harness works. Add --live and an attestation for a")
@@ -186,15 +216,25 @@ def main() -> int:
     parser.add_argument("--live", action="store_true", help="make real model calls (costs money)")
     parser.add_argument("--limit", type=int, help="cap the number of calls")
     parser.add_argument("--json", help="write the aggregate result here")
+    parser.add_argument("--out", help="write per-command rows (JSONL) here")
     args = parser.parse_args()
 
     raw = json.loads(Path(args.corpus).expanduser().read_text(encoding="utf-8"))
     commands = [r["command"] if isinstance(r, dict) else r for r in raw]
     result = run(commands, live=args.live, limit=args.limit)
     report(result)
+    if args.out:
+        # Per-command probabilities, kept local: this is the calibration input, and it carries
+        # command text. Never committed.
+        with Path(args.out).open("w", encoding="utf-8") as fh:
+            for row in result.pop("rows", []):
+                fh.write(json.dumps(row, ensure_ascii=False, default=str) + "\n")
+        print(f"\nper-command rows written to {args.out}")
+    else:
+        result.pop("rows", None)
     if args.json:
         Path(args.json).write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-        print(f"\naggregate written to {args.json}")
+        print(f"aggregate written to {args.json}")
     return 0
 
 
