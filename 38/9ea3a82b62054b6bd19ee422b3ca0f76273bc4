@@ -1,0 +1,19 @@
+tools/calibration/analyze_ensemble.py
+  s_5c29cf94de1cce::t_885ff85f962c76 1-119
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "389ea3a82b62054b6bd19ee422b3ca0f76273bc4",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
