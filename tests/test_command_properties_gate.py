@@ -14,6 +14,7 @@ from typing import Any
 import pytest
 
 from jev_kit.command_properties import CONFIDENT_KEY, PROPERTY_NAMES, STATE_PREFIX
+from jev_kit.destination import WIRE_FIELDS
 from jev_kit.egress import (
     ContentKind,
     EgressContext,
@@ -179,9 +180,14 @@ def test_outgoing_bytes_hold_no_raw_arguments(
         assert fragment not in body
     state = json.loads(body)["state"]
     for key, value in state.items():
-        if key.startswith(STATE_PREFIX):
+        if key.startswith(STATE_PREFIX) or key.startswith("dest_"):
             assert value is None or isinstance(value, bool)
     assert state["command"] in {"rm", "git", "Remove-Item", "curl"}
+    # The destination flags are declared and transmitted; the host they were derived from is
+    # not, because a hostname taken from the command line is exactly the raw argument this
+    # test exists to keep off the wire.
+    assert "dest_host" not in state
+    assert set(WIRE_FIELDS) <= set(state)
     # `git push` runs hooks, so it is not a modeled (confident) command.
     assert state[CONFIDENT_KEY] is (state["command"] != "git")
 
@@ -286,7 +292,7 @@ def _fingerprints(qset_obj: dict[str, Any]) -> dict[str, str]:
 
 def test_gate_fingerprints_change_when_a_property_field_is_dropped() -> None:
     obj = json.loads(Path(GATE).read_text(encoding="utf-8"))
-    assert obj["version"] == "3"
+    assert obj["version"] == "4"
     full = _fingerprints(obj)
     del obj["state_schema"][STATE_PREFIX + "force_flag"]
     fewer = _fingerprints(obj)

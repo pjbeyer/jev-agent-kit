@@ -37,6 +37,7 @@ from jev_kit.hooks.core import (
     Runner,
     ToolCall,
     decide_tool_call,
+    dest_allowlist_from_env,
     producer_id,
     question_set_path_from_env,
 )
@@ -132,6 +133,8 @@ def pre_tool_call(
     question_set_path: str | None = None,
     runner: Runner | None = None,
     self_deadline_s: float = DEFAULT_SELF_DEADLINE_S,
+    dest_allowlist: frozenset[str] | None = None,
+    workdir: str | None = None,
 ) -> dict[str, str] | None:
     """Hermes `pre_tool_call` callback: allow (`None`) or block (a Hermes block payload).
 
@@ -139,13 +142,18 @@ def pre_tool_call(
     no state on it. All decision logic lives in `hooks.core.decide_tool_call`. `mode` and
     `question_set_path` default from the environment when not given (`JEV_KIT_HOOK_MODE`,
     default shadow; `JEV_KIT_HOOK_QUESTION_SET_PATH` or its deprecated alias
-    `JEV_KIT_QUESTION_SET_PATH`, default the tool-call-gate set).
+    `JEV_KIT_QUESTION_SET_PATH`, default the tool-call-gate set). `dest_allowlist` defaults
+    from `JEV_KIT_DEST_ALLOWLIST`; when it is empty, destination trust is unknown for every
+    call, which is the same behaviour as not having the feature.
 
     Never raises: an unparseable event or any internal failure fails closed to a block in
     enforce and to allow in shadow, matching the core's own fail-closed behavior.
     """
     del ctx
     resolved_mode, resolved_path = _resolve(mode, question_set_path)
+    allowlist = (
+        dest_allowlist if dest_allowlist is not None else dest_allowlist_from_env()
+    )
 
     call = _extract_tool_call(tool_call)
     if call is None:
@@ -159,6 +167,8 @@ def pre_tool_call(
             producer=_PRODUCER,
             runner=runner,
             self_deadline_s=self_deadline_s,
+            dest_allowlist=allowlist,
+            workdir=workdir,
         )
     except Exception:
         # decide_tool_call never raises for runtime conditions; this is a last-resort net so the

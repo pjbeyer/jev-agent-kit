@@ -13,6 +13,11 @@ every host shim inherits them:
 - Command properties (ADR 0005) are computed here, in code, and added to state as keyed
   booleans. They are evidence only and can never allow a call. When the command cannot be
   parsed confidently, enforce never allows: unknown is treated as risky.
+- Destination trust (the shared gate augmentation contract) is computed here too: the
+  `dest_*` fields name where a command sends data, which the local `cmd_*` facts cannot
+  describe. They are evidence only, like the command properties, and are computed with the
+  same tri-state discipline. Their polarity is inverted on purpose: `dest_allowlisted`
+  unknown is not permission, so it is never read as allowlisted.
 """
 
 from __future__ import annotations
@@ -26,7 +31,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from jev_kit import command_properties
+from jev_kit import command_properties, destination
 from jev_kit.command_properties import extract_command_properties
 from jev_kit.types import Mode
 
@@ -63,6 +68,18 @@ def question_set_path_from_env() -> str:
         if raw:
             return raw
     return DEFAULT_QUESTION_SET_PATH
+
+
+#: Canonical environment variable naming the destination allowlist. Comma-separated hosts.
+#: Empty by default: an empty allowlist is the absence of a policy, and yields
+#: `dest_allowlisted = null` for every call rather than a deny.
+DEST_ALLOWLIST_ENV_VAR = "JEV_KIT_DEST_ALLOWLIST"
+
+
+def dest_allowlist_from_env() -> frozenset[str]:
+    """The operator's destination allowlist, from the environment. Never raises."""
+    raw = os.environ.get(DEST_ALLOWLIST_ENV_VAR, "")
+    return frozenset(item.strip() for item in raw.split(",") if item.strip())
 
 
 # A runner takes a JSON decision request and returns a JSON response. The default is a
@@ -110,8 +127,8 @@ PRODUCER_UNAVAILABLE = "unavailable"
 
 
 def producer_id(name: str, shim_file: str) -> str:
-    """Identity of a hook's state preprocessing: its own source, this module's, and the
-    command-property extractor's (ADR 0005).
+    """Identity of a hook's state preprocessing: its own source, this module's, the
+    command-property extractor's (ADR 0005), and the destination extractor's.
 
     Sent as the request's `producer`, which the engine binds into every fingerprint, so any
     change to how a hook builds state invalidates calibration made with the old code. Never
@@ -123,9 +140,12 @@ def producer_id(name: str, shim_file: str) -> str:
             Path(shim_file).read_bytes()
             + bytes(1)
             + Path(__file__).read_bytes()
-            # The property extractor shapes state too, so its source is part of the identity.
+            # The property extractors shape state too, so their sources are part of the
+            # identity.
             + bytes(1)
             + Path(command_properties.__file__).read_bytes()
+            + bytes(1)
+            + Path(destination.__file__).read_bytes()
         )
     except OSError:
         return PRODUCER_UNAVAILABLE
@@ -142,6 +162,8 @@ def decide_tool_call(
     producer: str | None = None,
     runner: Runner | None = None,
     self_deadline_s: float = DEFAULT_SELF_DEADLINE_S,
+    dest_allowlist: frozenset[str] = frozenset(),
+    workdir: str | None = None,
 ) -> HookResult:
     """Judge one tool call. Returns ALLOW or ASK; never raises for runtime conditions."""
     if producer == PRODUCER_UNAVAILABLE:
@@ -156,6 +178,11 @@ def decide_tool_call(
     # Facts about the full command line, computed locally (ADR 0005). Only a question set that
     # declares these fields (kind `flag`) sends them; others drop them as undeclared.
     properties = extract_command_properties(call.command)
+    # Where the data would go, also computed locally. An empty allowlist yields unknown for
+    # every call, which is the same behaviour as not having this feature at all.
+    dest = destination.resolve_destination(
+        call.command, allowlist=dest_allowlist, workdir=workdir
+    )
     request = {
         "schema_version": 1,
         "op": "decide",
@@ -167,6 +194,7 @@ def decide_tool_call(
             "target": call.target,
             "context": call.context,
             **properties.as_state(),
+            **dest.as_state(),
         },
     }
     run: Callable[[dict[str, Any]], dict[str, Any]]

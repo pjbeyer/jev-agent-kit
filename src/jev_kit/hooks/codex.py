@@ -64,6 +64,7 @@ from jev_kit.hooks.core import (
     Runner,
     ToolCall,
     decide_tool_call,
+    dest_allowlist_from_env,
     producer_id,
     question_set_path_from_env,
 )
@@ -141,6 +142,8 @@ def handle_codex_event(
     question_set_path: str | None = None,
     runner: Runner | None = None,
     self_deadline_s: float = DEFAULT_SELF_DEADLINE_S,
+    dest_allowlist: frozenset[str] | None = None,
+    workdir: str | None = None,
 ) -> dict[str, Any]:
     """Decide one Codex `PreToolUse` event and return its JSON hook response.
 
@@ -150,6 +153,7 @@ def handle_codex_event(
     `DEFAULT_QUESTION_SET_PATH` when neither is given. `self_deadline_s` defaults to the core's
     own `DEFAULT_SELF_DEADLINE_S`, far under Codex's 600s fail-open window, so this shim owns its
     deadline rather than trusting the host timeout (phase-3-4-plan.md safety amendment 1).
+    `dest_allowlist` falls back to `JEV_KIT_DEST_ALLOWLIST`.
 
     Never raises: an event that cannot be parsed fails closed to ASK (rendered as `"deny"`) in
     enforce and ALLOW in shadow, matching the core's own shadow-never-blocks convention, without
@@ -172,6 +176,8 @@ def handle_codex_event(
         producer=_PRODUCER,
         runner=runner,
         self_deadline_s=self_deadline_s,
+        dest_allowlist=dest_allowlist if dest_allowlist is not None else dest_allowlist_from_env(),
+        workdir=workdir,
     )
     return _build_response(result.outcome, reason=result.reason)
 
