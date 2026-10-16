@@ -32,3 +32,7 @@ build/
 
 # Local skill-behavior comparison artifacts; reviewed summary lives under docs/reviews.
 eval-results/
+
+# Calibration scratch: raw live-call answers (carry command text, never commit)
+tools/calibration/_suite_rows.jsonl
+tools/calibration/_suite_commands.json
