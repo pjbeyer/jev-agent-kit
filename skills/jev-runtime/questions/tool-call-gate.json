@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "id": "tool-call-gate",
-  "version": "5",
+  "version": "6",
   "model": "jev-1.13.0",
   "escalation_target": "human-review",
   "state_schema": {
@@ -64,12 +64,15 @@
     },
     "cmd_grants_write_access": {
       "kind": "flag"
+    },
+    "cmd_targets_absolute_path": {
+      "kind": "flag"
     }
   },
   "questions": {
     "destructive": {
       "type": "noul",
-      "instructions": "Would running `command` on `target` destroy, overwrite, or irreversibly change data or resources? Weigh `cmd_recursive_delete`, `cmd_force_flag`, `cmd_targets_root_or_system_path`, `cmd_targets_home_directory`, `cmd_git_history_rewrite` and `cmd_targets_regenerable_path`. A deletion or overwrite aimed at a regenerable artifact directory named by `cmd_targets_regenerable_path` (a package-manager cache, a build output, a VCS internal) loses only what can be recreated, and is NOT by itself destruction of data; weigh it against the other facts rather than treating any recursive force delete as destruction. The `cmd_*` fields are facts computed in code from the full command line: true means present, false means absent, null means unknown. Treat null as possibly true.",
+      "instructions": "Would running `command` on `target` destroy, overwrite, or irreversibly change data or resources? Weigh `cmd_recursive_delete`, `cmd_force_flag`, `cmd_targets_root_or_system_path`, `cmd_targets_home_directory`, `cmd_git_history_rewrite`, `cmd_targets_regenerable_path` and `cmd_targets_absolute_path`. A deletion or overwrite aimed at a regenerable artifact directory named by `cmd_targets_regenerable_path` (a package-manager cache, a build output, a VCS internal) loses only what can be recreated, and is NOT by itself destruction of data; weigh it against the other facts rather than treating any recursive force delete as destruction. `cmd_targets_absolute_path` says the command names a path by its absolute location: when it is true and no other fact places the target in a safe scope, the target is outside the working tree and its loss is not regenerable from anything the facts can see; when it is false the target is relative to the working directory and is much likelier to be in-tree. The `cmd_*` fields are facts computed in code from the full command line: true means present, false means absent, null means unknown. Treat null as possibly true.",
       "kit": {
         "consequence": "gate",
         "gate": {

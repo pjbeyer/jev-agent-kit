@@ -205,6 +205,7 @@ widens_permission  p(yes)=0.04  -> ask
   "cmd_parse_confident": true,
   "cmd_pipes_to_shell": false,
   "cmd_recursive_delete": true,
+  "cmd_targets_absolute_path": false,
   "cmd_targets_home_directory": false,
   "cmd_targets_regenerable_path": false,
   "cmd_targets_root_or_system_path": false,

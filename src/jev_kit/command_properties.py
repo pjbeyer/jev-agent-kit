@@ -47,6 +47,7 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "targets_regenerable_path",
     "network_upload",
     "grants_write_access",
+    "targets_absolute_path",
 )
 
 STATE_PREFIX = "cmd_"
@@ -414,9 +415,14 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # bundled -X POST form is not two tokens, so the method words are checked by
         # joining the args, the same way a shell would see them.
         joined = " ".join(t.lower() for t in args)
-        upload = any(t.lower() in _UPLOAD_FLAGS for t in args) or any(
-            marker in joined for marker in ("-x post", "-x put", "--request post", "--request put")
-        )
+        # Short flags are compared case-sensitively: curl's -F/-T are upload-only while
+        # -f means "fail silently", so a lowercased comparison would conflate them. Long
+        # options also match as `--opt=value` prefixes, since wget/curl accept that form.
+        _UPLOAD_PREFIXES = ("--post-file=", "--body-data=", "--data-raw=")
+        upload = (any(t in _UPLOAD_FLAGS for t in args)
+                  or any(t.startswith(pfx) for t in args for pfx in _UPLOAD_PREFIXES)
+                  or any(marker in joined for marker in
+                         ("-x post", "-x put", "--request post", "--request put")))
         if program in _UPLOAD_HOST_TOOLS or upload:
             found.hit("network_upload")
         # git push is an upload by construction: it sends objects to a remote. Handled at the
@@ -841,6 +847,8 @@ def _check_path_token(token: str, found: _Found) -> None:
             found.hit("targets_home_directory")
         if _is_regenerable(cand):
             found.hit("targets_regenerable_path")
+        if _absolute(cand) is not None:
+            found.hit("targets_absolute_path")
         if (cand.startswith("\\\\") or cand.startswith("//")) and _segments(cand):
             found.unsure("unc_or_network_path")
         if _absolute(cand) is None and _net_climb(cand) >= 3:
@@ -1051,10 +1059,17 @@ def _raw_scan(text: str, found: _Found) -> None:
         found.hit("uses_elevation")
     if _RAW_DOWNLOAD.search(text):
         found.hit("network_download")
-    if re.search(r"\b(?:scp|sftp|rsync)\b|(-F|--form|-T|--upload-file|-d\s|--data|--json\b"
-                 r"|-x\s*post|-x\s*put|--request\s+(?:post|put)|git\s+push\b)", text,
-                 re.IGNORECASE):
+    if re.search(r"\b(?:scp|sftp|rsync)\b|\bcurl\b[^;&|\n]*("
+                 # Short flags are case-sensitive on purpose: -F/-T are upload-only and -f
+                 # means "fail silently", so they sit in a (?-i:...) scope while long flags
+                 # stay case-insensitive.
+                 r"(?-i:-F|-T)|--form|--upload-file|-d\s|--data|--json\b|-x\s*(?:post|put)\b|"
+                 r"--request\s+(?:post|put)\b)|"
+                 r"\bwget\b[^;&|\n]*(?:(?-i:--post-file|--body-data))|"
+                 r"\bgit\s+push\b", text, re.IGNORECASE):
         found.hit("network_upload")
+    if re.search(r"(?:^|[\s=&(])(?:/|~|[A-Za-z]:[\\/])", text):
+        found.hit("targets_absolute_path")
     if _RAW_RECURSIVE.search(text):
         found.hit("recursive_delete")
     chmod_mode = re.search(r"\bchmod\b[^;&|\n]*\s(?:[ugoa]*[+-=][rwxXst]*|[0-7]{3,4})", text,
