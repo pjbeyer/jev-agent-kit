@@ -379,7 +379,9 @@ def test_every_package_install_is_also_a_download(
      "git config core.hooksPath /tmp/h", "PATH=/tmp ls", "LD_PRELOAD=/tmp/x.so ls",
      "env LD_PRELOAD=/tmp/x.so ls", "GIT_EXTERNAL_DIFF=/tmp/x git diff",
      "GIT_PAGER=/tmp/x git log", "git grep -O x", "git diff --ext-diff",
-     "git show --textconv HEAD", "git status", "git log", "date -s 2020-01-01",
+     "git show --textconv HEAD", "date -s 2020-01-01",
+     # git read-only subcommands are modeled now, so they are asserted confident instead
+     # (see test_git_read_only_is_modeled_and_still_carries_its_hazards).
      "cp /tmp/evil .git/hooks/pre-commit", "ln -s /tmp/evil .git/hooks/pre-commit",
      "cp /tmp/x .claude/settings.json", "cp /tmp/x Makefile", "cp /tmp/x .envrc",
      "cp -t.git/hooks x", "mv -t.claude x", "copy-item x -destination:Makefile",

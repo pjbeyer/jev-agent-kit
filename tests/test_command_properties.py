@@ -126,7 +126,9 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("net localgroup administrators alice /add", False, {PERM}),
     ("net use", False, set()),
     # --- git
-    ("git status", False, set()),
+    # Read-only on a plain invocation is modeled (see _GIT_READ_ONLY_SUBCOMMANDS). Every
+    # subcommand that runs repository hooks, updates refs or changes config is not.
+    ("git status", True, set()),
     ("git push origin main", False, set()),
     ("git push --force origin main", False, {GIT, F}),
     ("git push -f", False, {GIT, F}),
@@ -243,8 +245,8 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("git pull", False, {NET}),
     ("git am patch", False, set()),
     ("git config core.hooksPath /tmp/h", False, set()),
-    ("git log --oneline", False, set()),
-    ("git diff HEAD", False, set()),
+    ("git log --oneline", True, set()),
+    ("git diff HEAD", True, set()),
     # --- environment assignments and git config can run unseen code (round 3 C01)
     ("PATH=/tmp ls", False, set()),
     ("LD_PRELOAD=/tmp/x.so ls", False, set()),
@@ -256,7 +258,7 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("git diff --ext-diff", False, set()),
     ("git show --textconv HEAD", False, set()),
     ("git --upload-pack=x ls-remote", False, set()),
-    ("git -C /srv/repo log", False, {ROOT}),
+    ("git -C /srv/repo log", True, {ROOT}),
     ("date -s 2020-01-01", False, set()),
     ("sort --compress-program=x a", False, set()),
     ("wget --use-askpass=x http://x", False, {NET}),

@@ -316,6 +316,13 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
     if program in _INDIRECT:
         found.unsure("indirect_execution")
         return
+    if program == "git":
+        # Dispatched before the _MODELED check on purpose. git is not wholly unmodeled any
+        # more: `_git` decides confidence per subcommand, because a read-only subcommand on a
+        # plain invocation cannot run a program this module fails to model, while every
+        # subcommand that runs repository hooks, updates refs or changes config still can.
+        _git(args, found)
+        return
     if program not in _MODELED:
         # Confident is an allowlist (ADR 0005): a program whose effects this module does not
         # model is unknown. Positive detections below still count.
@@ -335,9 +342,6 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         found.unsure("runs_unseen_code")
     if program == "find":
         _find(args, found)
-        return
-    if program == "git":
-        _git(args, found)
         return
 
     if program in _WRITERS:
@@ -513,7 +517,18 @@ def _git(args: list[str], found: _Found) -> None:
     if sub not in _GIT_KNOWN:
         found.unsure("git_unknown_subcommand")  # possibly a user alias
         return
-    if sub not in _GIT_MODELED:
+    if sub in _GIT_READ_ONLY_SUBCOMMANDS and not _git_can_run_repo_programs(rest):
+        # Read-only on a plain invocation: no repository hook, no ref update, no config
+        # change, and no option that runs a program named by configuration, so there is
+        # nothing here this module fails to model. This is what stops enforce treating
+        # `git status` exactly like a destructive command.
+        #
+        # Deliberately NOT widened: every subcommand that runs repository hooks (commit,
+        # checkout, merge, pull, push, rebase, am, ...), updates refs, or changes config
+        # stays unknown, because repo config can name programs (core.fsmonitor,
+        # diff.external, textconv, filters, pager) and this module cannot see them.
+        pass
+    else:
         # Subcommands that run repository hooks (commit, checkout, merge, pull, push, rebase,
         # am, ...), update refs (reference-transaction hook) or change config are not modeled.
         found.unsure("git_unmodeled_subcommand")
@@ -571,6 +586,27 @@ def _git(args: list[str], found: _Found) -> None:
         found.hit("network_download")
     if sub == "lfs" and words & {"pull", "fetch", "clone"}:
         found.hit("network_download")
+#: git subcommands that only read, on a plain invocation. Read-only is not the same as
+#: harmless: the hazard properties below still fire on these, so `git clean -fd` is confident
+#: AND flagged as a recursive forced delete.
+_GIT_READ_ONLY_SUBCOMMANDS = frozenset(
+    {"status", "log", "diff", "show", "rev-parse", "ls-files", "ls-tree", "describe",
+     "shortlog", "show-ref", "cat-file", "for-each-ref", "version", "help", "merge-base",
+     "rev-list", "name-rev", "whatchanged", "diff-tree", "diff-index", "diff-files",
+     "check-ignore", "var", "verify-commit", "verify-tag", "count-objects", "blame", "grep"}
+)
+
+#: Options that let a read-only subcommand run a program named by configuration. These are
+#: the reason git was originally off the confidence allowlist entirely, so a subcommand that
+#: carries one is still unknown.
+_GIT_RUNS_PROGRAM_OPTIONS = frozenset(
+    {"--ext-diff", "--textconv", "--no-textconv", "-O", "--open-files-in-pager"}
+)
+
+
+def _git_can_run_repo_programs(rest: list[str]) -> bool:
+    """Whether this invocation can run a program named by repository config."""
+    return any(t.split("=", 1)[0] in _GIT_RUNS_PROGRAM_OPTIONS for t in rest)
 
 
 # program -> subcommands that install packages
