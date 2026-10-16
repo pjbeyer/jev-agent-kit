@@ -1,0 +1,26 @@
+README.md
+  h_c5be3b3dad7ca8 200,203,209
+skills/jev-runtime/questions/tool-call-gate.json
+  h_c5be3b3dad7ca8 4,58-66,72,84,96
+skills/jev-runtime/references/evidence-contracts.md
+  h_c5be3b3dad7ca8 14
+src/jev_kit/command_properties.py
+  h_c5be3b3dad7ca8 47-49,95-110,412-423,433-434,484-499,842-843,928-954,1054-1057,1060-1067,1087-1104
+tests/test_command_properties.py
+  h_c5be3b3dad7ca8 29-31,74-76,126-127
+tests/test_command_properties_gate.py
+  h_c5be3b3dad7ca8 295
+tests/test_command_sequence.py
+  h_c5be3b3dad7ca8 36-37,105,123-126
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "562a9a507815bdcec01393214391c9a6c3e6c916",
+  "prompts": {},
+  "humans": {
+    "h_c5be3b3dad7ca8": {
+      "author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
