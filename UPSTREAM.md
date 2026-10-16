@@ -95,6 +95,7 @@ is general (a candidate to offer upstream) or specific to this installation.
 | `aug/calibration` | Reproduce the documented calibration procedure, and record what it returns on real traffic. | Yes. General. |
 | `aug/state-facts` | Add the consequence, direction and write-access facts the questions were missing. | Yes. General, and it measurably fixes the separation problem. |
 | `aug/absolute-fact` | The absolute-path fact, plus the ensemble measured end to end. | Yes. General. |
+| `aug/calibration-registry` | Threshold registry from measured rows; per-question labels; pilot extractor fix. | Yes. General. |
 
 The receipt-replay idea below is **not implemented** and has no branch. It is recorded as a
 candidate rather than a change, because this file must not claim work that does not exist:
