@@ -1,0 +1,34 @@
+tools/calibration/merge_suite.py
+  s_5c29cf94de1cce::t_4318773815cf25 1-28,93-116,139-217
+  s_5c29cf94de1cce::t_64634cc499767d 117-120,122-127,132,135-137
+  s_5c29cf94de1cce::t_a3cbdebef05fae 29-92
+  s_5c29cf94de1cce::t_05f573c017df33 121,128-131,133-134,138
+  s_5c29cf94de1cce::t_ab678c76c26605 218-220
+tools/calibration/dangerous_suite.json
+  s_5c29cf94de1cce::t_567543db599798 1-139
+  s_5c29cf94de1cce::t_df62ac7a144e30 140-142
+tools/calibration/analyze_suite.py
+  s_5c29cf94de1cce::t_3137b3580d9fe2 1-114
+tools/calibration/run_enforce_profile.py
+  s_5c29cf94de1cce::t_b5c59e305c62b0 1-100
+  s_5c29cf94de1cce::t_ad7fd15486223f 101-102
+tools/calibration/run_suite.py
+  s_5c29cf94de1cce::t_ee8441b8dee9be 1-198
+  s_5c29cf94de1cce::t_9ba4fe6789060a 199-201
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "79f95b86f4ad264a00ff9c85b4e2b61f14481ee2",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
