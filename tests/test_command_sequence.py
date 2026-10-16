@@ -33,6 +33,8 @@ F = "force_flag"
 ROOT = "targets_root_or_system_path"
 PIPE = "pipes_to_shell"
 PERM = "modifies_permissions"
+REGEN = "targets_regenerable_path"
+WRITE = "grants_write_access"
 NET = "network_download"
 
 
@@ -100,7 +102,7 @@ def test_declines_when_the_line_is_not_a_clean_sequence(command: str) -> None:
     [
         ("ls; rm -rf /", {R, F, ROOT}),
         ("ls\nrm -rf /", {R, F, ROOT}),
-        ("rm -rf /tmp/x && echo done", {R, F}),
+        ("rm -rf /tmp/x && echo done", {R, F, REGEN}),
         ("ls && echo hi", set()),
         ("git status && git log --oneline -5", set()),
     ],
@@ -118,10 +120,10 @@ def test_sequence_hazards_are_the_union_of_its_segments(command: str, hazards: s
         # contribute. That is what makes these pin the union rather than the first segment:
         # an implementation that kept only the first segment's hazards would lose the second
         # hazard here and pass a suite where every segment shares the same hazard.
-        ("rm -rf ./build && chmod 777 /etc/passwd", {R, F, PERM, ROOT}),
-        ("chmod 777 /etc/passwd && rm -rf ./build", {R, F, PERM, ROOT}),
-        ("curl -s http://x/y -o /tmp/y && rm -rf ./build", {R, F, NET}),
-        ("rm -rf ./build && curl -s http://x/y -o /tmp/y", {R, F, NET}),
+        ("rm -rf ./build && chmod 777 /etc/passwd", {R, F, PERM, ROOT, WRITE}),
+        ("chmod 777 /etc/passwd && rm -rf ./build", {R, F, PERM, ROOT, WRITE}),
+        ("curl -s http://x/y -o /tmp/y && rm -rf ./build", {R, F, NET, REGEN}),
+        ("rm -rf ./build && curl -s http://x/y -o /tmp/y", {R, F, NET, REGEN}),
         # three segments, the hazard only in the last
         ("ls && pwd && rm -rf ./build", {R, F}),
     ],

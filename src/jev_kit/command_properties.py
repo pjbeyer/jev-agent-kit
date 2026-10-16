@@ -44,6 +44,9 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "modifies_permissions",
     "git_history_rewrite",
     "package_install",
+    "targets_regenerable_path",
+    "network_upload",
+    "grants_write_access",
 )
 
 STATE_PREFIX = "cmd_"
@@ -89,6 +92,22 @@ _DOWNLOADERS = frozenset({
     "start-bitstransfer", "bitsadmin", "aria2c", "ftp", "tftp", "lftp", "scp", "sftp",
     "rsync", "fetch", "http", "httpie", "xh",
 })
+# Upload markers: the request-carries-data direction. curl's -F/--form/-T/--upload-file put a
+# local file into a request body; -d/--data/-X POST/PUT do the same for inline data; scp/rsync
+# source-to-destination with a remote host; ftp put. A downloader without these is a receive.
+_UPLOAD_FLAGS = frozenset({
+    "-F", "--form", "--form-string", "-T", "--upload-file", "-d", "--data",
+    "--data-raw", "--data-ascii", "--data-binary", "--data-urlencode", "--json",
+    "-X POST", "-X PUT", "--request POST", "--request PUT", "--upload",
+})
+_UPLOAD_HOST_TOOLS = frozenset({"scp", "sftp", "rsync", "ftp", "tftp", "lftp"})
+
+# chmod modes that grant write access beyond the owner: the numeric digits contain 2/3/6/7 in
+# the group or other position, or a symbolic +w/+rwx. 644/755/+x do not. Only the numeric form
+# and the symbolic form are checked; anything else leaves the fact null via the mode-arg check.
+_GRANT_WRITE_NUM = re.compile(r"^[0-7]{3,4}$")
+_WRITE_DIGITS = frozenset("2367")
+
 _PERMISSIONS = frozenset({
     "chmod", "chown", "chgrp", "chattr", "setfacl", "icacls", "cacls", "xcacls", "takeown",
     "attrib", "set-acl", "usermod", "gpasswd", "useradd", "adduser", "passwd", "visudo",
@@ -390,6 +409,18 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         "askpass" in t.lower() or t in {"-e", "--execute", "-K", "--config"} for t in args
     ):
         found.unsure("downloader_runs_program")  # wget --use-askpass, -e; curl -K config
+    if program in _DOWNLOADERS:
+        # The request-carries-data direction. A bare URL fetch does not set it. curl's
+        # bundled -X POST form is not two tokens, so the method words are checked by
+        # joining the args, the same way a shell would see them.
+        joined = " ".join(t.lower() for t in args)
+        upload = any(t.lower() in _UPLOAD_FLAGS for t in args) or any(
+            marker in joined for marker in ("-x post", "-x put", "--request post", "--request put")
+        )
+        if program in _UPLOAD_HOST_TOOLS or upload:
+            found.hit("network_upload")
+        # git push is an upload by construction: it sends objects to a remote. Handled at the
+        # git subcommand site below, which already distinguishes push from the read-only set.
     if program in _VCS_OTHER:
         words = {t.lower() for t in args if not t.startswith("-")}
         if words & _VCS_DOWNLOAD:
@@ -399,6 +430,8 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # a module, a make target, a package script) that this module cannot see. Positive
         # detections below still count; nothing undetected may be reported as false.
         found.unsure("runs_unseen_code")
+    if program == "git" and args and args[0].lower() == "push":
+        found.hit("network_upload")  # push sends objects to the remote
     if program == "find":
         _find(args, found)
         return
@@ -448,6 +481,22 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
 
     if program in _PERMISSIONS:
         found.hit("modifies_permissions")
+        if program in {"chmod", "icacls", "cacls", "xcacls"}:
+            # Only the mode argument decides: a numeric mode granting write beyond the owner
+            # (2/3/6/7 in the group or other digit), or a symbolic +w/+rwx/=. 644, 755 and
+            # +x do not grant write. No recognized mode argument leaves the fact null, which
+            # the question reads as possibly-true.
+            for tok in args:
+                cleaned = tok.lstrip("-").lower()
+                if _GRANT_WRITE_NUM.fullmatch(cleaned):
+                    digits = cleaned[-3:]
+                    if any(d in _WRITE_DIGITS for d in digits[1:]):
+                        found.hit("grants_write_access")
+                    break
+                if cleaned in {"+w", "+rwx", "=w", "=rwx", "a+w", "a+rwx", "o+w", "o+rwx",
+                               "g+w", "g+rwx"}:
+                    found.hit("grants_write_access")
+                    break
     if program == "net" and any(t.lower() in {"localgroup", "user", "group"} for t in args):
         found.hit("modifies_permissions")
 
@@ -790,6 +839,8 @@ def _check_path_token(token: str, found: _Found) -> None:
             found.hit("targets_root_or_system_path")
         if _is_home(cand):
             found.hit("targets_home_directory")
+        if _is_regenerable(cand):
+            found.hit("targets_regenerable_path")
         if (cand.startswith("\\\\") or cand.startswith("//")) and _segments(cand):
             found.unsure("unc_or_network_path")
         if _absolute(cand) is None and _net_climb(cand) >= 3:
@@ -872,6 +923,33 @@ def _is_root_or_system(token: str) -> bool:
     # A leading-backslash path is posix-flavored after the separator swap, so the Windows
     # names are checked for both flavors.
     return first in _SYSTEM_WINDOWS or first.startswith("progra")  # also 8.3 PROGRA~1
+
+
+def _is_regenerable(token: str) -> bool:
+    """A path into a regenerable artifact directory, judged after lexical `.`/`..` resolution.
+    `~/.cache/pip` is regenerable; `~/.hermes` is not. Relative paths do not resolve without a
+    working directory, so this fact covers absolute and tilde paths only -- an in-tree
+    `./node_modules` stays False here rather than being guessed. A closed allowlist: an
+    unlisted name is not regenerable, and this fact never vouches for safety on its own."""
+    resolved = _absolute(token)
+    if resolved is None:
+        return False
+    _, segs = resolved
+    # ANY segment naming an artifact directory makes the path regenerable: the hazard is
+    # deleting a directory OF artifacts, so `~/.cache/pip` is inside `.cache`. Synthetic base
+    # segments (`home`, the `~` marker) are skipped. A drive or filesystem ROOT directory that
+    # merely carries an artifact name (C:\temp, /tmp itself is fine to empty, but C:\build is
+    # not provably an artifact dir) is NOT regenerable: with nothing above it, the name alone
+    # does not prove the directory is disposable.
+    skip = {"home", "~", ".", ".."}
+    # A drive or filesystem ROOT directory that merely carries an artifact name (C:\temp,
+    # /tmp) is NOT provably regenerable: with nothing above it, the name alone does not prove
+    # the directory is disposable. `_absolute` folds the drive letter away, so a one-segment
+    # path is a root path under either flavor.
+    if len(segs) <= 1:
+        return False
+    return any(seg in _REGENERABLE_HIDDEN or seg.lower() in _REGENERABLE_BARE
+               for seg in segs if seg not in skip)
 
 
 def _is_home(token: str) -> bool:
@@ -973,8 +1051,20 @@ def _raw_scan(text: str, found: _Found) -> None:
         found.hit("uses_elevation")
     if _RAW_DOWNLOAD.search(text):
         found.hit("network_download")
+    if re.search(r"\b(?:scp|sftp|rsync)\b|(-F|--form|-T|--upload-file|-d\s|--data|--json\b"
+                 r"|-x\s*post|-x\s*put|--request\s+(?:post|put)|git\s+push\b)", text,
+                 re.IGNORECASE):
+        found.hit("network_upload")
     if _RAW_RECURSIVE.search(text):
         found.hit("recursive_delete")
+    chmod_mode = re.search(r"\bchmod\b[^;&|\n]*\s(?:[ugoa]*[+-=][rwxXst]*|[0-7]{3,4})", text,
+                           re.IGNORECASE)
+    if chmod_mode:
+        mode = chmod_mode.group(1)
+        symbolic = "+" in mode or "=w" in mode or "=rwx" in mode
+        if symbolic or (_GRANT_WRITE_NUM.fullmatch(mode)
+                        and any(d in _WRITE_DIGITS for d in mode[-3:][1:])):
+            found.hit("grants_write_access")
     if _RAW_PERMISSIONS.search(text):
         found.hit("modifies_permissions")
     if _RAW_GIT_REWRITE.search(text):
@@ -993,6 +1083,24 @@ _KNOWN_PROGRAMS = (
     | frozenset({"git", "find", "cp", "mv", "ln", "net", "certutil", "npx", "pnpx", "bunx",
                  "pacman", "uv", "uvx", "python", "python3", "py"})
 )
+
+# Artifact directories whose contents are regenerable by construction: package-manager caches,
+# build outputs, VCS internals. Deleting or overwriting here loses nothing that cannot be
+# recreated from a lockfile, a registry or a compiler. A CLOSED list -- this is a "safe
+# direction" fact, so a miss (an artifact dir not listed) reads as False and must never be
+# treated downstream as proof of safety; it only refines hazards other facts already fired.
+# Two lists because paths are judged lexically and `_absolute` resolves a tilde path to the
+# home base without a literal name: dot-prefixed cache names are checked as hidden names under
+# home, and bare artifact names are checked as any segment anywhere.
+_REGENERABLE_HIDDEN = frozenset({
+    ".cache", ".npm", ".yarn", ".pnpm-store", ".cargo", ".gradle", ".next", ".nuxt",
+    ".turbo", ".parcel-cache", ".pytest_cache", ".mypy_cache", ".ruff_cache", ".tox",
+    ".nox", ".hypothesis", ".eggs", ".terraform", ".sonar", ".venv",
+})
+_REGENERABLE_BARE = frozenset({
+    "cache", "caches", "__pycache__", "node_modules", "vendor", "venv", "dist", "build",
+    "target", "out", "obj", "eggs", "site-packages", "tmp", "temp",
+})
 
 _RUNNERS = frozenset({
     "py", "node", "nodejs", "deno", "bun", "bunx", "ruby", "perl", "php", "lua", "java",
