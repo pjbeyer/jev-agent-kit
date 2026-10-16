@@ -1,0 +1,20 @@
+tests/test_endpoint_allowlist.py
+  s_5c29cf94de1cce::t_7914569774842c 1-41,45-103
+  s_5c29cf94de1cce::t_a5228cd9252c29 42-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "5bc0c817a8aa61588884ed361ceb2a02aebd0c80",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "deepseek-v4.1-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
