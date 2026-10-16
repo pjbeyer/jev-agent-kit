@@ -93,6 +93,7 @@ is general (a candidate to offer upstream) or specific to this installation.
 | `aug/flex-gateway` | Let an operator route live calls through their own gateway, without relaxing finding C23. | Yes. General. |
 | `aug/parse-split` | Read a sequence of readable commands (`a && b`, `a | b`, a script) instead of refusing the line. | Yes. General, and the highest-value change here. |
 | `aug/calibration` | Reproduce the documented calibration procedure, and record what it returns on real traffic. | Yes. General. |
+| `aug/state-facts` | Add the consequence, direction and write-access facts the questions were missing. | Yes. General, and it measurably fixes the separation problem. |
 
 The receipt-replay idea below is **not implemented** and has no branch. It is recorded as a
 candidate rather than a change, because this file must not claim work that does not exist:
