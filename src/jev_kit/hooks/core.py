@@ -24,14 +24,17 @@ from __future__ import annotations
 
 import concurrent.futures
 import hashlib
+import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
 from jev_kit import command_properties, destination
+from jev_kit import unattended as unattended_mod
 from jev_kit.command_properties import extract_command_properties
 from jev_kit.types import Mode
 
@@ -164,8 +167,13 @@ def decide_tool_call(
     self_deadline_s: float = DEFAULT_SELF_DEADLINE_S,
     dest_allowlist: frozenset[str] = frozenset(),
     workdir: str | None = None,
+    task_id: str | None = None,
 ) -> HookResult:
-    """Judge one tool call. Returns ALLOW or ASK; never raises for runtime conditions."""
+    """Judge one tool call. Returns ALLOW or ASK; never raises for runtime conditions.
+
+    `task_id` is the host's task identifier. It is used only to detect an unattended run
+    (a `cron:` prefix); it is never sent to the model.
+    """
     if producer == PRODUCER_UNAVAILABLE:
         # Without an identity the call cannot be bound to its calibration; never send it
         # unbound (that would silently change the fingerprint) and never crash the host.
@@ -226,8 +234,66 @@ def decide_tool_call(
         # Unknown is risky, never safe: a command the property parser could not read never
         # reaches ALLOW in enforce, whatever the gate answered. The call still runs so the
         # decision leaves its receipt. Shadow never changes host behavior.
-        return HookResult(HookOutcome.ASK, "ask", "command_parse_unconfident", result.is_mock)
+        result = HookResult(HookOutcome.ASK, "ask", "command_parse_unconfident", result.is_mock)
+
+    # An ASK is an escalation that presumes a human. Where there is no human, the unattended
+    # policy decides instead. Only ASK reaches this branch: a gate that affirmatively judged
+    # the call dangerous is not an escalation and never passes through here.
+    #
+    # The mode check is defense in depth rather than the operative guard: shadow mode always
+    # yields ALLOW (both in _fail_closed and in _map_response), so this branch is already
+    # unreachable there. It is kept because it states the intent at the point of use instead of
+    # relying on that invariant holding somewhere else. `test_shadow_never_yields_ask` pins the
+    # invariant this depends on.
+    if (
+        mode is Mode.ENFORCE
+        and result.outcome is HookOutcome.ASK
+        and unattended_mod.is_unattended(task_id)
+    ):
+        policy = unattended_mod.policy_from_env()
+        outcome = unattended_mod.resolve_escalation(
+            would_escalate=True, unattended=True, policy=policy
+        )
+        if outcome.proceed:
+            _record_suppressed_escalation(call, result, policy, dest)
+            return HookResult(HookOutcome.ALLOW, "unattended", None, result.is_mock)
     return result
+
+
+def _record_suppressed_escalation(
+    call: ToolCall,
+    result: HookResult,
+    policy: unattended_mod.UnattendedPolicy,
+    dest: destination.Destination,
+) -> None:
+    """Write down an escalation the unattended policy suppressed.
+
+    This is what separates the default policy from doing nothing. The suppression is not
+    silent: it lands in a local audit file an operator can count and review, with the action
+    that would have been taken. Only the command basename is recorded, matching the egress
+    discipline, and the file never leaves the machine.
+    """
+    try:
+        path = unattended_mod.audit_log_path()
+        if path is None:
+            return
+        path.parent.mkdir(parents=True, exist_ok=True)
+        words = (call.command or "").split()
+        entry = {
+            "ts": datetime.now(UTC).isoformat(timespec="seconds"),
+            "unattended": True,
+            "policy": policy.value,
+            "would_escalate": True,
+            "would_outcome": result.outcome.value,
+            "reason": result.reason,
+            "command": words[0] if words else "",
+            "dest_known": dest.known,
+            "dest_allowlisted": dest.allowlisted,
+        }
+        with path.open("a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+    except Exception:  # a record must never break a turn
+        pass
 
 
 def _map_response(response: dict[str, Any], mode: Mode) -> HookResult:

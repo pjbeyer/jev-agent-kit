@@ -173,8 +173,28 @@ def handle_claude_event(
         self_deadline_s=self_deadline_s,
         dest_allowlist=dest_allowlist if dest_allowlist is not None else dest_allowlist_from_env(),
         workdir=workdir,
+        task_id=_task_id_from(event),
     )
     return _build_response(result.outcome, reason=result.reason)
+
+
+def _task_id_from(event: dict[str, Any]) -> str | None:
+    """The host's task or session id, if the event carries one. Used only for unattended
+    detection: a `cron:` prefix is one of the two unattended signals."""
+    try:
+        for key in ("task_id", "session_id", "turn_id"):
+            value = event.get(key)
+            if isinstance(value, str) and value:
+                return value
+        tool_input = event.get("tool_input")
+        if isinstance(tool_input, dict):
+            for key in ("task_id", "session_id"):
+                value = tool_input.get(key)
+                if isinstance(value, str) and value:
+                    return value
+    except Exception:
+        return None
+    return None
 
 
 def _parse_argv(argv: Sequence[str]) -> tuple[Mode | None, str | None]:

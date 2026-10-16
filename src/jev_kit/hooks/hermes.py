@@ -119,6 +119,26 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
         return None
 
 
+def _task_id_from(event: Any) -> str | None:
+    """The host's task id, if the event carries one. Used only for unattended detection."""
+    try:
+        if not isinstance(event, dict):
+            return None
+        for key in ("task_id", "session_id", "task"):
+            value = event.get(key)
+            if isinstance(value, str) and value:
+                return value
+        args = event.get("args")
+        if isinstance(args, dict):
+            for key in ("task_id", "session_id"):
+                value = args.get(key)
+                if isinstance(value, str) and value:
+                    return value
+    except Exception:
+        return None
+    return None
+
+
 def _block(reason: str | None) -> dict[str, str]:
     if reason is None:
         return {"action": "block", "message": _BLOCK_MESSAGE}
@@ -169,6 +189,7 @@ def pre_tool_call(
             self_deadline_s=self_deadline_s,
             dest_allowlist=allowlist,
             workdir=workdir,
+            task_id=_task_id_from(tool_call),
         )
     except Exception:
         # decide_tool_call never raises for runtime conditions; this is a last-resort net so the
