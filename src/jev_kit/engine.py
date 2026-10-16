@@ -126,6 +126,12 @@ class EngineConfig:
     max_request_bytes: int = 49_152  # 48 KiB serialized ceiling (finding C13)
     max_request_tokens: int = 16_000  # whole-request token budget (finding C13)
     max_state_question_tokens: int = 12_000  # state plus the longest question (finding C13)
+    # Route live calls through another host that serves the same SystemOne route, which is how
+    # an operator uses their own gateway instead of reaching TypeSafe directly. None is the
+    # shipped behaviour: the fixed default endpoint. The transport refuses any host that is not
+    # on the allowlist, so this cannot be used to send the key somewhere unintended.
+    base_url: str | None = None
+    endpoint_allowlist: tuple[str, ...] | None = None
 
 
 def _config_from_env() -> EngineConfig:
@@ -141,9 +147,15 @@ def _config_from_env() -> EngineConfig:
         raw = os.environ.get(name, "")
         return frozenset(item.strip() for item in raw.split(",") if item.strip())
 
+    # An absent or blank base URL means the fixed default endpoint, so an unset variable cannot
+    # change where a live request goes.
+    base_url = os.environ.get("JEV_KIT_BASE_URL", "").strip() or None
+    allowlist = tuple(sorted(_set("JEV_KIT_ENDPOINT_ALLOWLIST"))) or None
     return EngineConfig(
         source_allowlist=_set("JEV_KIT_SOURCE_ALLOWLIST"),
         public_names=_set("JEV_KIT_PUBLIC_NAMES"),
+        base_url=base_url,
+        endpoint_allowlist=allowlist,
     )
 
 
@@ -774,7 +786,9 @@ def run_json(request: dict[str, Any], *, transport: Transport | None = None) -> 
                 )
                 if api_key is None:
                     return _error_envelope(FailReason.CONFIG)
-                transport = LiveTransport(api_key)
+                transport = LiveTransport(
+                    api_key, base_url=config.base_url, endpoint_allowlist=config.endpoint_allowlist
+                )
             results = decide_batch(reqs, transport=transport, config=config)
             return {"schema_version": SCHEMA_VERSION, "status": "ok", "results": results}
         if op != "decide":
@@ -783,7 +797,9 @@ def run_json(request: dict[str, Any], *, transport: Transport | None = None) -> 
             api_key = config.api_key or secrets.resolve_api_key(timeout=config.deadline_seconds)
             if api_key is None:
                 return _error_envelope(FailReason.CONFIG)
-            transport = LiveTransport(api_key)
+            transport = LiveTransport(
+                api_key, base_url=config.base_url, endpoint_allowlist=config.endpoint_allowlist
+            )
         return _decide(request, transport, config)
     except ValidationError as exc:
         return _error_envelope(exc.reason)

@@ -15,8 +15,9 @@ import ssl
 import threading
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
-from collections.abc import Mapping
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from typing import ClassVar, Protocol, runtime_checkable
 
@@ -85,6 +86,25 @@ class MockTransport:
 
 DEFAULT_ENDPOINT = "https://api.typesafe.ai/v1/systemone"
 
+#: Path appended to a configured base URL to reach the same SystemOne route on another host.
+SYSTEMONE_PATH = "/v1/systemone"
+
+#: Hosts this kit will send a live request to. The endpoint is fixed by default (finding C23),
+#: so an allowlist is only needed once a base URL is configurable at all; it is the mechanism
+#: that keeps "configurable" from meaning "exfiltrate the API key to any host".
+#:
+#: The operator's own gateway belongs here rather than being trusted implicitly, because the
+#: Authorization header is attached to whatever host is configured: an attacker who can set this
+#: variable can already read the key, but a typo or a copy-pasted URL should not silently ship
+#: the key somewhere unintended. Overriding the allowlist is itself explicit and audited.
+DEFAULT_ENDPOINT_ALLOWLIST = ("api.typesafe.ai",)
+
+#: The Flex AI gateway's SystemOne proxy. It speaks the same protocol on the same path, so the
+#: only differences from the default endpoint are the host and the model id it expects. Listed
+#: as a named constant so an operator recognises it rather than pasting a hostname from a
+#: document into configuration.
+FLEX_GATEWAY_BASE_URL = "https://litellm.shared.getflex.org/typesafe"
+
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     """Refuse every redirect. The default handler would forward a normally added
@@ -107,16 +127,30 @@ MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB cap on any response body read
 
 
 class LiveTransport:
-    """POST to the fixed HTTPS endpoint with bearer auth. One attempt per send; the engine
-    owns retries, backoff and the rate budget. The destination is fixed (no override reaches
-    a shipped instance, finding C23); redirects are refused; the key is attached only as a
-    request header and never appears in the body, digests or diagnostics."""
+    """POST to the HTTPS endpoint with bearer auth. One attempt per send; the engine
+    owns retries, backoff and the rate budget. The destination is fixed by default (finding
+    C23); redirects are refused; the key is attached only as a request header and never appears
+    in the body, digests or diagnostics.
+
+    ``base_url`` re-points the request at another host that serves the same SystemOne route,
+    which is what lets an operator route through their own gateway. It is refused unless the
+    host is on ``endpoint_allowlist``, so the key cannot be sent to an arbitrary destination by
+    setting one variable. Passing ``base_url=None`` reproduces the shipped behaviour exactly.
+    """
 
     is_mock: ClassVar[bool] = False
 
-    def __init__(self, api_key: str) -> None:
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str | None = None,
+        endpoint_allowlist: Sequence[str] | None = None,
+    ) -> None:
         self._api_key = api_key
-        self._endpoint = DEFAULT_ENDPOINT
+        if base_url is None:
+            self._endpoint = DEFAULT_ENDPOINT
+        else:
+            self._endpoint = _resolve_endpoint(base_url, endpoint_allowlist)
         self._opener = _build_opener()
 
     def send(self, body: bytes, deadline: Deadline) -> TransportResult:
@@ -149,6 +183,39 @@ class LiveTransport:
             return TransportFailure(FailReason.TIMEOUT, "read_timeout")
         except (urllib.error.URLError, OSError, ValueError):
             return TransportFailure(FailReason.TRANSPORT, "transport_error")
+
+
+class EndpointNotAllowed(ValueError):
+    """A configured base URL whose host is not on the allowlist. Raised rather than returned
+    as a transport failure: it is a configuration error, and the engine must refuse to send
+    rather than retry against a destination it will never be permitted to use."""
+
+
+def _resolve_endpoint(base_url: str, endpoint_allowlist: Sequence[str] | None) -> str:
+    """Build the request URL for a configured base URL, refusing a host off the allowlist.
+
+    Fails closed on anything unexpected: a non-HTTPS scheme, a missing host, a host that is not
+    on the allowlist, or a base URL carrying userinfo, a query or a fragment. Each of those
+    would either downgrade the connection or send the bearer token somewhere other than the
+    intended route, so none is a warning.
+    """
+    allowed = tuple(endpoint_allowlist) if endpoint_allowlist else DEFAULT_ENDPOINT_ALLOWLIST
+    try:
+        parsed = urllib.parse.urlsplit(base_url.strip())
+    except ValueError as exc:
+        raise EndpointNotAllowed("base_url_unparseable") from exc
+    if parsed.scheme != "https":
+        raise EndpointNotAllowed("base_url_not_https")
+    if not parsed.hostname:
+        raise EndpointNotAllowed("base_url_no_host")
+    if parsed.username or parsed.password:
+        raise EndpointNotAllowed("base_url_has_userinfo")
+    if parsed.query or parsed.fragment:
+        raise EndpointNotAllowed("base_url_has_query_or_fragment")
+    host = parsed.hostname.lower()
+    if host not in {entry.strip().lower() for entry in allowed}:
+        raise EndpointNotAllowed("base_url_host_not_allowed")
+    return f"{parsed.scheme}://{parsed.netloc}{parsed.path.rstrip('/')}{SYSTEMONE_PATH}"
 
 
 def parse_retry_after(headers: Mapping[str, str]) -> float | None:
