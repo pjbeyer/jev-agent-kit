@@ -402,6 +402,31 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # subcommand that runs repository hooks, updates refs or changes config still can.
         _git(args, found)
         return
+    if program in {"scp", "sftp", "rsync"}:
+        # Options that run a program or read a config that runs one: rsync -e/--rsh and
+        # --rsync-path (remote shell, remote rsync binary), scp -S/-F, sftp -S and
+        # -b/-B batch files (the batch is executed).
+        _COPY_RUNS_PROGRAM = ("--rsh", "--rsync-path", "--config")
+        if any(t in _COPY_RUNS_PROGRAM or t in {"-e", "-S", "-F"}
+               or t.startswith(("-b", "-B"))
+               or any(t.startswith(prefix) for prefix in _COPY_RUNS_PROGRAM)
+               for t in args):
+            found.unsure("copy_tool_runs_program")
+        # Direction: a remote spec (user@host:path, or host:path for rsync) on the sending
+        # side means a local file leaves; on the receiving side a file arrives.
+        remote_args = [t for t in args if not t.startswith("-") and _remote_spec(t)]
+        local_args = [t for t in args if not t.startswith("-") and not _remote_spec(t)]
+        if remote_args and local_args:
+            first_remote = next(i for i, t in enumerate(args)
+                                if not t.startswith("-") and _remote_spec(t))
+            if first_remote == 0:
+                found.hit("network_download")  # remote -> local
+            else:
+                found.hit("network_upload")  # local -> remote
+        elif remote_args:
+            found.hit("network_upload")  # cannot tell which side; conservative: leaves
+        if found.unconfident_reason is None:
+            return
     if program not in _MODELED:
         # Confident is an allowlist (ADR 0005): a program whose effects this module does not
         # model is unknown. Positive detections below still count.
@@ -837,7 +862,26 @@ def _check_name_aliases(token: str, found: _Found) -> None:
             found.unsure("windows_name_alias")
 
 
+_REMOTE_SPEC = re.compile(r"^[A-Za-z0-9._+-]+@[A-Za-z0-9._-]+:")
+
+
+def _remote_spec(token: str) -> bool:
+    """True for `user@host:path` (scp/sftp) or a bare `host:path` (rsync also allows this)."""
+    if _REMOTE_SPEC.match(token):
+        return True
+    head, sep, _rest = token.partition(":")
+    # Bare-host specs have no user part; a single-letter drive prefix is a Windows path.
+    return bool(sep and head and "." in head and not head.startswith("-")
+                and len(head) > 1 and _SAFE_PROGRAM.match(head) is not None
+                and head.lower() not in {"http", "https", "ftp", "ftps", "file", "sftp"})
+
+
 def _check_path_token(token: str, found: _Found) -> None:
+    # A `user@host:path` remote spec is not a local path: firing targets_* facts on the
+    # remote side would claim the command targets this machine. The copy tools carry the
+    # direction separately; the remote path is opaque here.
+    if _REMOTE_SPEC.match(token):
+        return
     # `--opt=value` and `-Param:value`: check the value too.
     candidates = [token]
     for sep in ("=", ":"):
@@ -1143,6 +1187,10 @@ _MODELED = frozenset({
     "find", "which", "whoami", "uniq", "stat", "tree", "du", "df",
     "get-childitem", "gci", "get-content", "gc", "get-location", "write-output",
     "select-string", "curl", "wget", "iwr", "irm", "invoke-webrequest", "invoke-restmethod",
+    # Host-to-host copy tools: modeled with direction (which side holds the remote spec)
+    # and their own unsafe-option unsures below. ftp/tftp/lftp stay unmodeled: their
+    # interactive subcommands cannot be seen in one argv.
+    "scp", "sftp", "rsync",
 }) | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
                                                                "run0"})
 # git is not on the allowlist: every git command can run programs named by the repository's

@@ -79,7 +79,11 @@ def main() -> None:
         neg = len(confirm_samples) - pos
         # A confirm half with no positives of a class proves nothing about that class,
         # whatever the flag says: the evaluator's accuracy cannot be earned on an empty class.
-        if min(pos, neg) == 0:
+        # How many of each class the chosen bounds actually answer in confirm: a band that
+        # clears almost nothing has headline accuracy on a handful of items.
+        clear_pos = sum(1 for n, y in confirm_samples if y == 1 and n >= (res.yes_bound or 1.0))
+        clear_neg = sum(1 for n, y in confirm_samples if y == 0 and n <= (res.no_bound or 0.0))
+        if min(pos, neg) == 0 or (MIN_CONFIRM_PER_CLASS == 0 and min(clear_pos, clear_neg) < 10):
             sufficient = False
         else:
             sufficient = (res.reason == "meets_criteria"
