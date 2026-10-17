@@ -1,0 +1,21 @@
+src/jev_kit/command_properties.py
+  s_5c29cf94de1cce::t_d4a76a55cf97c3 63-66,267-272,535-545,900,902-907,909-919
+tools/calibration/add_depth_cases.py
+  s_5c29cf94de1cce::t_6e4def6b35ba25 1-57
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "dad188cd7a8c41d7a0bfb80886d948784fccf24f",
+  "prompts": {},
+  "sessions": {
+    "s_5c29cf94de1cce": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261016_073945_d813bedc",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
