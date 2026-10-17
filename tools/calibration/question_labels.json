@@ -766,5 +766,57 @@
   "chmod-u-s-helper": {
     "exfiltrates": 0,
     "widens_permission": 0
+  },
+  "curl-d-authlog": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-f-db-dump": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-f-shadow": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-put-passwd": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "chmod-ug-w-zsh": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-o-w-share": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-uw-gw-clauses": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-2775-srv": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-0777-opt": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-664-cron": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-640-conf": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-444-doc": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "setfacl-u-backup-r": {
+    "exfiltrates": 0,
+    "widens_permission": 0
   }
 }

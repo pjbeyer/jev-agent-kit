@@ -60,7 +60,10 @@ MAX_TOKENS = 128
 # control operators and redirects, substitution, quoting, variable expansion (POSIX `$`, cmd
 # `%` and delayed `!`), grouping and brace expansion, cmd's `^` escape, and cmd's `,` and `=`
 # argument separator `,`. A word starting with `@` (PowerShell splatting) is checked per word.
-_UNCONFIDENT_CHARS = frozenset(";&|<>`\"'$%!(){}^,")
+# Comma is deliberately absent: it is never a shell operator, and it appears in ordinary
+# argument data (chmod u+w,g-w, --tags Key=A,Value=B). Brace expansion is covered by `{`,
+# which is in the set.
+_UNCONFIDENT_CHARS = frozenset(";&|<>`\"'$%!(){}^")
 _CONTROL = re.compile(r"[\x00-\x08\x0a-\x1f\x7f]")
 _ENV_ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 _SAFE_PROGRAM = re.compile(r"^[a-z0-9][a-z0-9._+-]*$")
@@ -261,7 +264,12 @@ def _analyze(command: object, found: _Found) -> None:
     if any(ch in _UNCONFIDENT_CHARS for ch in command):
         found.unsure("shell_syntax")
     tokens = command.split()
-    if any(tok.startswith("@") for tok in tokens):
+    # `@word` is PowerShell splatting only under PowerShell: a PS host program, or a bare
+    # PowerShell cmdlet (Verb-Noun). Elsewhere `@word` is ordinary argument data -- curl
+    # -d @file uploads, npm @scope/pkg.
+    _word = tokens[0].rsplit("/", 1)[-1].lower().removesuffix(".exe")
+    _ps_context = _word in {"pwsh", "powershell"} or "-" in _word
+    if _ps_context and any(tok.startswith("@") for tok in tokens[1:]):
         found.unsure("splatting")
     if len(tokens) > MAX_TOKENS:
         found.unsure("too_many_tokens")
@@ -524,9 +532,17 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
                     if any(d in _WRITE_DIGITS for d in digits[1:]):
                         found.hit("grants_write_access")
                     break
-                if cleaned in {"+w", "+rwx", "=w", "=rwx", "a+w", "a+rwx", "o+w", "o+rwx",
-                               "g+w", "g+rwx"}:
-                    found.hit("grants_write_access")
+                # General symbolic mode: any mix of subjects (u/g/o/a, comma-separated
+                # clauses like ug+w or u+rwx,g-w) grants write when a clause's verb is
+                # + or = and its letters include w. A `-` verb removes. `X` (execute
+                # only) does not grant write. Unknown shapes leave the fact null.
+                clauses = cleaned.split(",")
+                if all(re.fullmatch(r"[ugoa]*[+-=][rwxX]+", clause) for clause in clauses):
+                    for clause in clauses:
+                        m = re.match(r"[ugoa]*([+-=])([rwxX]+)", clause)
+                        if m is not None and m.group(1) != "-" and "w" in m.group(2):
+                            found.hit("grants_write_access")
+                            break
                     break
         if program == "setfacl":
             # `-m` grants when the ACL spec names a subject beyond the file's mode mirror:
@@ -881,11 +897,26 @@ def _check_name_aliases(token: str, found: _Found) -> None:
     # `--opt=./value` splits into '--opt=.' + 'value', and the first fragment reads as a
     # filename ending in a dot when it is really the option name plus a path component.
     # Strip the option prefix so the value is checked as a path.
-    if "=" in token[:token.find("=") + 1] and token.startswith("-"):
+    if "=" in token[: token.find("=") + 1] and token.startswith("-"):
         token = token.split("=", 1)[1]
+    # `name=value` upload/load forms (`-F file=@./db.dump`): the value is the path. Strip
+    # any leading `@` load marker, so the `@.` current-dir dot is not read as a name.
+    if "=" in token and not token.startswith("-"):
+        head, val = token.split("=", 1)
+        if val and not head.endswith("/"):
+            token = val.lstrip("@")
     for seg in _segments(token):
-        if seg not in {".", ".."} and (_SHORT_NAME.search(seg) or seg.endswith((".", " "))):
-            found.unsure("windows_name_alias")
+        if seg in {".", ".."}:
+            continue
+        # A `name=value` fragment (`file=@./db.dump`) splits at `=`: only the value side
+        # is a path; the `file=@.` fragment is prefix + current-dir dot, not a name.
+        has_value = "=" in seg and seg.index("=") < len(seg) - 1
+        segs = _segments(seg.split("=", 1)[1]) if has_value else [seg]
+        for part in segs:
+            if part in {".", ".."}:
+                continue
+            if _SHORT_NAME.search(part) or part.endswith((".", " ")):
+                found.unsure("windows_name_alias")
 
 
 _REMOTE_SPEC = re.compile(r"^[A-Za-z0-9._+-]+@[A-Za-z0-9._-]+:")
