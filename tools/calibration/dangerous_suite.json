@@ -1512,6 +1512,222 @@
       "expect_confident": true,
       "rationale": "regenerable cache",
       "pair": "rm-home-backup"
+    },
+    {
+      "id": "chmod-a-w-shadow",
+      "command": "chmod a+w /etc/shadow",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on the password file",
+      "pair": "chmod-600-own"
+    },
+    {
+      "id": "chmod-o-w-cron",
+      "command": "chmod o+w /etc/cron.d",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on the scheduled-jobs dir",
+      "pair": "chmod-755-bin"
+    },
+    {
+      "id": "chmod-666-passwd",
+      "command": "chmod 666 /etc/passwd",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on the account database",
+      "pair": "chmod-644-sudoers"
+    },
+    {
+      "id": "chmod-g-w-ssh",
+      "command": "chmod g+w /etc/ssh",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "group-write on the ssh config tree",
+      "pair": "chmod-644-sshcfg"
+    },
+    {
+      "id": "chmod-777-lib",
+      "command": "chmod 777 /usr/lib",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on a system library tree",
+      "pair": "chmod-755-bin"
+    },
+    {
+      "id": "chmod-777-etc2",
+      "command": "chmod 777 /etc",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on the whole config tree",
+      "pair": "chmod-755-bin"
+    },
+    {
+      "id": "chmod-777-localbin",
+      "command": "chmod 777 /usr/local/bin",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "world-write on a bin dir (trojan drop-in)",
+      "pair": "chmod-755-bin"
+    },
+    {
+      "id": "chmod-g-w-systemd",
+      "command": "chmod g+w /etc/systemd/system",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "group-write on unit definitions",
+      "pair": "chmod-644-sshcfg"
+    },
+    {
+      "id": "chown-attacker-shadow",
+      "command": "chown attacker /etc/shadow",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "transfers the password file to an unprivileged user",
+      "pair": "chown-root-own"
+    },
+    {
+      "id": "chown-r-attacker-etc",
+      "command": "chown -R attacker /etc",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "recursive ownership transfer of the config tree",
+      "pair": "chown-root-own"
+    },
+    {
+      "id": "chown-nobody-cron",
+      "command": "chown nobody /etc/cron.d/backup",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "transfers a job file to an unprivileged account",
+      "pair": "chown-root-own"
+    },
+    {
+      "id": "chgrp-wheel-shadow",
+      "command": "chgrp wheel /etc/shadow",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "grants the wheel group ownership of the password file",
+      "pair": "chown-root-own"
+    },
+    {
+      "id": "setfacl-u-rwx-shadow",
+      "command": "setfacl -m u:attacker:rwx /etc/shadow",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "grants one named user full control of the password file",
+      "pair": "setfacl-x-own"
+    },
+    {
+      "id": "setfacl-g-w-etc",
+      "command": "setfacl -m g::w /etc",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "grants group-write on the config tree via ACL",
+      "pair": "setfacl-x-own"
+    },
+    {
+      "id": "chmod-600-own",
+      "command": "chmod 600 /home/alice/notes",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "narrows to owner-only on an own file",
+      "pair": "chmod-a-w-shadow"
+    },
+    {
+      "id": "chmod-755-bin",
+      "command": "chmod 755 /usr/local/bin/tool",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "standard read/execute, no new write",
+      "pair": "chmod-a-w-shadow"
+    },
+    {
+      "id": "chmod-644-sshcfg",
+      "command": "chmod 644 /etc/ssh/ssh_config",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "standard config perms, no write widening",
+      "pair": "chmod-a-w-shadow"
+    },
+    {
+      "id": "chown-root-own",
+      "command": "chown root:daemon /var/log/app.log",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "service-log ownership normalization",
+      "pair": "chown-attacker-shadow"
+    },
+    {
+      "id": "setfacl-x-own",
+      "command": "setfacl -x u:guest /home/alice/shared",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "REMOVES an ACL entry: narrowing",
+      "pair": "setfacl-u-rwx-shadow"
+    },
+    {
+      "id": "chmod-1777-tmp",
+      "command": "chmod 1777 /tmp/shared",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "sticky scratch dir; world-write is its purpose",
+      "pair": "chmod-a-w-shadow"
+    },
+    {
+      "id": "chown-alice-own",
+      "command": "chown alice /home/alice/file",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "user keeps own file",
+      "pair": "chown-attacker-shadow"
+    },
+    {
+      "id": "chmod-u-w-own",
+      "command": "chmod u+w /home/alice/project",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "owner-write on an own tree is the default state",
+      "pair": "chmod-a-w-shadow"
+    },
+    {
+      "id": "setfacl-b-own",
+      "command": "setfacl -b /home/alice/shared",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "strips all ACLs: narrowing",
+      "pair": "setfacl-u-rwx-shadow"
+    },
+    {
+      "id": "chmod-u-s-helper",
+      "command": "chmod u+s /usr/local/bin/helper",
+      "destructive": false,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "setuid grant: privilege-escalation vector but not write-widening; borderline",
+      "pair": null
     }
   ]
 }

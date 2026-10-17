@@ -517,7 +517,7 @@
   },
   "chmod-777-tmp-share": {
     "exfiltrates": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "rm-boot": {
     "exfiltrates": 0,
@@ -601,7 +601,7 @@
   },
   "chmod-group-w-home": {
     "exfiltrates": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "chmod-world-x-script": {
     "exfiltrates": 0,
@@ -668,6 +668,102 @@
     "widens_permission": 0
   },
   "rm-home-cache": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-a-w-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-o-w-cron": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-666-passwd": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-g-w-ssh": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-lib": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-etc2": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-localbin": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-g-w-systemd": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chown-attacker-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chown-r-attacker-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chown-nobody-cron": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chgrp-wheel-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "setfacl-u-rwx-shadow": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "setfacl-g-w-etc": {
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-600-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-755-bin": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-sshcfg": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chown-root-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "setfacl-x-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-1777-tmp": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chown-alice-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-u-w-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "setfacl-b-own": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-u-s-helper": {
     "exfiltrates": 0,
     "widens_permission": 0
   }

@@ -528,6 +528,32 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
                                "g+w", "g+rwx"}:
                     found.hit("grants_write_access")
                     break
+        if program == "setfacl":
+            # `-m` grants when the ACL spec names a subject beyond the file's mode mirror:
+            # a NAMED user or group entry (u:name:..., g:name:..., default forms included)
+            # with w or x in its permission letters widens access. The mirror entries
+            # (u::, g::, o::) restate the mode's own bits and do not widen. `-x`/`-b`
+            # remove entries and never fire. An unparsable spec leaves the fact null.
+            granting = False
+            seen_mode = False
+            for tok in args:
+                if tok in {"-m", "--modify"}:
+                    seen_mode = True
+                    continue
+                if tok in {"-b", "--remove-all", "-x", "--remove", "-B", "-k", "--default"} \
+                        and not seen_mode:
+                    # Removal forms cannot grant; a confident parse without a hit already
+                    # reads the fact as false, so there is nothing more to do.
+                    break
+                if seen_mode and not tok.startswith("-"):
+                    parts = tok.split(":")
+                    named = len(parts) >= 2 and bool(parts[1])
+                    letters = parts[-1].lower()
+                    if named and any(ch in letters for ch in ("w", "x")):
+                        granting = True
+                    break
+            if granting:
+                found.hit("grants_write_access")
     if program == "net" and any(t.lower() in {"localgroup", "user", "group"} for t in args):
         found.hit("modifies_permissions")
 

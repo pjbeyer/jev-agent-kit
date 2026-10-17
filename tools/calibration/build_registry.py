@@ -50,6 +50,12 @@ def main() -> None:
     by_cmd = {c["command"]: c for c in suite.values()}
 
     rows = [json.loads(line) for line in ROWS.read_text().splitlines()]
+    # Re-scoring appends: the LAST row for a command carries the current parser facts;
+    # earlier rows for the same command are stale and must not double-count.
+    deduped: dict[str, dict] = {}
+    for row in rows:
+        deduped[row["command"]] = row
+    rows = list(deduped.values())
     usable: dict[str, list[dict]] = {q: [] for q in QUESTIONS}
     for row in rows:
         case = by_cmd.get(row["command"])
