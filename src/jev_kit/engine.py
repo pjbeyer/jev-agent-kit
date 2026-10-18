@@ -647,7 +647,14 @@ def _decide(
                     # the original accept while we return a downgraded route. Report the receipt
                     # as not written rather than claim a truthful record exists (finding H8).
                     rec["receipt_written"] = False
-    return {"schema_version": SCHEMA_VERSION, "status": "ok", "records": records}
+    # call_id rides on every record so a host shim (or the opt-in side-log) can join
+    # a decision to its receipt batch without parsing receipt files. Additive and
+    # response-side only: the receipts already carry call_id separately.
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "status": "ok",
+        "records": [{**rec, "call_id": call_id} for rec in records],
+    }
 
 
 def _parse_response_body(body: bytes) -> Any:

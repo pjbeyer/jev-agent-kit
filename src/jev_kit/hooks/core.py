@@ -34,6 +34,7 @@ from pathlib import Path
 from typing import Any
 
 from jev_kit import command_properties, destination
+from jev_kit import sidelog
 from jev_kit import unattended as unattended_mod
 from jev_kit.command_properties import extract_command_properties
 from jev_kit.types import Mode
@@ -191,6 +192,10 @@ def decide_tool_call(
     dest = destination.resolve_destination(
         call.command, allowlist=dest_allowlist, workdir=workdir
     )
+    # The opt-in local side-log: the only place the judged command text is written
+    # down, joined to receipts by the call id computed below. Off by default; a
+    # record must never break a turn, so every failure here is swallowed.
+    sidelog_path = sidelog.path_from_env()
     request = {
         "schema_version": 1,
         "op": "decide",
@@ -219,15 +224,32 @@ def decide_tool_call(
             response = future.result(timeout=self_deadline_s)
         except concurrent.futures.TimeoutError:
             pool.shutdown(wait=False, cancel_futures=True)
+            _record_sidelog(
+                sidelog_path, call, mode, "ask", "timeout", producer,
+                properties, dest,
+            )
             return _fail_closed(mode, "timeout", timed_out=True)
         except Exception:
             pool.shutdown(wait=False, cancel_futures=True)
+            _record_sidelog(
+                sidelog_path, call, mode, "ask", "internal", producer,
+                properties, dest,
+            )
             return _fail_closed(mode, "internal")
     finally:
         # Do not block on a still-running worker; a hung runner must not hang the hook.
         pool.shutdown(wait=False, cancel_futures=True)
 
     result = _map_response(response, mode)
+    _record_sidelog(
+        sidelog_path, call, mode, result.outcome.value, result.reason, producer,
+        properties, dest,
+        call_id=next(
+            (r.get("call_id") for r in response.get("records", [])
+             if isinstance(r, dict) and r.get("call_id")),
+            None,
+        ),
+    )
     if mode is Mode.ENFORCE and not properties.parse_confident and result.outcome is not (
         HookOutcome.ASK
     ):
@@ -292,6 +314,36 @@ def _record_suppressed_escalation(
         }
         with path.open("a", encoding="utf-8") as fh:
             fh.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+    except Exception:  # a record must never break a turn
+        pass
+
+
+def _record_sidelog(
+    path: Path | None,
+    call: ToolCall,
+    mode: Mode,
+    outcome: str,
+    reason: str | None,
+    producer: str | None,
+    properties: Any,
+    dest: Any,
+    call_id: str | None = None,
+) -> None:
+    """Write one side-log line after the decision. Never raises."""
+    try:
+        sidelog.record(
+            path=path,
+            call_id=call_id or "",
+            command=call.command,
+            target=call.target,
+            context=call.context,
+            mode=mode.value,
+            outcome=outcome,
+            reason=reason,
+            cmd_facts=properties.as_state() if properties is not None else {},
+            dest_facts=dest.as_state() if dest is not None else {},
+            producer=producer,
+        )
     except Exception:  # a record must never break a turn
         pass
 

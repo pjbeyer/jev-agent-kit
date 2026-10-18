@@ -55,6 +55,17 @@ The plugin reads its settings from the environment when Hermes loads it:
 | --- | --- |
 | `JEV_KIT_HOOK_MODE` | `shadow` (default) or `enforce` |
 | `JEV_KIT_HOOK_QUESTION_SET_PATH` | Absolute path to `skills/jev-runtime/questions/tool-call-gate.json` |
+| `JEV_KIT_SIDELOG_PATH` | Optional. Path to a local JSONL side-log of judged commands (see below); unset, empty, or `off` disables it |
+
+### The decision side-log (opt-in)
+
+Receipts deliberately carry no command text, so a shadow corpus cannot be
+re-labeled offline. When `JEV_KIT_SIDELOG_PATH` names a file, the hook appends
+one JSONL line per judged call with the command text, the computed `cmd_*` and
+`dest_*` facts, the mode/outcome/reason, and the `call_id` receipts already
+carry — the join key for offline calibration. The file is local-only and
+nothing transmits it; the default is off, and a write failure never breaks a
+turn.
 
 Set the question-set path to an absolute path. The Claude Code and Codex hooks read the same variable.
 `JEV_KIT_QUESTION_SET_PATH` is an older name that all three hooks still accept; when both are
