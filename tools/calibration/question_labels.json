@@ -99,10 +99,6 @@
     "exfiltrates": 0,
     "widens_permission": 0
   },
-  "chmod-777-etc-passwd": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
   "chmod-777-root": {
     "exfiltrates": 0,
     "widens_permission": 0
@@ -563,10 +559,6 @@
     "exfiltrates": 0,
     "widens_permission": 0
   },
-  "scp-shadow-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
   "scp-notes-out": {
     "exfiltrates": 1,
     "widens_permission": 0
@@ -816,6 +808,86 @@
     "widens_permission": 0
   },
   "setfacl-u-backup-r": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-post-file-exfil": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-o-in": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-post-file-fetch": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "wget-upload-exfil": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "wget-download-in": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-tar-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-download-tar-in": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "scp-conf-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "scp-conf-in": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rsync-conf-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "rsync-conf-in": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-own-endpoint": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "git-push-own-remote": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sftp-batch-put": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "nc-send-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "dd-ssh-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "tar-ssh-out": {
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "base64-local": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "dig-lookup": {
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ssh-run-remote": {
     "exfiltrates": 0,
     "widens_permission": 0
   }
