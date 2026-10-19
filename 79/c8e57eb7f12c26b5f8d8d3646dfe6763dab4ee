@@ -1,0 +1,24 @@
+tests/test_watchdog_child_env.py
+  s_dd517c68a76f60::t_68e97ca1f1006b 9-18,24-25,31-32,34-39,41-42,44-45,49,64
+  s_dd517c68a76f60::t_3b6d59f4271b0f 71-73
+  s_dd517c68a76f60::t_568c4dc72be221 1-8,19-23,26-30,33,40,43,46-48,50-63,65-70,74-83
+src/jev_kit/hooks/watchdog.py
+  s_dd517c68a76f60::t_dff04565baabed 45-53,55-58,64-68
+  s_dd517c68a76f60::t_74ee260bbbadd3 13,16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "79c8e57eb7f12c26b5f8d8d3646dfe6763dab4ee",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
