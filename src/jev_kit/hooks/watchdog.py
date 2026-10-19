@@ -10,8 +10,10 @@ its environment for a live call; that, and arming a host, are owner-gated.
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
 
 _ERROR_TIMEOUT: dict[str, Any] = {
@@ -40,13 +42,30 @@ def run_child(
 
     Enforces a hard wall-clock timeout: on expiry the child is killed and reaped and a timeout
     error envelope is returned. Never raises for runtime conditions.
+
+    The child is spawned with `-m jev_kit.cli`, which needs `jev_kit` importable. A host that
+    runs this hook from a source checkout bootstraps `sys.path` in its own process only — a
+    fresh child does not inherit it (isolated interpreters, `-I`, and dropped editable
+    installs all remove it). The directory containing this file's package's parent (the
+    checkout's `src/`) is passed as `PYTHONPATH` so the child resolves the same source tree
+    the parent is running, which also keeps the child's fingerprint bound to the code the
+    parent loaded. An explicit `python_exe` (tests) or an inherited environment wins over
+    nothing: a previously-set `PYTHONPATH` is prepended, not replaced.
     """
+    package_parent = str(Path(__file__).resolve().parents[2])
+    env = dict(os.environ)
+    existing = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = f"{package_parent}{os.pathsep}{existing}" if existing else package_parent
     argv = [python_exe or sys.executable, "-m", "jev_kit.cli"]
     payload = json.dumps(request).encode("utf-8")
     proc = None
     try:
         proc = subprocess.Popen(
-            argv, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+            argv,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            env=env,
         )
         out, _ = proc.communicate(input=payload, timeout=max(0.1, timeout_s))
     except subprocess.TimeoutExpired:
