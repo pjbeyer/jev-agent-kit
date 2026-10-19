@@ -1,0 +1,23 @@
+docs/specs/hazard-family-split.md
+  s_dd517c68a76f60::t_e8602ca50fc57e 1-122
+tools/calibration/add_exfil_cases.py
+  s_dd517c68a76f60::t_37037f97027e23 1-146,148-161,168-185
+  s_dd517c68a76f60::t_ab38687f5dbe2d 147,162-167
+  s_dd517c68a76f60::t_b00bc872324f0e 186-187
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "809e30a755e61f38c0793b705b8cbb1a72ac33ea",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
