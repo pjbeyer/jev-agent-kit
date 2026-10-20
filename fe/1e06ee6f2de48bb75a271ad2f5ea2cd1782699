@@ -1,0 +1,23 @@
+plugins/hermes/__init__.py
+  s_dd517c68a76f60::t_e66b7faa5bd5a0 1-46
+plugins/hermes/plugin.yaml
+  s_dd517c68a76f60::t_b7d11d6e3effa9 1-17
+plugins/hermes/README.md
+  s_dd517c68a76f60::t_295b55a65e9ccd 1-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "fe1e06ee6f2de48bb75a271ad2f5ea2cd1782699",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
