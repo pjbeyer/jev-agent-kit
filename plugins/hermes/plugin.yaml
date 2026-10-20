@@ -1,0 +1,17 @@
+name: jev-gate
+description: Ask Jev whether a tool call looks destructive, exfiltrating, or permission-widening before it runs (shadow mode by default)
+version: 0.1.0
+requires_env:
+  - name: JEV_KIT_HOOK_MODE
+    description: "shadow (default) or enforce; an unrecognized value resolves to shadow"
+    required: false
+  - name: JEV_KIT_HOOK_QUESTION_SET_PATH
+    description: Absolute path to the tool-call-gate.json question set
+    required: false
+  - name: JEV_KIT_SRC
+    description: Absolute path to the jev-agent-kit checkout's src/ directory (fallback ~/jev-agent-kit/src)
+    required: false
+provides_hooks:
+  - pre_tool_call
+license: MIT
+tags: [jev, typesafe, safety, tool-call-gate, calibration]
