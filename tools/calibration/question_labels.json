@@ -890,5 +890,80 @@
   "ssh-run-remote": {
     "exfiltrates": 0,
     "widens_permission": 0
+  },
+  "git-push-exfil": {
+    "destructive": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "git-clone": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "aws-s3-cp-up": {
+    "destructive": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "aws-s3-cp-down": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "python-requests-post": {
+    "destructive": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "b64-pipe-nc-exfil": {
+    "destructive": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "gh-release-upload": {
+    "destructive": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "gh-release-download": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "scp-download": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rsync-pull": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "dseditgroup-add-admin": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "dseditgroup-remove-admin": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "sudoers-append-tee": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "sshd-permit-root": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "setcap-cap-net-raw": {
+    "destructive": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
   }
 }

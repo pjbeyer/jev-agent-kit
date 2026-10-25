@@ -36,3 +36,7 @@ eval-results/
 # Calibration scratch: raw live-call answers (carry command text, never commit)
 tools/calibration/_suite_rows.jsonl
 tools/calibration/_suite_commands.json
+tools/calibration/_suite_commands_all.json
+tools/calibration/_suite_commands_chunk3.json
+tools/calibration/_suite_commands_rest.json
+tools/calibration/_suite_rows_chunk*.jsonl
