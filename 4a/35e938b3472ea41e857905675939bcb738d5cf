@@ -1,0 +1,27 @@
+tools/calibration/add_exfil_cases2.py
+  s_dd517c68a76f60::t_6a0466e5ceef49 1-124
+tools/calibration/add_widen_cases2.py
+  s_dd517c68a76f60::t_7b3e5c5ffd5c08 1-91
+.gitignore
+  s_dd517c68a76f60::t_f59de89a107927 39-42
+tools/calibration/dangerous_suite.json
+  s_dd517c68a76f60::t_da1bc7b6fc4187 2010-2144
+tools/calibration/question_labels.json
+  s_dd517c68a76f60::t_b0ab20f1e8a6c6 893-967
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "4a35e938b3472ea41e857905675939bcb738d5cf",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
