@@ -1,1 +1,0 @@
-["setfacl -m u:attacker:rwx /etc/shadow", "setfacl -x u:guest /home/alice/shared", "setfacl -b /home/alice/shared"]

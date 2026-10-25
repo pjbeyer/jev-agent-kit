@@ -40,3 +40,6 @@ tools/calibration/_suite_commands_all.json
 tools/calibration/_suite_commands_chunk3.json
 tools/calibration/_suite_commands_rest.json
 tools/calibration/_suite_rows_chunk*.jsonl
+tools/calibration/_suite_rows*
+tools/calibration/_rescore_commands.json
+tools/calibration/_suite_commands*
