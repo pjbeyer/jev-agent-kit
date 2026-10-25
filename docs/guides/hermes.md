@@ -63,7 +63,7 @@ Receipts deliberately carry no command text, so a shadow corpus cannot be
 re-labeled offline. When `JEV_KIT_SIDELOG_PATH` names a file, the hook appends
 one JSONL line per judged call with the command text, the computed `cmd_*` and
 `dest_*` facts, the mode/outcome/reason, and the `call_id` receipts already
-carry — the join key for offline calibration. The file is local-only and
+carry, the join key for offline calibration. The file is local-only and
 nothing transmits it; the default is off, and a write failure never breaks a
 turn.
 
