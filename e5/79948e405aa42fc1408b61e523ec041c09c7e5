@@ -1,0 +1,21 @@
+src/jev_kit/command_properties.py
+  s_dd517c68a76f60::t_dda6b6bf3bf3c4 384-483,513-528,1383-1385
+tests/test_command_properties.py
+  s_dd517c68a76f60::t_bc521f1e15aa4e 321-336
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "e579948e405aa42fc1408b61e523ec041c09c7e5",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
