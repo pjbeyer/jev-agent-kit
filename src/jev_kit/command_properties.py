@@ -451,7 +451,9 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # Short flags are compared case-sensitively: curl's -F/-T are upload-only while
         # -f means "fail silently", so a lowercased comparison would conflate them. Long
         # options also match as `--opt=value` prefixes, since wget/curl accept that form.
-        _UPLOAD_PREFIXES = ("--post-file=", "--body-data=", "--data-raw=")
+        _UPLOAD_PREFIXES = ("--post-file=", "--body-data=", "--data-raw=", "--data=",
+                            "--data-binary=", "--data-urlencode=", "--data-ascii=",
+                            "--json=")
         upload = (any(t in _UPLOAD_FLAGS for t in args)
                   or any(t.startswith(pfx) for t in args for pfx in _UPLOAD_PREFIXES)
                   or any(marker in joined for marker in
@@ -893,18 +895,30 @@ def _python_like(program: str, args: list[str], found: _Found) -> None:
 
 def _check_name_aliases(token: str, found: _Found) -> None:
     """Windows reads GIT~1 as an 8.3 alias and drops a trailing dot or space, so the name on
-    disk may differ from the name written here. Checked on the literal word only."""
+    disk may differ from the name written here. Checked on the literal word only.
+
+    Scoped (ADR 0005 amendment 1, 2026-10-25): the 8.3 alias reads a *path component*, so a
+    `~digit` only makes the parse unconfident inside a path-like token (one containing a
+    separator, a drive form, or a leading `~`). A bare word (`HEAD~3`, `HEAD~2..HEAD`) is a
+    git ref or an ordinary argument, not a path, and no filesystem resolves it. Trailing
+    dot/space still refuse everywhere: `Makefile.` is ambiguous data on both platforms.
+    """  # noqa: D205
     # `--opt=./value` splits into '--opt=.' + 'value', and the first fragment reads as a
     # filename ending in a dot when it is really the option name plus a path component.
     # Strip the option prefix so the value is checked as a path.
     if "=" in token[: token.find("=") + 1] and token.startswith("-"):
         token = token.split("=", 1)[1]
-    # `name=value` upload/load forms (`-F file=@./db.dump`): the value is the path. Strip
-    # any leading `@` load marker, so the `@.` current-dir dot is not read as a name.
-    if "=" in token and not token.startswith("-"):
-        head, val = token.split("=", 1)
-        if val and not head.endswith("/"):
-            token = val.lstrip("@")
+    # `name=value` upload/load forms (`-F file=@./db.dump`) and curl load markers
+    # (`--data-binary @./db.dump`, `--data=@./db.dump`): the value is the path. Strip any
+    # leading `@` load marker, so the `@.` current-dir dot is not read as a name ending
+    # in a dot (amendment 1: this previously only covered the bare `name=value` form).
+    if "=" in token:
+        token = token.split("=", 1)[1].lstrip("@")
+    else:
+        token = token.lstrip("@")
+    pathlike = any(m in token for m in ("/", "\\")) or bool(
+        _DRIVE.match(token) or token.startswith("~")
+    )
     for seg in _segments(token):
         if seg in {".", ".."}:
             continue
@@ -915,7 +929,9 @@ def _check_name_aliases(token: str, found: _Found) -> None:
         for part in segs:
             if part in {".", ".."}:
                 continue
-            if _SHORT_NAME.search(part) or part.endswith((".", " ")):
+            if part.endswith((".", " ")) or (
+                pathlike and _SHORT_NAME.search(part)
+            ):
                 found.unsure("windows_name_alias")
 
 

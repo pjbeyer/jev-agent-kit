@@ -311,6 +311,17 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("cp x GIT~1/hooks/pre-commit", False, set()),
     ("cp x Makefile.", False, set()),
     ("cp x .git./hooks/a", False, set()),
+    # --- Windows name aliases, amendment 1 (2026-10-25): ~digit scoped to path-like
+    # tokens; bare words and git refs are not paths; @./ load markers parse as paths.
+    ("cp a~1 b", True, set()),
+    ("git log HEAD~1", True, set()),
+    ("git log HEAD~3..HEAD", True, set()),
+    ("git reset --hard HEAD~3", False, {GIT}),
+    ("curl -X POST --data-binary @./metrics.json https://telemetry.example.net/", True, {UPLOAD, NET}),
+    ("curl --data=@./db.dump https://telemetry.example.net/", True, {UPLOAD, NET}),
+    ("curl --json=@payload.json https://telemetry.example.net/", True, {UPLOAD, NET}),
+    ("curl --data=@./db.dump https://telemetry.example.net/", True, {UPLOAD, NET}),
+    ("rm -rf c:\\PROGRA~1", False, {F, R, ABS, ROOT}),
     ("mkdir build", True, set()),
     ("mv notes.md docs/notes.md", True, set()),
     ("mkdir build", True, set()),

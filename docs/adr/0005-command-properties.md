@@ -123,9 +123,25 @@ that tools run or load on their own (`Makefile`, `justfile`, `package.json`, `py
 name list is finite, a directory destination hides the final name, and `mv` of a directory
 is not detected as recursive.
 
-Windows name aliases are not confident on every platform: any path component containing `~`
-followed by a digit (an 8.3 short name such as `GIT~1`) or ending in `.` or a space
-(`Makefile.`), since Windows may resolve it to a different name.
+Windows name aliases are not confident: any *path component* of a path-like token
+containing `~` followed by a digit (an 8.3 short name such as `GIT~1`), or a final name
+ending in `.` or a space (`Makefile.`), since Windows may resolve it to a different name.
+Amendment 1 (2026-10-25, owner-approved): the `~digit` check applies only inside a
+path-like token — one containing a separator, a drive form, or a leading `~`. A bare
+argument word is not a filesystem path: `git reset --hard HEAD~3` names a ref, `cp a~1 b`
+names a literal file, and neither is resolved by an 8.3 alias. A path-like token keeps the
+check under every program, so `cp x GIT~1/hooks/pre-commit` and `rm -rf C:\PROGRA~1` are
+still not confident. A `~digit` inside a URL path is also kept (conservative: a URL is not
+distinguishable from a path token without guessing). The check no longer masks the real
+reason on git commands: `git reset --hard HEAD~1` now reports `git_unmodeled_subcommand`
+(design refusal, unchanged outcome) instead of `windows_name_alias`. One git outcome
+changes: a READ-ONLY subcommand whose only tilde argument is a bare ref (`git log HEAD~1`,
+`git log HEAD~3..HEAD`) is now confident, matching the read-only carve-out the code has
+always made and which the alias check had been masking; write-path git is unchanged. The
+ADR text above ("every git command") predates that carve-out; the code comments at
+`_GIT_READ_ONLY_SUBCOMMANDS` are authoritative. Load-marker forms (`--data-binary
+@./db.dump`, `--data=@./db.dump`) are parsed as the path they name, fixing the `@.` misread
+as a trailing-dot name.
 
 Every git command is not confident, by deliberate choice. Even read commands run programs
 named by the repository's own config (`core.fsmonitor` on `status`, `diff.external`,
