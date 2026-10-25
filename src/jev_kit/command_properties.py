@@ -381,6 +381,106 @@ def _program_readings(word: str) -> list[tuple[str, list[str]]]:
     return readings
 
 
+def _dseditgroup(args: list[str], found: _Found) -> None:
+    """macOS group-membership edits: the one shape modeled with confidence.
+
+    `-o edit` plus `-a <member>` (add) or `-d <member>` (delete) and a `-t user|group`
+    record type is a single well-defined membership change. Adding fires
+    `modifies_permissions` (authorization widened); deleting does not. Everything else
+    — read, create, destroy, missing operands — stays unconfident.
+    """
+    adding = deleting = editing = False
+    idx = 0
+    while idx < len(args):
+        tok = args[idx]
+        if tok == "-o" and idx + 1 < len(args):
+            editing = args[idx + 1].lower() == "edit"
+            idx += 2
+            continue
+        if tok in {"-a", "--add"} and idx + 1 < len(args):
+            adding = True
+            idx += 2
+            continue
+        if tok in {"-d", "--delete"} and idx + 1 < len(args):
+            deleting = True
+            idx += 2
+            continue
+        if tok in {"-t", "--recordtype"} and idx + 1 < len(args):
+            idx += 2
+            continue
+        if tok.startswith("-") and tok != "-":
+            found.unsure("dseditgroup_unknown_option")
+            return
+        idx += 1
+    if not (editing and (adding or deleting)):
+        found.unsure("dseditgroup_unmodeled_operation")
+        return
+    if adding:
+        found.hit("modifies_permissions")
+
+
+def _cloud_cli(args: list[str], found: _Found, program: str) -> None:
+    """Closed-subcommand modeling for the aws and gh CLIs.
+
+    Both CLIs can run arbitrary code outside their subcommand grammar (aws: credential
+    helpers, config `credential_process`; gh: extensions, aliases, web hooks), so any
+    subcommand outside the closed lists below leaves the parse unconfident. Data
+    direction is decided only where both sides are visible.
+    """
+    if not args:
+        found.unsure("cloud_cli_no_subcommand")
+        return
+    head = args[0].lower()
+    rest = args[1:]
+    if program == "aws":
+        if head == "s3" and rest:
+            verb = rest[0].lower()
+            operands = [t for t in rest[1:] if not t.startswith("-")]
+            remote = [t for t in operands if t.lower().startswith("s3://")]
+            local = [t for t in operands if not t.lower().startswith("s3://")]
+            if verb in {"cp", "mv", "sync"}:
+                if remote and local:
+                    first_remote = next(i for i, t in enumerate(operands)
+                                        if t.lower().startswith("s3://"))
+                    if first_remote == 0:
+                        found.hit("network_download")
+                    else:
+                        found.hit("network_upload")
+                elif remote:
+                    found.hit("network_upload")  # cannot tell which side; conservative
+                else:
+                    found.unsure("cloud_cli_no_direction")
+                return
+            if verb in {"ls", "rm", "mb", "rb", "presign"}:
+                if verb in {"rm", "rb"} and remote:
+                    # `aws s3 rm s3://bucket/key` deletes a remote object; no local fact
+                    # covers a remote delete, so the parse is confident with no hit and
+                    # the question judges it from the program name and direction nulls.
+                    pass
+                if local:
+                    found.unsure("cloud_cli_no_direction")
+                return
+            found.unsure("cloud_cli_unknown_subcommand")
+            return
+        found.unsure("cloud_cli_unknown_subcommand")
+        return
+    # gh: closed list.
+    if head == "release" and len(rest) >= 1:
+        verb = rest[0].lower()
+        if verb == "upload":
+            found.hit("network_upload")
+            return
+        if verb == "download":
+            found.hit("network_download")
+            return
+        found.unsure("cloud_cli_unknown_subcommand")
+        return
+    if head == "repo" and len(rest) >= 1 and rest[0].lower() == "clone":
+        found.hit("network_download")
+        return
+    found.unsure("cloud_cli_unknown_subcommand")
+
+
 def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -> None:
     if program in _ELEVATION:
         found.hit("uses_elevation")
@@ -409,6 +509,22 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # plain invocation cannot run a program this module fails to model, while every
         # subcommand that runs repository hooks, updates refs or changes config still can.
         _git(args, found)
+        return
+    if program in {"aws", "gh"}:
+        # Cloud and GitHub CLIs (ADR 0005 amendment 2, 2026-10-25, owner-approved): modeled
+        # with a CLOSED subcommand list, the same allowlist rule as every other program.
+        # A subcommand outside the list keeps the parse unconfident (these CLIs can run
+        # anything through config, plugins, or session hooks we cannot see). Within the
+        # list, only data-direction shapes are decided; anything ambiguous stays unsure.
+        _cloud_cli(args, found, program)
+        return
+    if program == "dseditgroup":
+        # macOS local group membership editor. Only a membership ADD/DROP edit models
+        # confidently: `-o edit` with `-a user` (add) or `-d user` (delete) and a `-t`
+        # record type. Adding a user to a privileged group widens authorization, so the
+        # handler fires modifies_permissions; removal does not. Any other operation
+        # (-o read, create, destroy, or a missing operand) stays unconfident.
+        _dseditgroup(args, found)
         return
     if program in {"scp", "sftp", "rsync"}:
         # Options that run a program or read a config that runs one: rsync -e/--rsh and
@@ -1264,6 +1380,9 @@ _MODELED = frozenset({
     # and their own unsafe-option unsures below. ftp/tftp/lftp stay unmodeled: their
     # interactive subcommands cannot be seen in one argv.
     "scp", "sftp", "rsync",
+    # Closed-subcommand CLIs (ADR 0005 amendment 2): confidence only for the shapes
+    # _cloud_cli and _dseditgroup decide; every other invocation stays unconfident.
+    "aws", "gh", "dseditgroup",
 }) | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
                                                                "run0"})
 # git is not on the allowlist: every git command can run programs named by the repository's

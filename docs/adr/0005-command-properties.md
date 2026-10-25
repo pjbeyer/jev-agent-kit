@@ -127,7 +127,7 @@ Windows name aliases are not confident: any *path component* of a path-like toke
 containing `~` followed by a digit (an 8.3 short name such as `GIT~1`), or a final name
 ending in `.` or a space (`Makefile.`), since Windows may resolve it to a different name.
 Amendment 1 (2026-10-25, owner-approved): the `~digit` check applies only inside a
-path-like token — one containing a separator, a drive form, or a leading `~`. A bare
+path-like token (one containing a separator, a drive form, or a leading `~`). A bare
 argument word is not a filesystem path: `git reset --hard HEAD~3` names a ref, `cp a~1 b`
 names a literal file, and neither is resolved by an 8.3 alias. A path-like token keeps the
 check under every program, so `cp x GIT~1/hooks/pre-commit` and `rm -rf C:\PROGRA~1` are
@@ -142,6 +142,19 @@ ADR text above ("every git command") predates that carve-out; the code comments 
 `_GIT_READ_ONLY_SUBCOMMANDS` are authoritative. Load-marker forms (`--data-binary
 @./db.dump`, `--data=@./db.dump`) are parsed as the path they name, fixing the `@.` misread
 as a trailing-dot name.
+
+Closed-subcommand CLIs (amendment 2, 2026-10-25, owner-approved): `aws`, `gh` and
+`dseditgroup` are modeled with a closed subcommand list, the same allowlist rule every
+other program follows. `aws s3 cp/mv/sync` decides direction by which operand holds the
+`s3://` URI (both sides visible), `aws s3 ls/rm/mb/rb/presign` is confident with no
+direction when unambiguous, and any other `aws` subcommand (`configure`, `lambda`,
+everything else) stays unconfident because these CLIs run arbitrary code through
+credential helpers, config and extensions. `gh release upload/download`, `gh repo clone`
+are confident with the matching direction; all other `gh` subcommands (`pr`, `api`,
+extensions, aliases) stay unconfident. `dseditgroup -o edit -a <member> -t <type>` is a
+confident membership add firing `cmd_modifies_permissions` (authorization widened);
+`-d` (remove) is confident with no hit; every other operation stays unconfident. Only
+existing facts are fired; no question-set change is required.
 
 Every git command is not confident, by deliberate choice. Even read commands run programs
 named by the repository's own config (`core.fsmonitor` on `status`, `diff.external`,
