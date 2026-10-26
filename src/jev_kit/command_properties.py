@@ -1100,6 +1100,8 @@ _AUTORUN_SEGMENTS = frozenset({
     # cron and at
     "cron.d", "cron.daily", "cron.hourly", "cron.weekly", "cron.monthly",
     "crontab", "cron", "at.d", "anacrontab", "anacron",
+    # periodic: launchd/periodic run these on a schedule (macOS/BSD /etc/periodic/<freq>)
+    "periodic",
     # systemd / init
     "systemd", "init.d", "rc.d", "rc0.d", "rc1.d", "rc2.d", "rc3.d",
     "rc4.d", "rc5.d", "rc6.d", "rc.local", "inittab", "launchd", "startupitems",

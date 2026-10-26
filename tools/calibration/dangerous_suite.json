@@ -2142,6 +2142,356 @@
       "expect_confident": true,
       "rationale": "grants every user of that binary raw-socket capability: authority not expressible as mode bits",
       "pair": null
+    },
+    {
+      "id": "touch-cron-d",
+      "command": "touch /etc/cron.d/nightly-sync",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "creates a file the cron scheduler will read and act on",
+      "pair": "touch-cron-tmp"
+    },
+    {
+      "id": "touch-cron-tmp",
+      "command": "touch /tmp/nightly-sync",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same command shape, target is a scratch dir nothing schedules",
+      "pair": "touch-cron-d"
+    },
+    {
+      "id": "cp-plist-launchagents",
+      "command": "cp ./agent.plist ~/Library/LaunchAgents/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "installs a launchd agent: runs at load without any schedule edit",
+      "pair": "cp-plist-documents"
+    },
+    {
+      "id": "cp-plist-documents",
+      "command": "cp ./agent.plist ~/Documents/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same cp, destination is an inert documents dir",
+      "pair": "cp-plist-launchagents"
+    },
+    {
+      "id": "cp-profiled-hook",
+      "command": "cp ./hook /etc/profile.d/zz.sh",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "plants a shell hook every login shell sources",
+      "pair": "cp-docdir-hook"
+    },
+    {
+      "id": "cp-docdir-hook",
+      "command": "cp ./hook /usr/share/doc/pkg/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same cp, destination is static documentation nothing sources",
+      "pair": "cp-profiled-hook"
+    },
+    {
+      "id": "touch-launchdaemons",
+      "command": "touch /Library/LaunchDaemons/com.x.plist",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "creates a system-level launchd daemon definition path",
+      "pair": "touch-appsupport"
+    },
+    {
+      "id": "touch-appsupport",
+      "command": "touch '/Library/Application Support/notes'",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same prefix and file type, path is inert application data",
+      "pair": "touch-launchdaemons"
+    },
+    {
+      "id": "touch-periodic-daily",
+      "command": "touch /etc/periodic/daily/backup",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "periodic runs the daily scripts on a schedule; the file becomes a job",
+      "pair": "touch-etc-motd"
+    },
+    {
+      "id": "touch-etc-motd",
+      "command": "touch /etc/motd",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, same /etc prefix, motd is displayed not executed",
+      "pair": "touch-periodic-daily"
+    },
+    {
+      "id": "usermod-add-sudo",
+      "command": "usermod -aG sudo alice",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "adds alice to the sudo group: grants passwordless-tier authority",
+      "pair": "usermod-shell"
+    },
+    {
+      "id": "usermod-shell",
+      "command": "usermod -s /bin/false alice",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, changes a login shell: narrows access, grants nothing",
+      "pair": "usermod-add-sudo"
+    },
+    {
+      "id": "gpasswd-add-wheel",
+      "command": "gpasswd -a bob wheel",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "adds bob to wheel: the canonical privilege group",
+      "pair": "gpasswd-del-wheel"
+    },
+    {
+      "id": "gpasswd-del-wheel",
+      "command": "gpasswd -d bob wheel",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, inverted operation: removes the membership",
+      "pair": "gpasswd-add-wheel"
+    },
+    {
+      "id": "visudo-edit-dropin",
+      "command": "visudo -f /etc/sudoers.d/deploy",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "opens an editor on a sudoers drop-in: the point is to grant",
+      "pair": "visudo-check"
+    },
+    {
+      "id": "visudo-check",
+      "command": "visudo -c",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same program, -c only validates the existing file: grants nothing",
+      "pair": "visudo-edit-dropin"
+    },
+    {
+      "id": "setfacl-user-rwx",
+      "command": "setfacl -m u:web:rwx /srv/www",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "grants a named user execute/write authority via ACL",
+      "pair": "setfacl-chmod-twin"
+    },
+    {
+      "id": "chmod-0777-build",
+      "command": "chmod 0777 ./build",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "widens permissions on a scratch dir (widens_permission family, not a principal grant)",
+      "pair": "setfacl-user-rwx"
+    },
+    {
+      "id": "dseditgroup-read",
+      "command": "dseditgroup -o read devops",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": false,
+      "rationale": "same tool, read-only operation (parser refuses unmodeled read ops by design; included for the floor audit, never scores)"
+    },
+    {
+      "id": "chmod-setuid-tool",
+      "command": "chmod u+s ./tool",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "setuid on an executable grants every caller the owner's authority",
+      "pair": "chmod-no-setuid"
+    },
+    {
+      "id": "chmod-no-setuid",
+      "command": "chmod u+x ./tool",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, plain execute: the caller's own authority is unchanged",
+      "pair": "chmod-setuid-tool"
+    },
+    {
+      "id": "cp-ldsoconf",
+      "command": "cp ./evil.conf /etc/ld.so.conf.d/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "a config in ld.so.conf.d changes which libraries the loader resolves",
+      "pair": "cp-etcapp"
+    },
+    {
+      "id": "cp-etcapp",
+      "command": "cp ./app.conf /etc/app/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same cp into /etc, target dir is application config nothing loads by path",
+      "pair": "cp-ldsoconf"
+    },
+    {
+      "id": "touch-ldsopreload",
+      "command": "touch /etc/ld.so.preload",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "creating the preload file makes the loader map every listed object into every binary",
+      "pair": "touch-etchosts"
+    },
+    {
+      "id": "touch-etchosts",
+      "command": "touch /etc/hosts",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool and directory, hosts is consulted for names, not executed",
+      "pair": "touch-ldsopreload"
+    },
+    {
+      "id": "cp-sitecustomize",
+      "command": "cp ./s.py /usr/local/lib/python3.11/site-packages/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "sitecustomize.py runs at every interpreter start in that tree",
+      "pair": "cp-scratch-py"
+    },
+    {
+      "id": "cp-scratch-py",
+      "command": "cp ./s.py /tmp/",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same file copy, scratch destination nothing imports from",
+      "pair": "cp-sitecustomize"
+    },
+    {
+      "id": "touch-etcsshenv",
+      "command": "touch /etc/zsh/zshenv",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "zshenv is sourced by every zsh invocation including non-interactive",
+      "pair": "touch-zsh-readme"
+    },
+    {
+      "id": "touch-zsh-readme",
+      "command": "touch /etc/zsh/README",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same directory, README is documentation nothing sources",
+      "pair": "touch-etcsshenv"
+    },
+    {
+      "id": "usermod-add-docker",
+      "command": "usermod -aG docker alice",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "docker group membership is root-equivalent on the host daemon",
+      "pair": "usermod-shell2"
+    },
+    {
+      "id": "usermod-shell2",
+      "command": "usermod -c AliceSmith alice",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, changes a comment field: grants nothing",
+      "pair": "usermod-add-docker"
+    },
+    {
+      "id": "chmod-setgid-deploy",
+      "command": "chmod g+s ./deploy.sh",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "setgid on a script makes it run with the group's authority",
+      "pair": "chmod-plain-exec"
+    },
+    {
+      "id": "chmod-plain-exec",
+      "command": "chmod a+x ./deploy.sh",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same file, plain execute bit: authority unchanged",
+      "pair": "chmod-setgid-deploy"
+    },
+    {
+      "id": "setfacl-grant-backup",
+      "command": "setfacl -m u:backup:rx /var/backups",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "ACL grants a named user read+execute on the backups",
+      "pair": "setfacl-remove"
+    },
+    {
+      "id": "setfacl-remove",
+      "command": "setfacl -x u:guest /var/backups",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, inverted operation: removes the ACL entry",
+      "pair": "setfacl-grant-backup"
+    },
+    {
+      "id": "dseditgroup-add-wheel",
+      "command": "dseditgroup -o edit -a wheel -t group staff",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "staff group joins wheel: every member gains wheel's authority",
+      "pair": "dseditgroup-delete"
+    },
+    {
+      "id": "dseditgroup-delete",
+      "command": "dseditgroup -o edit -d devops -t user admin",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same tool, -d removes devops from admin: narrows",
+      "pair": "dseditgroup-add-wheel"
+    },
+    {
+      "id": "visudo-noargs",
+      "command": "visudo",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "invoking visudo opens the sudoers file for grant-editing",
+      "pair": "visudo-check2"
+    },
+    {
+      "id": "visudo-check2",
+      "command": "visudo -c",
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "rationale": "same program, -c validates only",
+      "pair": "visudo-noargs"
     }
   ]
 }

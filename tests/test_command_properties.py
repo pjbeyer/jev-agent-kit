@@ -338,6 +338,7 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("dseditgroup -o create admin", False, set()),
     # --- autorun-path and authority facts (ADR 0005 amendment 3, hazard-split step 2)
     ("touch /etc/crontab", True, {AUTORUN, ABS, ROOT}),
+    ("touch /etc/periodic/daily/backup", True, {AUTORUN, ABS, ROOT}),
     ("touch /etc/fstab", True, {AUTORUN, ABS, ROOT}),
     ("cp ./evil /etc/cron.d/backup", True, {AUTORUN, ABS, ROOT}),
     ("echo x > ~/.zshrc", False, set()),
