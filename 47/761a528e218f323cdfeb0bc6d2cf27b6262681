@@ -1,0 +1,45 @@
+README.md
+  s_dd517c68a76f60::t_5adacc3eee96a8 246
+  s_dd517c68a76f60::t_1c7eea285e60c6 219
+  s_dd517c68a76f60::t_25f8bc3d1e9fe2 204
+tests/test_command_properties_gate.py
+  s_dd517c68a76f60::t_7b002dcefac542 295
+src/jev_kit/command_properties.py
+  s_dd517c68a76f60::t_1ed83064b33db6 787-788,793
+  s_dd517c68a76f60::t_fa04008fb5031a 731-735,740,775-778,782-786
+  s_dd517c68a76f60::t_0a6749c66d27f1 422,444-445,453-454
+  s_dd517c68a76f60::t_1e82409682b6c7 751-752
+  s_dd517c68a76f60::t_c250a2f537d2de 404-410
+  s_dd517c68a76f60::t_fd58a93b659b40 737-739,741,744-746,748-750,753-759,762-770
+  s_dd517c68a76f60::t_6ad375823c18b6 761
+  s_dd517c68a76f60::t_b073b1dd981602 789-792,794-801
+  s_dd517c68a76f60::t_bbf7e9cd6b5105 760
+  s_dd517c68a76f60::t_3691c3f8cc9462 53-54
+  s_dd517c68a76f60::t_630152a60bc2b0 388-403,411-412
+tests/test_command_properties.py
+  s_dd517c68a76f60::t_91ae92553c652e 359
+  s_dd517c68a76f60::t_556c5c5b832a90 35-36
+  s_dd517c68a76f60::t_9d7e2fd34f1850 364
+  s_dd517c68a76f60::t_355de2857838cb 337-338
+  s_dd517c68a76f60::t_1491959b207960 350-354,356-358,361-363
+skills/jev-runtime/references/evidence-contracts.md
+  s_dd517c68a76f60::t_07c2bb5c5e6589 14
+skills/jev-runtime/questions/tool-call-gate.json
+  s_dd517c68a76f60::t_799c42a0e07810 4,76-81,135
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "47761a528e218f323cdfeb0bc6d2cf27b6262681",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
