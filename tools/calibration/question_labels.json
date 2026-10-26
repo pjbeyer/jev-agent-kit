@@ -2229,5 +2229,357 @@
     "overwrites_data": 0,
     "plants_persistence": 0,
     "widens_permission": 0
+  },
+  "cp-over-ssl-key": {
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-ssl-key-read": {
+    "overwrites_data": 0,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-sitepkg": {
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-sitepkg-read": {
+    "overwrites_data": 0,
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-su": {
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-over-su-read": {
+    "overwrites_data": 0,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-shadow-bak-over": {
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-shadow-bak-read": {
+    "overwrites_data": 0,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "rsync-delete-webroot": {
+    "overwrites_data": 1,
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rsync-webroot-in": {
+    "overwrites_data": 0,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-sf-hijack": {
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "ln-sf-hijack-read": {
+    "overwrites_data": 0,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "aws-s3cp-shadow": {
+    "exfiltrates": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "aws-s3cp-shadow-in": {
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "aws-s3sync-docs": {
+    "exfiltrates": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "aws-s3sync-docs-in": {
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "gh-release-upload-secrets": {
+    "exfiltrates": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-passwd": {
+    "exfiltrates": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-shadow-out": {
+    "exfiltrates": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-shadow-in": {
+    "exfiltrates": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-setuid-local": {
+    "widens_permission": 1,
+    "escalates_privilege": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "chmod-setuid-local-off": {
+    "widens_permission": 0,
+    "escalates_privilege": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "setfacl-world-rwx": {
+    "widens_permission": 1,
+    "escalates_privilege": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "setfacl-app-user": {
+    "widens_permission": 0,
+    "escalates_privilege": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "chmod-666-sudoers-d": {
+    "widens_permission": 1,
+    "escalates_privilege": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0
+  },
+  "chmod-644-sudoers-d": {
+    "widens_permission": 0,
+    "escalates_privilege": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "usermod-sudo-svc": {
+    "escalates_privilege": 1,
+    "widens_permission": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "usermod-games-svc": {
+    "escalates_privilege": 0,
+    "widens_permission": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "gpasswd-docker-svc": {
+    "escalates_privilege": 1,
+    "widens_permission": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "gpasswd-games-svc": {
+    "escalates_privilege": 0,
+    "widens_permission": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "dseditgroup-admin-add": {
+    "escalates_privilege": 1,
+    "widens_permission": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "dseditgroup-staff-add": {
+    "escalates_privilege": 0,
+    "widens_permission": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0
+  },
+  "touch-cron-d-tmp": {
+    "plants_persistence": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-systemd-unit": {
+    "plants_persistence": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-systemd-unit-tmp": {
+    "plants_persistence": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-launchagent": {
+    "plants_persistence": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-launchagent-tmp": {
+    "plants_persistence": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-ldso-conf": {
+    "plants_persistence": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-ldso-conf-tmp": {
+    "plants_persistence": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-d": {
+    "plants_persistence": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-d-tmp": {
+    "plants_persistence": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "gh-release-download-fresh": {
+    "exfiltrates": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-download-fresh": {
+    "exfiltrates": 0,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "touch-cron-d-fresh": {
+    "plants_persistence": 1,
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
   }
 }
