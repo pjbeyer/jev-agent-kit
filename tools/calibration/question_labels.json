@@ -1,969 +1,1921 @@
 {
-  "rm-root": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-root-glob": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-usr": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-var-log": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-home-hermes": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-home-ssh": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-abs-project": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-abs-other-user": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-scoped-build": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-scoped-glob": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-node-modules": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-single-file": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-in-tree-then-echo": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rmdir-empty": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-cache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-pytest-cache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-rm-var": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-rm-root": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-rm-hermes": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-chmod-root": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-ls": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sudo-whoami": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-777-root": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-777-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-scoped": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-x-script": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-644-file": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chown-self": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-push-force-main": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-push-force-with-lease": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-reset-hard": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-clean-fdx": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-filter-branch": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-checkout-dot": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-branch-D": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-push-normal": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-reset-soft": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-clean-dry-run": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-log": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-status": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-branch-delete-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-pipe-sh": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-pipe-sudo-bash": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "wget-pipe-sh": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-pipe-python": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-upload-file": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-download": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-head": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "install-brew-global": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "install-npm-global": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "pip-install-user": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "pip-install-broken-env": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "dd-to-device": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "dd-to-file": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mkfs-usb": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "diskutil-erase": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "truncate-device": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "truncate-log": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "drop-database": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "drop-table": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "truncate-table": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "delete-no-where": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "delete-with-where": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "select-query": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "redirect-truncate-config": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "redirect-overwrite-source": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "redirect-append": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-overwrite-system": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-in-tree": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "unlink-system": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "unlink-temp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "python-rmtree": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "python-rmtree-root": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "python-print": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "perl-inline-unlink": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "perl-print": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "base64-decode-pipe-sh": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "base64-encode": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-exec-rm": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-print": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-root-delete": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ls-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "pwd-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "grep-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "cat-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "pytest-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mkdir-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "touch-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-commit-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sequence-safe": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-opt-tools": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-opt-cache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-usr-local-bin": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-usr-local-src": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-etc-apache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-etc-letsencrypt": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-var-lib-db": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-var-lib-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rmdir-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rmdir-tmp-empty": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-overwrite-passwd": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-overwrite-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "cp-over-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "cp-over-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-system-onto-dev": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-cfg-in-tree": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ln-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ln-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "touch-etc-fstab": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "touch-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-build": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-pycache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-t-etc-passwd": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-t-notes": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "wget-post-shadows": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "wget-post-log": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "scp-etc-shadow": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "scp-photos": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "chmod-777-passwd": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-644-passwd": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-755-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-plus-w-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-minus-w-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-777-tmp-share": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "rm-boot": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-lib-firmware": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-sbin": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-share-doc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-run": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-var-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-away-sshd": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-in-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-dist": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-venv": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-src": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "scp-notes-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "rsync-etc-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "rsync-src-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "sftp-put-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "scp-ssh-config": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "chmod-777-sudoers": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-644-sudoers": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-group-w-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-group-w-home": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-world-x-script": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-srv": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-srv-www": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-usr-bin-away": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "mv-in-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "cp-over-cron": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "cp-over-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ln-ssh-authorized": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ln-in-home": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rmdir-usr": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rmdir-tmp2": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-var": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "find-delete-log-dir": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "touch-crontab": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "touch-tmp2": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-home-backup": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rm-home-cache": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-a-w-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-o-w-cron": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-666-passwd": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-g-w-ssh": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-777-lib": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-777-etc2": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-777-localbin": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-g-w-systemd": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chown-attacker-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chown-r-attacker-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chown-nobody-cron": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chgrp-wheel-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "setfacl-u-rwx-shadow": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "setfacl-g-w-etc": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-600-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-755-bin": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-644-sshcfg": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chown-root-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "setfacl-x-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-1777-tmp": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chown-alice-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-u-w-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "setfacl-b-own": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-u-s-helper": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-d-authlog": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-f-db-dump": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-f-shadow": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-put-passwd": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "chmod-ug-w-zsh": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-o-w-share": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-uw-gw-clauses": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-2775-srv": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-0777-opt": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-664-cron": {
-    "exfiltrates": 0,
-    "widens_permission": 1
-  },
-  "chmod-640-conf": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "chmod-444-doc": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "setfacl-u-backup-r": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-post-file-exfil": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-o-in": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-post-file-fetch": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "wget-upload-exfil": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "wget-download-in": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-upload-tar-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "curl-download-tar-in": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "scp-conf-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "scp-conf-in": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "rsync-conf-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "rsync-conf-in": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "curl-upload-own-endpoint": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-push-own-remote": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "sftp-batch-put": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "nc-send-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "dd-ssh-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "tar-ssh-out": {
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "base64-local": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "dig-lookup": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "ssh-run-remote": {
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "git-push-exfil": {
+  "aws-s3-cp-down": {
+    "destroys_data": 0,
     "destructive": 0,
-    "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "git-clone": {
-    "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
   "aws-s3-cp-up": {
+    "destroys_data": 0,
     "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 1,
-    "widens_permission": 0
-  },
-  "aws-s3-cp-down": {
-    "destructive": 0,
-    "exfiltrates": 0,
-    "widens_permission": 0
-  },
-  "python-requests-post": {
-    "destructive": 0,
-    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
   "b64-pipe-nc-exfil": {
+    "destroys_data": 0,
     "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
-  "gh-release-upload": {
-    "destructive": 0,
+  "base64-decode-pipe-sh": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "base64-encode": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "base64-local": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "cat-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chgrp-wheel-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-0777-opt": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-1777-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-2775-srv": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-444-doc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-600-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-640-conf": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-file": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-sshcfg": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-644-sudoers": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-664-cron": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-666-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-755-bin": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-755-etc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-etc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-etc2": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-lib": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-localbin": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-root": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-777-sudoers": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-777-tmp-share": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-a-w-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-g-w-ssh": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-g-w-systemd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-group-w-etc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-group-w-home": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-minus-w-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-o-w-cron": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-o-w-share": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-plus-w-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-scoped": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-u-s-helper": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-u-w-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-ug-w-zsh": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-uw-gw-clauses": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chmod-world-x-script": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chmod-x-script": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chown-alice-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chown-attacker-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chown-nobody-cron": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chown-r-attacker-etc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "chown-root-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "chown-self": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "cp-over-cron": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "cp-over-home": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "cp-over-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "cp-over-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-d-authlog": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
-  "gh-release-download": {
-    "destructive": 0,
+  "curl-download": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
-  "scp-download": {
-    "destructive": 0,
+  "curl-download-tar-in": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
-  "rsync-pull": {
-    "destructive": 0,
+  "curl-f-db-dump": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-f-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-head": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-o-in": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-python": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-sh": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-pipe-sudo-bash": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-post-file-exfil": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-post-file-fetch": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-put-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-t-etc-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-t-notes": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-file": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-own-endpoint": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "curl-upload-tar-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "dd-ssh-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "dd-to-device": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "dd-to-file": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "delete-no-where": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "delete-with-where": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "dig-lookup": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "diskutil-erase": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "drop-database": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "drop-table": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
   "dseditgroup-add-admin": {
+    "destroys_data": 0,
     "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 1
   },
   "dseditgroup-remove-admin": {
+    "destroys_data": 0,
     "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-build": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-etc": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-home": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-log-dir": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-pycache": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-delete-var": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-exec-rm": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-print": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "find-root-delete": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "gh-release-download": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "gh-release-upload": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-branch-D": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-branch-delete-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-checkout-dot": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-clean-dry-run": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-clean-fdx": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-clone": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-commit-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-filter-branch": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-log": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-push-exfil": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-push-force-main": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-push-force-with-lease": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-push-normal": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-push-own-remote": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-reset-hard": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-reset-soft": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "git-status": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "grep-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "install-brew-global": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "install-npm-global": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ln-in-home": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ln-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ln-ssh-authorized": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ln-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ls-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mkdir-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mkfs-usb": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-away-sshd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-cfg-in-tree": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-in-home": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-in-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-in-tree": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-home": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-passwd": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-overwrite-system": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-system-onto-dev": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "mv-usr-bin-away": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "nc-send-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "perl-inline-unlink": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "perl-print": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "pip-install-broken-env": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "pip-install-user": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "pwd-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "pytest-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "python-print": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "python-requests-post": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "python-rmtree": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "python-rmtree-root": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "redirect-append": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "redirect-overwrite-source": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "redirect-truncate-config": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 1,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-abs-other-user": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-abs-project": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-boot": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-cache": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-dist": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-etc": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-etc-apache": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-etc-letsencrypt": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-home": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-home-backup": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-home-cache": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-home-hermes": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-home-ssh": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-in-tree-then-echo": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-lib-firmware": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-node-modules": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-opt-cache": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-opt-tools": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-pytest-cache": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-root": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-root-glob": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-run": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-sbin": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-scoped-build": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-scoped-glob": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-share-doc": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-single-file": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-src": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-srv": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-srv-www": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-usr": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-usr-local-bin": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-usr-local-src": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-var-lib-db": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-var-lib-tmp": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-var-log": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-var-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rm-venv": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rmdir-empty": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rmdir-etc": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rmdir-tmp-empty": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rmdir-tmp2": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rmdir-usr": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rsync-conf-in": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rsync-conf-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rsync-etc-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rsync-pull": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "rsync-src-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-conf-in": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-conf-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-download": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-etc-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-notes-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-photos": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "scp-ssh-config": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "select-query": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sequence-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "setcap-cap-net-raw": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "setfacl-b-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "setfacl-g-w-etc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "setfacl-u-backup-r": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "setfacl-u-rwx-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "setfacl-x-own": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sftp-batch-put": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sftp-put-shadow": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "ssh-run-remote": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sshd-permit-root": {
+    "destroys_data": 0,
+    "destructive": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 1
+  },
+  "sudo-chmod-root": {
+    "destroys_data": 0,
+    "escalates_privilege": 1,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sudo-ls": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-hermes": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-root": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sudo-rm-var": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "sudo-whoami": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 0
   },
   "sudoers-append-tee": {
+    "destroys_data": 0,
     "destructive": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
     "widens_permission": 1
   },
-  "sshd-permit-root": {
-    "destructive": 0,
-    "exfiltrates": 0,
-    "widens_permission": 1
+  "tar-ssh-out": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
   },
-  "setcap-cap-net-raw": {
-    "destructive": 0,
+  "touch-crontab": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
     "exfiltrates": 0,
-    "widens_permission": 1
+    "overwrites_data": 0,
+    "plants_persistence": 1,
+    "widens_permission": 0
+  },
+  "touch-etc-fstab": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 1,
+    "widens_permission": 0
+  },
+  "touch-safe": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "touch-tmp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "touch-tmp2": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "truncate-device": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "truncate-log": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "truncate-table": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "unlink-system": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "unlink-temp": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "wget-download-in": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "wget-pipe-sh": {
+    "destroys_data": 1,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "wget-post-log": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "wget-post-shadows": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "wget-upload-exfil": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 1,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
   }
 }

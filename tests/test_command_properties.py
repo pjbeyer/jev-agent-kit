@@ -30,6 +30,8 @@ REGEN = "targets_regenerable_path"
 UPLOAD = "network_upload"
 WRITE = "grants_write_access"
 ABS = "targets_absolute_path"
+AUTORUN = "targets_autorun_path"
+AUTH = "grants_authority"
 
 # (command, confident, properties that must be True)
 CASES: list[tuple[str, bool, set[str]]] = [
@@ -330,10 +332,23 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("gh release download v1.0 --repo org/repo", True, {NET}),
     ("gh repo clone org/tool", True, {NET}),
     ("gh pr create --title x", False, set()),
-    ("dseditgroup -o edit -a devops -t user admin", True, {PERM}),
+    ("dseditgroup -o edit -a devops -t user admin", True, {PERM, AUTH}),
     ("dseditgroup -o edit -d devops -t user admin", True, set()),
     ("dseditgroup -o read admin", False, set()),
     ("dseditgroup -o create admin", False, set()),
+    # --- autorun-path and authority facts (ADR 0005 amendment 3, hazard-split step 2)
+    ("touch /etc/crontab", True, {AUTORUN, ABS, ROOT}),
+    ("touch /etc/fstab", True, {AUTORUN, ABS, ROOT}),
+    ("cp ./evil /etc/cron.d/backup", True, {AUTORUN, ABS, ROOT}),
+    ("echo x > ~/.zshrc", False, set()),
+    ("ln -sf /tmp/evil /etc/sudoers", True, {AUTH, AUTORUN, ABS, ROOT, F, REGEN}),
+    ("ln -sf /tmp/keys /root/.ssh/authorized_keys", False, set()),
+    ("usermod -aG docker alice", True, {AUTH, PERM}),
+    ("usermod -s /bin/zsh alice", True, {ROOT, PERM, ABS}),
+    ("gpasswd -a bob wheel", True, {AUTH, PERM}),
+    ("visudo", True, {AUTH, PERM}),
+    ("echo hi > /etc/ld.so.preload", False, set()),
+    ("rm -rf ~/Library/LaunchAgents", True, {R, F, AUTORUN, ABS}),
     ("curl --data=@./db.dump https://telemetry.example.net/", True, {UPLOAD, NET}),
     ("curl --json=@payload.json https://telemetry.example.net/", True, {UPLOAD, NET}),
     ("curl --data=@./db.dump https://telemetry.example.net/", True, {UPLOAD, NET}),

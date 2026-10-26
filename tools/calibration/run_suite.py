@@ -74,17 +74,18 @@ def main() -> None:
         print(f"live answers: {len(rows)}")
 
     # ---------------------------------------------------------------- join + coverage
+    labels = json.loads((HERE / "question_labels.json").read_text())
     joined, no_probability = [], []
     for row in rows:
         case = by_command.get(row["command"])
         if case is None:
             continue
-        noul = (row.get("destructive") or {}).get("noul")
+        noul = (row.get("destroys_data") or {}).get("noul")
         if not isinstance(noul, (int, float)):
             no_probability.append(case)
             continue
         joined.append({"id": case["id"], "command": case["command"],
-                       "label": int(case["destructive"]), "confidence": case["confidence"],
+                       "label": int(labels[case["id"]]["destroys_data"]), "confidence": case["confidence"],
                        "pair": case["pair"], "noul": float(noul),
                        "expect_confident": case["expect_confident"]})
 

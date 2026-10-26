@@ -41,5 +41,7 @@ tools/calibration/_suite_commands_chunk3.json
 tools/calibration/_suite_commands_rest.json
 tools/calibration/_suite_rows_chunk*.jsonl
 tools/calibration/_suite_rows*
+tools/calibration/shadow_pilot/receipts/*.jsonl
 tools/calibration/_rescore_commands.json
+tools/calibration/_rescore_rows*.jsonl
 tools/calibration/_suite_commands*

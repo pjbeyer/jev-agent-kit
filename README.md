@@ -186,17 +186,48 @@ output folder". The example never runs the command. It shows what would be sent,
 answers to three questions about the call, and the routes a hook in enforce mode would get:
 
 ```text
-destructive        p(yes)=0.93  -> ask
-exfiltrates        p(yes)=0.01  -> ask
-widens_permission  p(yes)=0.04  -> ask
+destroys_data       p(yes)=0.93  -> ask
+overwrites_data     p(yes)=0.02  -> ask
+escalates_privilege p(yes)=0.01  -> ask
+plants_persistence  p(yes)=0.01  -> ask
+exfiltrates         p(yes)=0.01  -> ask
+widens_permission   p(yes)=0.04  -> ask
 ```
 
 <details><summary>The full request Jev receives</summary>
 
 ```json
+   {
+  "cmd_force_flag": true,
+  "cmd_git_history_rewrite": false,
+  "cmd_grants_authority": false,
+  "cmd_grants_write_access": false,
+  "cmd_modifies_permissions": false,
+  "cmd_network_download": false,
+  "cmd_network_upload": false,
+  "cmd_package_install": false,
+  "cmd_parse_confident": true,
+  "cmd_pipes_to_shell": false,
+  "cmd_recursive_delete": true,
+  "cmd_targets_absolute_path": false,
+  "cmd_targets_autorun_path": false,
+  "cmd_targets_home_directory": false,
+  "cmd_targets_regenerable_path": false,
+  "cmd_targets_root_or_system_path": false,
+  "cmd_uses_elevation": false,
+  "command": "rm",
+  "context": "tool=Bash; description=Delete everything in the build output folder",
+  "target": "id_7dcb134b1ad03cd1"
+}
+```
+
+<details><summary>The previous single-question state (v6, for comparison)</summary>
+
+```json
 {
   "cmd_force_flag": true,
   "cmd_git_history_rewrite": false,
+  "cmd_grants_authority": false,
   "cmd_grants_write_access": false,
   "cmd_modifies_permissions": false,
   "cmd_network_download": false,
@@ -222,11 +253,11 @@ Jev sees `rm`, the agent's description, and yes/no facts the kit worked out loca
 full command line, but no flags, arguments or readable path. The `cmd_*` facts say this is a
 recursive, forced delete that does not aim at the system or home directory, so `rm file`
 and `rm -rf /` no longer look the same. On this call they made a difference: without them,
-Jev's destructive answer for the same command was 0.78, against 0.91 with them (single calls,
+Jev's destroys_data answer for the same command was 0.78, against 0.91 with them (single calls,
 2026-09-28). They are heuristic: a command the kit cannot read with
 confidence (pipes, quoting, variables, `bash -c`, scripts, interpreters, package installs, and
 similar) gets `null` for "unknown" and `cmd_parse_confident: false`, and in enforce mode such a
-command always asks. See [ADR 0005](docs/adr/0005-command-properties.md). All three answers come
+command always asks. See [ADR 0005](docs/adr/0005-command-properties.md). All answers come
 back as `ask` because no threshold is calibrated, so no answer can clear a check.
 
 `context` is plain text and needs an explicit opt-in for live calls. The hooks do not add the

@@ -48,6 +48,8 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "network_upload",
     "grants_write_access",
     "targets_absolute_path",
+    "targets_autorun_path",
+    "grants_authority",
 )
 
 STATE_PREFIX = "cmd_"
@@ -417,6 +419,7 @@ def _dseditgroup(args: list[str], found: _Found) -> None:
         return
     if adding:
         found.hit("modifies_permissions")
+        found.hit("grants_authority")
 
 
 def _cloud_cli(args: list[str], found: _Found, program: str) -> None:
@@ -690,6 +693,25 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
                 found.hit("grants_write_access")
     if program == "net" and any(t.lower() in {"localgroup", "user", "group"} for t in args):
         found.hit("modifies_permissions")
+    # Authority grants (ADR 0005 amendment 3): a command that hands authorization to a
+    # principal, distinct from a file-mode change. Membership ADDs (usermod -a, gpasswd -a,
+    # dseditgroup -a) and sudoers edits (visudo). Removals and account creation do not grant.
+    if program == "usermod":
+        for tok in args:
+            low = tok.lower()
+            if low.startswith("-a") or "-a" in low and low.startswith("-"):
+                found.hit("grants_authority")
+                break
+            if low.startswith("-") and low != "-a" and not low.startswith("-a"):
+                # -d/-s/-L etc. change account attributes, not authority; keep scanning for -a.
+                continue
+    if program == "gpasswd":
+        for idx, tok in enumerate(args):
+            if tok in {"-a", "--add"} and idx + 1 < len(args):
+                found.hit("grants_authority")
+                break
+    if program == "visudo":
+        found.hit("grants_authority")
 
     _package(program, args, found)
 
@@ -1065,6 +1087,87 @@ def _remote_spec(token: str) -> bool:
                 and head.lower() not in {"http", "https", "ftp", "ftps", "file", "sftp"})
 
 
+
+
+# --------------------------------------------------------------------------- autorun paths
+
+#: Prefix segments (after resolution, lower-case) whose subtree executes by schedule, boot,
+#: shell startup, or loader path. A write anywhere under one of these is a persistence
+#: candidate regardless of the writing program. Closed table, extendable by review.
+#: `home` is the synthetic base `_absolute` maps a tilde path onto, so shell rc files
+#: under `$HOME` are matched there.
+_AUTORUN_SEGMENTS = frozenset({
+    # cron and at
+    "cron.d", "cron.daily", "cron.hourly", "cron.weekly", "cron.monthly",
+    "crontab", "cron", "at.d", "anacrontab", "anacron",
+    # systemd / init
+    "systemd", "init.d", "rc.d", "rc0.d", "rc1.d", "rc2.d", "rc3.d",
+    "rc4.d", "rc5.d", "rc6.d", "rc.local", "inittab", "launchd", "startupitems",
+    "launchagents", "launchdaemons",
+    # loader config
+    "ld.so.conf", "ld.so.conf.d", "ld.so.preload",
+    # privileged policy
+    "sudoers", "sudoers.d", "sudoers.tmp",
+    # boot configuration that decides what the loader mounts or runs (spec's motivating
+    # case: touch /etc/fstab; fstab shapes what loads at boot even though it does not
+    # execute itself)
+    "fstab", "crypttab", "modules", "modules-load.d", "modprobe.d", "sysctl.d",
+    # shell startup (profile.d, bash_completion.d; home rc files below)
+    "profile.d", "bash_completion.d", "zshrc.d",
+})
+
+#: Exact file names that execute at shell startup, matched as a resolved segment name
+#: anywhere, so `~/.zprofile` and a planted `~/project/.zshrc` both match.
+_AUTORUN_RC_NAMES = frozenset({
+    ".bashrc", ".bash_profile", ".bash_login", ".profile", ".zshrc", ".zprofile",
+    ".zshenv", ".zlogin", ".kshrc", ".mkshrc", ".cshrc", ".tcshrc", ".fishrc",
+})
+
+#: File names that hold code or access executed by other programs without a schedule.
+_AUTORUN_TOOL_NAMES = frozenset({
+    "authorized_keys",  # executes on ssh connection
+    "sitecustomize.py", "usercustomize.py",  # interpreter startup
+})
+
+
+def _is_autorun(token: str) -> bool:
+    """A path that lands in a location which executes by schedule, boot, shell startup,
+    loader path, or as an access/policy file (`sudoers`, `authorized_keys`). Judged
+    after lexical `.`/`..` resolution. Relative paths do not resolve without a working
+    directory, so this fact covers absolute and tilde paths only. A closed table: an
+    unlisted location reads False and never vouches for safety."""
+    resolved = _absolute(token)
+    if resolved is None:
+        return False
+    _, segs = resolved
+    if not segs:
+        return False
+    for seg in segs:
+        if seg in _AUTORUN_SEGMENTS or seg in _AUTORUN_RC_NAMES or seg in _AUTORUN_TOOL_NAMES:
+            return True
+        if seg.endswith(".pth"):
+            return True
+    # /etc/<name> startup files not covered by a directory entry above.
+    if segs[0] == "etc" and segs[-1] in {"profile", "bashrc", "zshenv", "zprofile",
+                                         "environment", "shrc", "rc.local"}:
+        return True
+    return False
+
+
+def _grants_authority_path(token: str) -> bool:
+    """A path whose write grants authorization to a principal: sudoers files (root
+    command authority) and ssh `authorized_keys` (machine access). Read access to
+    these paths grants nothing, but the fact is a hazard direction: a hit means the
+    command NAMES such a path, and the question judges the action."""
+
+    resolved = _absolute(token)
+    if resolved is None:
+        return False
+    _, segs = resolved
+    return any(seg in {"sudoers", "sudoers.d", "sudoers.tmp", "authorized_keys"}
+               for seg in segs)
+
+
 def _check_path_token(token: str, found: _Found) -> None:
     # A `user@host:path` remote spec is not a local path: firing targets_* facts on the
     # remote side would claim the command targets this machine. The copy tools carry the
@@ -1087,6 +1190,10 @@ def _check_path_token(token: str, found: _Found) -> None:
             found.hit("targets_regenerable_path")
         if _absolute(cand) is not None:
             found.hit("targets_absolute_path")
+        if _is_autorun(cand):
+            found.hit("targets_autorun_path")
+        if _grants_authority_path(cand):
+            found.hit("grants_authority")
         if (cand.startswith("\\\\") or cand.startswith("//")) and _segments(cand):
             found.unsure("unc_or_network_path")
         if _absolute(cand) is None and _net_climb(cand) >= 3:

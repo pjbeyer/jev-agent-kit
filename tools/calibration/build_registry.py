@@ -34,7 +34,8 @@ LABELS = HERE / "question_labels.json"
 OUT = Path.home() / ".local/share/hermes/jev-calibration/registry/thresholds.json"
 
 QUESTION_SET = (REPO / "skills" / "jev-runtime" / "questions" / "tool-call-gate.json")
-QUESTIONS = ("destructive", "exfiltrates", "widens_permission")
+QUESTIONS = ("destroys_data", "overwrites_data", "escalates_privilege",
+             "plants_persistence", "exfiltrates", "widens_permission")
 MIN_CONFIRM_PER_CLASS = 30  # the calibration guide's walkthrough rule, applied per question
 
 # Below the bar, the default is fail-closed: the entry ships `uncalibrated` so the built-in
@@ -65,10 +66,13 @@ def main() -> None:
         for q in QUESTIONS:
             noul = (row.get(q) or {}).get("noul")
             if isinstance(noul, (int, float)):
-                if q == "destructive":
-                    label = int(case["destructive"])
-                else:
+                if q in ("destroys_data", "overwrites_data", "escalates_privilege",
+                         "plants_persistence"):
                     label = int(labels[case["id"]][q])
+                elif q == "exfiltrates" or q == "widens_permission":
+                    label = int(labels[case["id"]][q])
+                else:
+                    raise SystemExit(f"unknown question: {q}")
                 usable[q].append({"noul": float(noul), "label": label, "group": group})
 
     entries = {}
@@ -97,7 +101,9 @@ def main() -> None:
         summary = (f"suite {len(suite)} cases - {len(items)} {q} pairs scored - "
                    f"split fit {len(fit)} confirm {len(confirm)} yes {pos} - "
                    f"{res.reason} no {res.no_bound} yes {res.yes_bound} "
-                   f"acc {res.accuracy:.3f} cov {res.coverage:.3f}")
+                   f"acc "
+                   f"{res.accuracy if res.accuracy is not None else float('nan'):.3f} cov "
+                   f"{res.coverage if res.coverage is not None else float('nan'):.3f}")
         print(f"{q}: {summary}")
         if not sufficient:
             print(f"  -> uncalibrated (confirm per class {min(pos, neg)} < {MIN_CONFIRM_PER_CLASS}"
@@ -110,8 +116,9 @@ def main() -> None:
     import glob
     # Receipts from older question-set versions carry stale fingerprints (any wording change
     # re-keys the question). Only the NEWEST receipt file matches the set being shipped.
-    paths = sorted(glob.glob(str(Path.home()
-                                / ".local/share/hermes/jev-calibration/receipts/*.jsonl")),
+    candidates = [Path.home() / ".local/share/hermes/jev-calibration/receipts",
+                  HERE / "shadow_pilot" / "receipts"]
+    paths = sorted({str(f) for base in candidates for f in base.glob("*.jsonl")},
                    key=os.path.getmtime)
     fps: dict[str, str] = {}
     newest_path = paths[-1] if paths else None
