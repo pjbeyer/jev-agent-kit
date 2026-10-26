@@ -50,6 +50,8 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "targets_absolute_path",
     "targets_autorun_path",
     "grants_authority",
+    "grants_privileged_group",
+    "validates_only",
 )
 
 STATE_PREFIX = "cmd_"
@@ -383,6 +385,31 @@ def _program_readings(word: str) -> list[tuple[str, list[str]]]:
     return readings
 
 
+#: Closed table of groups whose membership is privilege-relevant on the platform (amendment
+#: 4). The state carries no group names, so the privileged/not-privileged distinction is
+#: decided here, in code, and sent as the `grants_privileged_group` flag. Group names are
+#: matched case-insensitively; the list is deliberately short and additive review applies
+#: as for any allowlist.
+_PRIVILEGED_GROUPS = frozenset({
+    "sudo", "wheel", "admin", "adm", "root", "staff-of-root",
+    "docker", "lxd", "libvirt", "kvm",
+    "operator", "shadow", "disk", "video", "tty",
+})
+
+_MACOS_ADMIN_GROUPS = frozenset({"admin", "wheel", "_appserveradm"})
+
+
+def _group_privilege(groups: list[str], found: _Found) -> None:
+    """Fire `grants_privileged_group` when any target group is in the closed table."""
+    for entry in groups:
+        # usermod -G takes a comma-separated list; split defensively.
+        for name in entry.split(","):
+            low = name.strip().rsplit("/", 1)[-1].lower()
+            if low in _PRIVILEGED_GROUPS or low in _MACOS_ADMIN_GROUPS:
+                found.hit("grants_privileged_group")
+                return
+
+
 def _dseditgroup(args: list[str], found: _Found) -> None:
     """macOS group-membership edits: the one shape modeled with confidence.
 
@@ -392,6 +419,7 @@ def _dseditgroup(args: list[str], found: _Found) -> None:
     — read, create, destroy, missing operands — stays unconfident.
     """
     adding = deleting = editing = False
+    group_name: str | None = None
     idx = 0
     while idx < len(args):
         tok = args[idx]
@@ -413,6 +441,8 @@ def _dseditgroup(args: list[str], found: _Found) -> None:
         if tok.startswith("-") and tok != "-":
             found.unsure("dseditgroup_unknown_option")
             return
+        # The final positional operand is the group being edited.
+        group_name = tok
         idx += 1
     if not (editing and (adding or deleting)):
         found.unsure("dseditgroup_unmodeled_operation")
@@ -420,6 +450,8 @@ def _dseditgroup(args: list[str], found: _Found) -> None:
     if adding:
         found.hit("modifies_permissions")
         found.hit("grants_authority")
+        if group_name is not None:
+            _group_privilege([group_name], found)
 
 
 def _cloud_cli(args: list[str], found: _Found, program: str) -> None:
@@ -696,22 +728,77 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
     # Authority grants (ADR 0005 amendment 3): a command that hands authorization to a
     # principal, distinct from a file-mode change. Membership ADDs (usermod -a, gpasswd -a,
     # dseditgroup -a) and sudoers edits (visudo). Removals and account creation do not grant.
+    # Amendment 4: the group NAME is not sent to Jev (the state carries only the program
+    # name and computed flags, finding H16), so privilege of the target group is decided
+    # here, in code, by a closed table. `grants_privileged_group` fires only when the
+    # membership add names a privileged group; an add to an unlisted group leaves it false
+    # (confident add, not privileged). An unparsable target leaves both null (unconfident).
     if program == "usermod":
+        # -a (append) marks a membership add. -G takes the group list, glued or
+        # separated: `-aG sudo` (-a, -G taking the next word), `-aGsudo`, `-a -G sudo`.
+        add = False
+        groups: list[str] = []
+        pending_g = False
         for tok in args:
             low = tok.lower()
-            if low.startswith("-a") or "-a" in low and low.startswith("-"):
-                found.hit("grants_authority")
-                break
-            if low.startswith("-") and low != "-a" and not low.startswith("-a"):
-                # -d/-s/-L etc. change account attributes, not authority; keep scanning for -a.
+            if pending_g:
+                groups.append(tok)
+                pending_g = False
                 continue
+            if low in {"-a", "--append"}:
+                add = True
+                continue
+            # -G is case-sensitive in usermod, but `low` is lowercased, so match -g here.
+            if low in {"-g", "-G", "--groups"} or tok in {"-G", "--groups"}:
+                pending_g = True
+                continue
+            if low.startswith("-G") and len(low) > 2:
+                groups.extend(low[2:].split(","))
+                continue
+            if low.startswith("-a") and not low.startswith("--") and len(low) > 2:
+                add = True
+                rest = low[2:]  # `low` is lowercased, so -aGsudo arrives as 'agsudo'→'gsudo'
+                if rest and rest[0] == "g":
+                    if len(rest) > 1:
+                        groups.extend(rest[1:].split(","))
+                    else:
+                        pending_g = True
+                continue
+        if add:
+            found.hit("grants_authority")
+            if groups:
+                _group_privilege(groups, found)
     if program == "gpasswd":
         for idx, tok in enumerate(args):
             if tok in {"-a", "--add"} and idx + 1 < len(args):
                 found.hit("grants_authority")
+                # The group is the final positional operand.
+                positional = [t for t in args[idx + 2:] if not t.startswith("-")]
+                if positional:
+                    _group_privilege([positional[-1]], found)
                 break
     if program == "visudo":
         found.hit("grants_authority")
+        # Amendment 4: -c (check) only parses and validates the sudoers file; it edits
+        # nothing and grants nothing beyond what the file already says. The fact lets the
+        # gate separate validate-only invocations from edits without seeing arguments.
+        if "-c" in args or "--check" in args:
+            found.hit("validates_only")
+    if program == "setcap":
+        # A file capability set (cap_* with the effective bit) hands system authority to
+        # whoever runs the file — the same shape as setuid, at finer grain. Both spec
+        # forms: `cap_x=eip` (bits after `=`) and `cap_x+ep` (bits attached with `+`).
+        # A spec without a readable bit set leaves the fact untouched (null on
+        # unconfident, false on confident-but-unmatched).
+        specs = [t for t in args if not t.startswith("-")]
+        for t in specs:
+            m = re.match(r"(?i)cap_[a-z0-9_.]+(?:=(?P<bits>[a-z]+)|\+(?P<bits2>[a-z]+))$", t)
+            if m is None:
+                continue
+            bits = (m.group("bits") or m.group("bits2") or "").lower()
+            if "e" in bits:
+                found.hit("grants_authority")
+                break
 
     _package(program, args, found)
 

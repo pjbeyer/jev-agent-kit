@@ -201,6 +201,7 @@ widens_permission   p(yes)=0.04  -> ask
   "cmd_force_flag": true,
   "cmd_git_history_rewrite": false,
   "cmd_grants_authority": false,
+  "cmd_grants_privileged_group": false,
   "cmd_grants_write_access": false,
   "cmd_modifies_permissions": false,
   "cmd_network_download": false,
@@ -215,6 +216,7 @@ widens_permission   p(yes)=0.04  -> ask
   "cmd_targets_regenerable_path": false,
   "cmd_targets_root_or_system_path": false,
   "cmd_uses_elevation": false,
+  "cmd_validates_only": false,
   "command": "rm",
   "context": "tool=Bash; description=Delete everything in the build output folder",
   "target": "id_7dcb134b1ad03cd1"
@@ -241,6 +243,7 @@ widens_permission   p(yes)=0.04  -> ask
   "cmd_targets_regenerable_path": false,
   "cmd_targets_root_or_system_path": false,
   "cmd_uses_elevation": false,
+  "cmd_validates_only": false,
   "command": "rm",
   "context": "tool=Bash; description=Delete everything in the build output folder",
   "target": "id_7dcb134b1ad03cd1"
