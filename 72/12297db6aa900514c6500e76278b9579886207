@@ -1,0 +1,35 @@
+tools/calibration/score_batch3b.py
+  s_dd517c68a76f60::t_27c053c83b6454 1-55
+tools/calibration/add_family_batch3.py
+  s_dd517c68a76f60::t_65bb33fcfa53b8 1-229
+tests/test_command_properties_gate.py
+  s_dd517c68a76f60::t_f61d0ca0616423 295
+tools/calibration/probe_batch3.py
+  s_dd517c68a76f60::t_4b9e37d49d580d 1-108
+tools/calibration/score_batch3.py
+  s_dd517c68a76f60::t_c8476a24e4d166 1-56
+tools/calibration/score_v9_probe.py
+  s_dd517c68a76f60::t_9a203bf8c966a8 1-67
+skills/jev-runtime/questions/tool-call-gate.json
+  s_dd517c68a76f60::t_d3243f4b53645a 4,135
+tools/calibration/dangerous_suite.json
+  s_dd517c68a76f60::t_4167b0ed116933 2495-3154
+tools/calibration/question_labels.json
+  s_dd517c68a76f60::t_e3bd293523ba04 2232-2583
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "7212297db6aa900514c6500e76278b9579886207",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
