@@ -51,6 +51,7 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "targets_autorun_path",
     "grants_authority",
     "grants_privileged_group",
+    "grants_setuid",
     "validates_only",
 )
 
@@ -115,6 +116,13 @@ _UPLOAD_HOST_TOOLS = frozenset({"scp", "sftp", "rsync", "ftp", "tftp", "lftp"})
 # and the symbolic form are checked; anything else leaves the fact null via the mode-arg check.
 _GRANT_WRITE_NUM = re.compile(r"^[0-7]{3,4}$")
 _WRITE_DIGITS = frozenset("2367")
+
+# Setuid/setgid bits (amendment 5): the numeric lead digit is 4 (setuid), 2 (setgid),
+# or 6 (both) in a 4-digit mode; the symbolic form is +s/=s or a s-containing letter
+# set on u/g subjects. `-s` removes. The fact lets the question distinguish a
+# setuid grant (privilege execution primitive) from an ordinary mode change:
+# the mode DIGITS themselves are not sent to Jev (finding H16's mode analogue).
+_SETUID_NUM_DIGITS = frozenset("2467")
 
 _PERMISSIONS = frozenset({
     "chmod", "chown", "chgrp", "chattr", "setfacl", "icacls", "cacls", "xcacls", "takeown",
@@ -678,24 +686,39 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             # (2/3/6/7 in the group or other digit), or a symbolic +w/+rwx/=. 644, 755 and
             # +x do not grant write. No recognized mode argument leaves the fact null, which
             # the question reads as possibly-true.
+            # Amendment 5: the same mode argument decides `grants_setuid` — a numeric
+            # lead digit of 2/4/6 or a symbolic s-bit grant (+s/=s on any subject mix;
+            # the bare `+s` shorthand defaults to a+s and is treated as a grant).
+            # `-s`/`a-s` remove and do not fire. Setgid is folded into the same fact:
+            # both bits make the file a privilege-execution primitive.
             for tok in args:
                 cleaned = tok.lstrip("-").lower()
                 if _GRANT_WRITE_NUM.fullmatch(cleaned):
                     digits = cleaned[-3:]
                     if any(d in _WRITE_DIGITS for d in digits[1:]):
                         found.hit("grants_write_access")
+                    if len(cleaned) == 4 and cleaned[0] in _SETUID_NUM_DIGITS:
+                        found.hit("grants_setuid")
                     break
                 # General symbolic mode: any mix of subjects (u/g/o/a, comma-separated
                 # clauses like ug+w or u+rwx,g-w) grants write when a clause's verb is
                 # + or = and its letters include w. A `-` verb removes. `X` (execute
                 # only) does not grant write. Unknown shapes leave the fact null.
                 clauses = cleaned.split(",")
-                if all(re.fullmatch(r"[ugoa]*[+-=][rwxX]+", clause) for clause in clauses):
+                if all(re.fullmatch(r"[ugoa]*[+-=][rwxXst]+", clause) for clause in clauses):
                     for clause in clauses:
-                        m = re.match(r"[ugoa]*([+-=])([rwxX]+)", clause)
-                        if m is not None and m.group(1) != "-" and "w" in m.group(2):
+                        m = re.match(r"[ugoa]*([+-=])([rwxXst]+)", clause)
+                        if m is None:
+                            continue
+                        verb, letters = m.group(1), m.group(2)
+                        if verb != "-" and "w" in letters:
                             found.hit("grants_write_access")
-                            break
+                        if verb != "-" and "s" in letters:
+                            found.hit("grants_setuid")
+                    break
+                # Bare `+s`/`=s` (no subject): defaults to all subjects; a grant.
+                if re.fullmatch(r"[+=]s[st]*", cleaned) or cleaned in {"+s", "=s"}:
+                    found.hit("grants_setuid")
                     break
         if program == "setfacl":
             # `-m` grants when the ACL spec names a subject beyond the file's mode mirror:

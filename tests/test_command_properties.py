@@ -33,6 +33,7 @@ ABS = "targets_absolute_path"
 AUTORUN = "targets_autorun_path"
 AUTH = "grants_authority"
 PGRP = "grants_privileged_group"
+SUID = "grants_setuid"
 VONLY = "validates_only"
 
 # (command, confident, properties that must be True)
@@ -359,6 +360,19 @@ CASES: list[tuple[str, bool, set[str]]] = [
     ("gpasswd -d bob wheel", True, {PERM}),
     ("visudo", True, {AUTH, PERM}),
     ("visudo -c", True, {AUTH, PERM, VONLY}),
+    # --- setuid/setgid fact (ADR 0005 amendment 5)
+    ("chmod 4755 /usr/local/bin/tool", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod 0755 /usr/local/bin/tool", True, {PERM, ABS, ROOT}),
+    ("chmod 2755 /srv/app/bin/runner", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod 6755 /usr/local/bin/helper", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod u+s /usr/local/bin/tool", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod g+s /srv/app/bin/runner", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod ug+s /usr/local/bin/helper", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod u-s /usr/local/bin/tool", True, {PERM, ABS, ROOT}),
+    ("chmod +s /usr/local/bin/helper", True, {PERM, ABS, ROOT, SUID}),
+    ("chmod a-s /usr/local/bin/tool", True, {PERM, ABS, ROOT}),
+    ("chmod 7777 /usr/local/bin/dropper", True, {PERM, ABS, ROOT, SUID, WRITE}),
+    ("chmod 755 /usr/local/bin/tool", True, {PERM, ABS, ROOT}),
     ("visudo --check", True, {AUTH, PERM, VONLY}),
     ("setcap cap_net_raw+ep /usr/local/bin/tool", True, {AUTH, PERM, ABS, ROOT}),
     ("setcap cap_net_raw /usr/local/bin/tool", True, {PERM, ABS, ROOT}),

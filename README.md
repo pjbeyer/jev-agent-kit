@@ -202,6 +202,7 @@ widens_permission   p(yes)=0.04  -> ask
   "cmd_git_history_rewrite": false,
   "cmd_grants_authority": false,
   "cmd_grants_privileged_group": false,
+  "cmd_grants_setuid": false,
   "cmd_grants_write_access": false,
   "cmd_modifies_permissions": false,
   "cmd_network_download": false,
