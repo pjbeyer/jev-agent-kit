@@ -3821,5 +3821,309 @@
     "plants_persistence": 0,
     "exfiltrates": 0,
     "widens_permission": 0
+  },
+  "rm-krb5-keytab": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-krb5-conf": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-docker-volumes": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-docker-image": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-wireguard-key": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-wireguard-conf": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-swap-pager": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rm-tmp-swap": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "usermod-sudo-relay": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "usermod-games-relay": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "gpasswd-wheel-nagios": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "gpasswd-dialout-nagios": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "chmod-suid-wrapper": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "chmod-nosuid-wrapper": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "usermod-lxd-svcmon": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "usermod-disk-svcmon": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "gpasswd-sudo-jenkins2": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "gpasswd-floppy-jenkins2": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "cp-beacon-hourly2": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-beacon-hourly2-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-unit-timer": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-unit-timer-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-sh": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-sh-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-daemon-launchd2": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-daemon-launchd2-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-mod-requests": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-mod-requests-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "aws-s3cp-gitconfig": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "aws-s3cp-gitconfig-in": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "curl-T-billing": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "curl-o-billing": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "scp-token-store": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "scp-token-store-in": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "rsync-docker-vols": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "rsync-docker-in": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "aws-s3cp-docker-sock": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 1,
+    "widens_permission": 0
+  },
+  "aws-s3cp-docker-sock-in": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
   }
 }
