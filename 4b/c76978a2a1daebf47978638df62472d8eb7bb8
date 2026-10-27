@@ -1,0 +1,27 @@
+tools/calibration/add_family_batch8.py
+  s_dd517c68a76f60::t_98232b7655e7d4 1-142
+tools/calibration/_fix_batch8_labels.py
+  s_dd517c68a76f60::t_5fab049750cd9b 1-31
+tools/calibration/score_batch8.py
+  s_dd517c68a76f60::t_68a8badc916408 1-49
+tools/calibration/dangerous_suite.json
+  s_dd517c68a76f60::t_c33c720639520b 6050-6559
+tools/calibration/question_labels.json
+  s_dd517c68a76f60::t_6ee64a936e54a4 4128-4399
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "4bc76978a2a1daebf47978638df62472d8eb7bb8",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
