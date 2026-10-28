@@ -1,0 +1,25 @@
+tools/calibration/_pilot_chunks.py
+  s_dd517c68a76f60::t_b1a07a2b336de3 1-61
+tools/calibration/_fix_widen_labels.py
+  s_dd517c68a76f60::t_0e02434253ac6b 1-43
+tools/calibration/dangerous_suite.json
+  s_dd517c68a76f60::t_c166ebd63cc125 218,2260,2296,2305,2448,2854
+tools/calibration/question_labels.json
+  s_dd517c68a76f60::t_5f25e62559d117 75,235,1049,1829,1861,2418
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "318223668caf4e39415084c57c595bf6076d7c66",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
