@@ -10,11 +10,11 @@ gateway).
 | surface | location | role |
 |---|---|---|
 | **Source of truth** | 1Password item **Flex AI Model Gateway** (`op://3g2pzzvrog6jeuxmcrmaowzn5i/iud54wgauipabvz6efnpfj7jcm/credential`), vault `3g2pzzvrog6jeuxmcrmaowzn5i` | the one place the key is stored |
-| **Offline-proof resolver** | `~/.config/jev/get-jev-api-key.sh`, wired via `TYPESAFE_API_KEY_COMMAND` in `~/.hermes/.env` | resolves via 1Password service-account token in the login keychain; survives desktop-app lock (commute-class outage, 2026-10-22) |
-| **Gateway runtime env** | `TYPESAFE_API_KEY` injected by Hermes `secrets.onepassword` at gateway start (from the `config.yaml` op:// ref) | the direct-var fast path; resolution order is direct-else-command (`secrets.resolve_secret`) |
+| **Gate resolver** | `~/.config/jev/get-jev-api-key.sh`, wired via `TYPESAFE_API_KEY_COMMAND` in `~/.hermes/.env` | resolves via 1Password service-account token in the login keychain; survives desktop-app lock (commute-class outage, 2026-10-22) |
+| **Local proxy resolver** | `credentials.toml` entry `TYPESAFE_API_KEY`, resolved by `run-proxy-wrapper.sh` at proxy start | the smart-router's own auth for the `/typesafe` route; independent of Hermes (shared virtual key, approved 2026-10-24) |
 
-The resolver's precedence means both paths read the same 1Password item — a
-rotation is a 1Password edit only. No other file ever stores the key.
+The two resolvers read the same 1Password item — a rotation is a 1Password
+edit only. No other file ever stores the key.
 
 ## Resolution order (verified)
 
@@ -26,6 +26,18 @@ rotation is a 1Password edit only. No other file ever stores the key.
 Setting both direct and command simultaneously is a hard config error
 (`both_key_sources`), so never export a literal `TYPESAFE_API_KEY` in
 `~/.hermes/.env`.
+
+**2026-10-28 topology fix (Phil approved):** Hermes injects
+`secrets.onepassword` env vars into its own process, and every hook child
+inherits that env — so the former `config.yaml` `TYPESAFE_API_KEY` entry
+paired with the `.env` shim in every judge child and tripped
+`both_key_sources` on ~every gate decide (sidelog: 25/35 sessions
+100%-`config` after 2026-10-25 17:20; shadow fail-open, so no blocks, but
+no receipts either). The `config.yaml` entry was removed via
+`hermes config unset secrets.onepassword.env.TYPESAFE_API_KEY`; the gate
+now resolves through the shim alone, and the proxy keeps its own
+credential. Do not re-add a direct `TYPESAFE_API_KEY` to either Hermes
+config surface while the shim is wired.
 
 ## Rotation procedure (key compromise / scheduled rotation)
 
