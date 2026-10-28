@@ -1,0 +1,20 @@
+docs/key-rotation.md
+  s_dd517c68a76f60::t_02b4a5193edf7b 13-14,16-17,30-40
+  s_dd517c68a76f60::t_025f2f0df94a6b 41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "74a07d82505bc322aca263dc0d0d046a7c993c28",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
