@@ -84,7 +84,8 @@ def main() -> None:
             (fit if h % 2 == 0 else confirm).append(item)
         fit_samples = [(i["noul"], i["label"]) for i in fit]
         confirm_samples = [(i["noul"], i["label"]) for i in confirm]
-        res = select_bounds(fit_samples, confirm_samples, reference_accuracy=0.95, tolerance=0.0)
+        res = select_bounds(fit_samples, confirm_samples, reference_accuracy=0.95, tolerance=0.0,
+                            selection_margin=0.03)
         pos = sum(y for _, y in confirm_samples)
         neg = len(confirm_samples) - pos
         # A confirm half with no positives of a class proves nothing about that class,

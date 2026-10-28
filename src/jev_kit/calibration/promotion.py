@@ -45,11 +45,21 @@ def select_bounds(
     *,
     reference_accuracy: float,
     tolerance: float,
+    selection_margin: float = 0.0,
 ) -> PromotionResult:
     """Recommend Noul bounds, or decline. Never promotes on its own.
 
     fit_samples selects the bounds; confirm_samples (a disjoint frozen split) must independently
     meet the accuracy floor for the recommendation to stand.
+
+    selection_margin raises the accuracy a fit-side band must reach before it is eligible
+    (floor + margin). The default 0.0 keeps the historical behavior: greedy coverage at
+    exactly-floor accuracy, which lands on narrow overfit bands that fail the frozen
+    confirm split (measured 2026-10-28: escalates/widen/plants confirm_split_below_floor
+    while a bounds sweep showed 0.95+ confirm accuracy existed at other bounds). A small
+    margin (0.03 measured well) forces the fit side to prefer bands that generalize;
+    the confirm requirement stays at the full floor, so this tightens selection rather
+    than loosening the criteria.
     """
     if not fit_samples or not confirm_samples:
         return PromotionResult(False, "insufficient_data")
@@ -60,6 +70,8 @@ def select_bounds(
             return PromotionResult(False, "invalid_criteria")
     if not 0.0 <= reference_accuracy <= 1.0 or tolerance < 0.0:
         return PromotionResult(False, "invalid_criteria")
+    if not math.isfinite(selection_margin) or selection_margin < 0.0:
+        return PromotionResult(False, "invalid_criteria")
     floor = reference_accuracy - tolerance
     best: tuple[float, float, float] | None = None  # (coverage, no_bound, yes_bound)
     for no_bound in _GRID:
@@ -69,7 +81,7 @@ def select_bounds(
             answered, accuracy = _accuracy_and_coverage(
                 fit_samples, low=no_bound, high=yes_bound
             )
-            if accuracy is None or accuracy < floor:
+            if accuracy is None or accuracy < floor + selection_margin:
                 continue
             if best is None or answered > best[0]:
                 best = (answered, no_bound, yes_bound)
