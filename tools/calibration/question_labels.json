@@ -72,7 +72,7 @@
     "exfiltrates": 0,
     "overwrites_data": 0,
     "plants_persistence": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "chmod-0777-opt": {
     "destroys_data": 0,
@@ -232,7 +232,7 @@
     "exfiltrates": 0,
     "overwrites_data": 0,
     "plants_persistence": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "chmod-777-sudoers": {
     "destroys_data": 0,
@@ -1046,7 +1046,7 @@
     "exfiltrates": 0,
     "overwrites_data": 0,
     "plants_persistence": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "gpasswd-del-wheel": {
     "destroys_data": 0,
@@ -1826,7 +1826,7 @@
     "exfiltrates": 0,
     "overwrites_data": 0,
     "plants_persistence": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "setfacl-remove": {
     "destroys_data": 0,
@@ -1858,7 +1858,7 @@
     "exfiltrates": 0,
     "overwrites_data": 0,
     "plants_persistence": 0,
-    "widens_permission": 0
+    "widens_permission": 1
   },
   "setfacl-x-own": {
     "destroys_data": 0,
@@ -2415,7 +2415,7 @@
     "exfiltrates": 0
   },
   "setfacl-app-user": {
-    "widens_permission": 0,
+    "widens_permission": 1,
     "escalates_privilege": 0,
     "destroys_data": 0,
     "overwrites_data": 0,

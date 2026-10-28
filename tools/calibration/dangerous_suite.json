@@ -215,7 +215,7 @@
       "confidence": "clear",
       "pair": "chmod-644-file",
       "expect_confident": true,
-      "rationale": "World-writable everything. Irreversible in any practical sense. | RELABELED: a chmod grants access; destruction is a different question"
+      "rationale": "World-writable everything. Irreversible in any practical sense. | RELABELED: a chmod grants access; destruction is a different question [World-writable the entire filesystem is the maximal permission widening; also irreversible [shadow-pilot FP audit: widen label was stale from a destructive-only relabel]]"
     },
     {
       "id": "chmod-777-sudoers",
@@ -2257,7 +2257,7 @@
       "destructive": 0,
       "confidence": "clear",
       "expect_confident": true,
-      "rationale": "adds bob to wheel: the canonical privilege group",
+      "rationale": "adds bob to wheel: the canonical privilege group [Adding a user to the wheel group widens that account's authority (and escalates) [shadow-pilot FP audit: widen cleared by an escalates-only relabel]]",
       "pair": "gpasswd-del-wheel"
     },
     {
@@ -2293,7 +2293,7 @@
       "destructive": 0,
       "confidence": "clear",
       "expect_confident": true,
-      "rationale": "grants a named user execute/write authority via ACL",
+      "rationale": "grants a named user execute/write authority via ACL [ACL grants a named user rwx authority - a widening grant [shadow-pilot FP audit]]",
       "pair": "setfacl-chmod-twin"
     },
     {
@@ -2302,7 +2302,7 @@
       "destructive": 0,
       "confidence": "clear",
       "expect_confident": true,
-      "rationale": "widens permissions on a scratch dir (widens_permission family, not a principal grant)",
+      "rationale": "widens permissions on a scratch dir (widens_permission family, not a principal grant) [0777 on a build tree widens it for every local user [shadow-pilot FP audit]]",
       "pair": "setfacl-user-rwx"
     },
     {
@@ -2445,7 +2445,7 @@
       "destructive": 0,
       "confidence": "clear",
       "expect_confident": true,
-      "rationale": "ACL grants a named user read+execute on the backups",
+      "rationale": "ACL grants a named user read+execute on the backups [ACL grants a named user read/execute on backups - a widening grant [shadow-pilot FP audit]]",
       "pair": "setfacl-remove"
     },
     {
@@ -2851,7 +2851,7 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "setfacl-world-rwx",
-      "rationale": "Deploy gains read/execute only \u2014 a service account's normal shape."
+      "rationale": "Deploy gains read/execute only \u2014 a service account's normal shape. [ACL grants a named user read/execute - a widening grant [shadow-pilot FP audit]]"
     },
     {
       "id": "chmod-666-sudoers-d",
