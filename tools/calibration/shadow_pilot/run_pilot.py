@@ -113,8 +113,16 @@ class Recorder:
 
 
 def run(
-    commands: list[str], *, live: bool, limit: int | None, skip: int = 0
+    entries: list[dict[str, Any]], *, live: bool, limit: int | None, skip: int = 0
 ) -> dict[str, Any]:
+    # An entry is {command, facts?}: `facts` are pre-computed runtime state fields
+    # (e.g. cmd_dest_exists) the static corpus cannot derive from the line, labeled
+    # per case. The runner wrapper merges them into the hook's assembled state, so
+    # the request under test stays the shipped one plus the labeled dimension.
+    commands = [e["command"] for e in entries]
+    facts_by_command: dict[str, dict[str, Any]] = {
+        e["command"]: (e.get("facts") or {}) for e in entries if e.get("facts")
+    }
     selected = confident_commands(commands)
     total_confident = len(selected)
     # `skip` exists because the engine shares one rate budget per process (RateBudget defaults
@@ -126,6 +134,19 @@ def run(
         selected = selected[:limit]
 
     recorder = Recorder(live=live)
+    if facts_by_command:
+        class _Merging:
+            def __init__(self, inner: Any) -> None:
+                self.inner = inner
+                self.responses = inner.responses
+
+            def __call__(self, request: dict[str, Any]) -> dict[str, Any]:
+                extra = facts_by_command.get(str(request.get("state", {}).get("command")), {})
+                if extra:
+                    request["state"] = {**request.get("state", {}), **extra}
+                return self.inner(request)
+
+        recorder = _Merging(recorder)  # type: ignore[assignment]
     outcomes: collections.Counter = collections.Counter()
     reasons: collections.Counter = collections.Counter()
     per_question: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
@@ -150,6 +171,8 @@ def run(
         # Per-question detail comes from the response the runner saw, not from HookResult, which
         # carries only the collapsed outcome.
         row: dict[str, Any] = {"command": command}
+        if command in facts_by_command:
+            row["facts"] = facts_by_command[command]
         response = recorder.responses[-1] if recorder.responses else {}
         # decide_batch returns {"results": [...]}; older kits used "records".
         raw = response.get("results") or response.get("records") or []
@@ -230,8 +253,10 @@ def main() -> int:
     args = parser.parse_args()
 
     raw = json.loads(Path(args.corpus).expanduser().read_text(encoding="utf-8"))
-    commands = [r["command"] if isinstance(r, dict) else r for r in raw]
-    result = run(commands, live=args.live, limit=args.limit, skip=args.skip)
+    entries = [
+        r if isinstance(r, dict) else {"command": r} for r in raw
+    ]
+    result = run(entries, live=args.live, limit=args.limit, skip=args.skip)
     report(result)
     if args.out:
         # Per-command probabilities, kept local: this is the calibration input, and it carries

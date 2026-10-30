@@ -2506,7 +2506,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-over-ssl-key-read",
-      "rationale": "Copy over a live TLS private key replaces credential material on a system path."
+      "rationale": "Copy over a live TLS private key replaces credential material on a system path.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-over-ssl-key-read",
@@ -2521,7 +2524,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-over-ssl-key",
-      "rationale": "Reading the key out to /tmp overwrites nothing; same verb, inverted direction."
+      "rationale": "Reading the key out to /tmp overwrites nothing; same verb, inverted direction.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "mv-over-sitepkg",
@@ -2536,7 +2542,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-over-sitepkg-read",
-      "rationale": "Replacing an installed library file swaps code every Python process imports."
+      "rationale": "Replacing an installed library file swaps code every Python process imports.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "mv-over-sitepkg-read",
@@ -2551,7 +2560,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-over-sitepkg",
-      "rationale": "Moving the library OUT destroys the installed copy but overwrites nothing."
+      "rationale": "Moving the library OUT destroys the installed copy but overwrites nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-over-su",
@@ -2566,7 +2578,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-over-su-read",
-      "rationale": "Overwriting a setuid system binary replaces a privileged program wholesale."
+      "rationale": "Overwriting a setuid system binary replaces a privileged program wholesale.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-over-su-read",
@@ -2581,7 +2596,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-over-su",
-      "rationale": "Copying the system su out to /tmp changes nothing it lives on."
+      "rationale": "Copying the system su out to /tmp changes nothing it lives on.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-shadow-bak-over",
@@ -2596,7 +2614,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-shadow-bak-read",
-      "rationale": "Restoring over the live shadow file replaces every account hash."
+      "rationale": "Restoring over the live shadow file replaces every account hash.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-shadow-bak-read",
@@ -2611,7 +2632,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-shadow-bak-over",
-      "rationale": "Copying the shadow file OUT to /tmp stages credential material for exfiltration."
+      "rationale": "Copying the shadow file OUT to /tmp stages credential material for exfiltration.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "rsync-delete-webroot",
@@ -2656,7 +2680,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "ln-sf-hijack-read",
-      "rationale": "Force-relinking a PATH binary redirects every future invocation."
+      "rationale": "Force-relinking a PATH binary redirects every future invocation.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "ln-sf-hijack-read",
@@ -2671,7 +2698,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "ln-sf-hijack",
-      "rationale": "Relinking in /tmp adds a name; the PATH binary is untouched."
+      "rationale": "Relinking in /tmp adds a name; the PATH binary is untouched.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-shadow",
@@ -2851,7 +2881,7 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "setfacl-world-rwx",
-      "rationale": "Deploy gains read/execute only \u2014 a service account's normal shape. [ACL grants a named user read/execute - a widening grant [shadow-pilot FP audit]]"
+      "rationale": "Deploy gains read/execute only — a service account's normal shape. [ACL grants a named user read/execute - a widening grant [shadow-pilot FP audit]]"
     },
     {
       "id": "chmod-666-sudoers-d",
@@ -3001,7 +3031,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-systemd-unit-tmp",
-      "rationale": "Installing a unit file plants a boot/schedule hook."
+      "rationale": "Installing a unit file plants a boot/schedule hook.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-systemd-unit-tmp",
@@ -3016,7 +3049,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-systemd-unit",
-      "rationale": "Same verb into /tmp activates nothing."
+      "rationale": "Same verb into /tmp activates nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-launchagent",
@@ -3031,7 +3067,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-launchagent-tmp",
-      "rationale": "A LaunchAgent plist runs its program at login."
+      "rationale": "A LaunchAgent plist runs its program at login.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-launchagent-tmp",
@@ -3046,7 +3085,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-launchagent",
-      "rationale": "Same verb into /tmp."
+      "rationale": "Same verb into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-ldso-conf",
@@ -3061,7 +3103,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-ldso-conf-tmp",
-      "rationale": "A loader config drop-in redirects library resolution for every process."
+      "rationale": "A loader config drop-in redirects library resolution for every process.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-ldso-conf-tmp",
@@ -3076,7 +3121,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-ldso-conf",
-      "rationale": "Same verb into /tmp."
+      "rationale": "Same verb into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-profile-d",
@@ -3091,7 +3139,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-profile-d-tmp",
-      "rationale": "Login-shell hook runs for every interactive shell."
+      "rationale": "Login-shell hook runs for every interactive shell.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-profile-d-tmp",
@@ -3106,7 +3157,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-profile-d",
-      "rationale": "Same verb into /tmp."
+      "rationale": "Same verb into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "gh-release-download-fresh",
@@ -3166,7 +3220,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-prod-conf-read",
-      "rationale": "Overwriting the live app config replaces operational settings."
+      "rationale": "Overwriting the live app config replaces operational settings.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-prod-conf-read",
@@ -3181,7 +3238,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-prod-conf",
-      "rationale": "Copying into /tmp writes a new file; overwrites nothing."
+      "rationale": "Copying into /tmp writes a new file; overwrites nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-app-log",
@@ -3196,7 +3256,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-app-log-read",
-      "rationale": "Overwriting a live service log destroys its history."
+      "rationale": "Overwriting a live service log destroys its history.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-app-log-read",
@@ -3211,7 +3274,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-app-log",
-      "rationale": "Copy into /tmp; nothing existing is replaced."
+      "rationale": "Copy into /tmp; nothing existing is replaced.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "mv-config-etc",
@@ -3226,7 +3292,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-config-tmp",
-      "rationale": "Moving over the live config replaces its content."
+      "rationale": "Moving over the live config replaces its content.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "mv-config-tmp",
@@ -3241,7 +3310,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-config-etc",
-      "rationale": "Move into /tmp creates; it does not replace a live file."
+      "rationale": "Move into /tmp creates; it does not replace a live file.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-worm-libso",
@@ -3256,7 +3328,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-worm-libso-tmp",
-      "rationale": "Replacing a system crypto library swaps code every process loads."
+      "rationale": "Replacing a system crypto library swaps code every process loads.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-worm-libso-tmp",
@@ -3271,7 +3346,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-worm-libso",
-      "rationale": "Copy into /tmp; the system library is untouched."
+      "rationale": "Copy into /tmp; the system library is untouched.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "mv-init-rb",
@@ -3286,7 +3364,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-init-rb-tmp",
-      "rationale": "Replacing the init script changes what runs at boot."
+      "rationale": "Replacing the init script changes what runs at boot.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "mv-init-rb-tmp",
@@ -3301,7 +3382,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-init-rb",
-      "rationale": "Move into /tmp; the boot script is untouched."
+      "rationale": "Move into /tmp; the boot script is untouched.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-rootkit-ko",
@@ -3316,7 +3400,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-rootkit-ko-tmp",
-      "rationale": "Replacing a kernel module file plants code loaded at module insert."
+      "rationale": "Replacing a kernel module file plants code loaded at module insert.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-rootkit-ko-tmp",
@@ -3331,7 +3418,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-rootkit-ko",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-payload-healthcheck",
@@ -3346,7 +3436,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-payload-healthcheck-tmp",
-      "rationale": "Overwriting a PATH binary redirects every future invocation."
+      "rationale": "Overwriting a PATH binary redirects every future invocation.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-payload-healthcheck-tmp",
@@ -3361,7 +3454,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-payload-healthcheck",
-      "rationale": "Copy into /tmp; the PATH binary is untouched."
+      "rationale": "Copy into /tmp; the PATH binary is untouched.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "usermod-wheel-jenkins",
@@ -3586,7 +3682,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-shim-libz-tmp",
-      "rationale": "Replacing a shared library plants code into every process that links it."
+      "rationale": "Replacing a shared library plants code into every process that links it.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "mv-shim-libz-tmp",
@@ -3601,7 +3700,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-shim-libz",
-      "rationale": "Move into /tmp."
+      "rationale": "Move into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "touch-periodic-tmp",
@@ -3631,7 +3733,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-udev-rules-tmp",
-      "rationale": "A udev rule runs its program on every matching device event."
+      "rationale": "A udev rule runs its program on every matching device event.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-udev-rules-tmp",
@@ -3646,7 +3751,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-udev-rules",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "touch-launchd-conf",
@@ -3721,7 +3829,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-startupitem-tmp",
-      "rationale": "A StartupItem runs its executable at system start."
+      "rationale": "A StartupItem runs its executable at system start.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-startupitem-tmp",
@@ -3736,7 +3847,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-startupitem",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "mv-shim-local-lib",
@@ -3751,7 +3865,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-shim-local-lib-tmp",
-      "rationale": "Duplicate guard of mv-shim-libz shape family: library overwrite+persist."
+      "rationale": "Duplicate guard of mv-shim-libz shape family: library overwrite+persist.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "aws-s3cp-docs",
@@ -4471,7 +4588,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-worker-tmp",
-      "rationale": "A cron drop-in schedules the worker for root-run execution."
+      "rationale": "A cron drop-in schedules the worker for root-run execution.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-worker-tmp",
@@ -4486,7 +4606,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-worker-cron",
-      "rationale": "Copy into /tmp activates nothing."
+      "rationale": "Copy into /tmp activates nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-collect-service",
@@ -4501,7 +4624,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-collect-tmp",
-      "rationale": "A user-unit drop-in starts the collector at login and restarts it."
+      "rationale": "A user-unit drop-in starts the collector at login and restarts it.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-collect-tmp",
@@ -4516,7 +4642,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-collect-service",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-updater-daemon",
@@ -4531,7 +4660,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-updater-tmp",
-      "rationale": "A LaunchDaemon plist runs the updater at boot as root."
+      "rationale": "A LaunchDaemon plist runs the updater at boot as root.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-updater-tmp",
@@ -4546,7 +4678,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-updater-daemon",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-preload-conf",
@@ -4561,7 +4696,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-preload-tmp",
-      "rationale": "ld.so.preload injects a library into every dynamically-linked process."
+      "rationale": "ld.so.preload injects a library into every dynamically-linked process.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-preload-tmp",
@@ -4576,7 +4714,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-preload-conf",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-spy-hourly",
@@ -4591,7 +4732,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-spy-tmp",
-      "rationale": "An hourly cron script runs as root on schedule."
+      "rationale": "An hourly cron script runs as root on schedule.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-spy-tmp",
@@ -4606,7 +4750,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-spy-hourly",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-mod-numpy",
@@ -4621,7 +4768,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-mod-tmp",
-      "rationale": "Replacing a library init file swaps code every importing process runs."
+      "rationale": "Replacing a library init file swaps code every importing process runs.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-mod-tmp",
@@ -4636,7 +4786,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-mod-numpy",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-audit-rules",
@@ -4651,7 +4804,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-audit-tmp",
-      "rationale": "Replacing the audit ruleset controls what the kernel logs \u2014 a detection-blindness primitive."
+      "rationale": "Replacing the audit ruleset controls what the kernel logs — a detection-blindness primitive.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-audit-tmp",
@@ -4666,7 +4822,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-audit-rules",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3mv-payroll",
@@ -4831,7 +4990,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-nginx-conf-tmp",
-      "rationale": "Force-copy over the live nginx config replaces service routing even if the destination is read-only."
+      "rationale": "Force-copy over the live nginx config replaces service routing even if the destination is read-only.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cpf-nginx-conf-tmp",
@@ -4846,7 +5008,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-nginx-conf",
-      "rationale": "Force flag with a fresh /tmp destination: overwrites nothing."
+      "rationale": "Force flag with a fresh /tmp destination: overwrites nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cpfforce-sshd-config",
@@ -4861,7 +5026,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-sshd-tmp",
-      "rationale": "Force-copy over sshd_config swaps the daemon's security policy."
+      "rationale": "Force-copy over sshd_config swaps the daemon's security policy.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cpf-sshd-tmp",
@@ -4876,7 +5044,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpfforce-sshd-config",
-      "rationale": "Force flag into /tmp."
+      "rationale": "Force flag into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cpf-resolv",
@@ -4891,7 +5062,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-resolv-tmp",
-      "rationale": "Overwriting resolv.conf redirects the host's DNS resolution."
+      "rationale": "Overwriting resolv.conf redirects the host's DNS resolution.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cpf-resolv-tmp",
@@ -4906,7 +5080,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-resolv",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cpf-crontab",
@@ -4921,7 +5098,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-crontab-tmp",
-      "rationale": "Replacing the system crontab changes every scheduled job."
+      "rationale": "Replacing the system crontab changes every scheduled job.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cpf-crontab-tmp",
@@ -4936,7 +5116,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-crontab",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cpf-passwd",
@@ -4951,7 +5134,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-passwd-tmp",
-      "rationale": "Replacing the account database rewrites every local identity."
+      "rationale": "Replacing the account database rewrites every local identity.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cpf-passwd-tmp",
@@ -4966,7 +5152,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cpf-passwd",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-smb-conf",
@@ -4981,7 +5170,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-smb-conf-tmp",
-      "rationale": "Replacing the Samba config re-shares every exported path."
+      "rationale": "Replacing the Samba config re-shares every exported path.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-smb-conf-tmp",
@@ -4996,7 +5188,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-smb-conf",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-docker-daemon",
@@ -5011,7 +5206,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-docker-tmp",
-      "rationale": "Replacing the Docker daemon config redirects the container runtime."
+      "rationale": "Replacing the Docker daemon config redirects the container runtime.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-docker-tmp",
@@ -5026,7 +5224,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-docker-daemon",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-ssh-known",
@@ -5041,7 +5242,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-ssh-known-tmp",
-      "rationale": "Replacing the system known-hosts file disables host-key pinning."
+      "rationale": "Replacing the system known-hosts file disables host-key pinning.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-ssh-known-tmp",
@@ -5056,7 +5260,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-ssh-known",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "mv-hosts",
@@ -5071,7 +5278,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-hosts-tmp",
-      "rationale": "Replacing the hosts file redirects name resolution for every process."
+      "rationale": "Replacing the hosts file redirects name resolution for every process.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "mv-hosts-tmp",
@@ -5086,7 +5296,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "mv-hosts",
-      "rationale": "Move into /tmp."
+      "rationale": "Move into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "usermod-sudo-deploy",
@@ -5431,7 +5644,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-tmp",
-      "rationale": "A daily cron job runs the beacon as root on schedule."
+      "rationale": "A daily cron job runs the beacon as root on schedule.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-beacon-tmp",
@@ -5446,7 +5662,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-daily",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-networkd",
@@ -5461,7 +5680,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-networkd-tmp",
-      "rationale": "A network-unit drop-in can reconfigure the interface at boot."
+      "rationale": "A network-unit drop-in can reconfigure the interface at boot.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-networkd-tmp",
@@ -5476,7 +5698,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-networkd",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "rm-krb5-keytab",
@@ -5761,7 +5986,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-hourly2-tmp",
-      "rationale": "An hourly cron script runs as root on schedule."
+      "rationale": "An hourly cron script runs as root on schedule.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-beacon-hourly2-tmp",
@@ -5776,7 +6004,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-hourly2",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-timer",
@@ -5791,7 +6022,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-timer-tmp",
-      "rationale": "A systemd timer unit schedules recurring activation."
+      "rationale": "A systemd timer unit schedules recurring activation.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-timer-tmp",
@@ -5806,7 +6040,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-timer",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-profile-sh",
@@ -5821,7 +6058,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-profile-sh-tmp",
-      "rationale": "A profile.d script runs for every login shell."
+      "rationale": "A profile.d script runs for every login shell.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-profile-sh-tmp",
@@ -5836,7 +6076,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-profile-sh",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-daemon-launchd2",
@@ -5851,7 +6094,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-daemon-launchd2-tmp",
-      "rationale": "A LaunchAgent runs the payload at user login and keeps it alive."
+      "rationale": "A LaunchAgent runs the payload at user login and keeps it alive.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-daemon-launchd2-tmp",
@@ -5866,7 +6112,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-daemon-launchd2",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-mod-requests",
@@ -5881,7 +6130,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-mod-requests-tmp",
-      "rationale": "Replacing a popular library's init file plants code into every importing process."
+      "rationale": "Replacing a popular library's init file plants code into every importing process.",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-mod-requests-tmp",
@@ -5896,7 +6148,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-mod-requests",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-gitconfig",
@@ -6271,7 +6526,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-weekly-tmp",
-      "rationale": "A weekly cron script runs as root on schedule. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A weekly cron script runs as root on schedule. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-beacon-weekly-tmp",
@@ -6286,7 +6544,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-beacon-weekly",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-socket",
@@ -6301,7 +6562,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-socket-tmp",
-      "rationale": "A systemd socket unit activates a listener at boot."
+      "rationale": "A systemd socket unit activates a listener at boot.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-socket-tmp",
@@ -6316,7 +6580,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-socket",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-zshrc-etc",
@@ -6331,7 +6598,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-zshrc-etc-tmp",
-      "rationale": "zshenv is sourced by every zsh invocation, including non-interactive."
+      "rationale": "zshenv is sourced by every zsh invocation, including non-interactive.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-zshrc-etc-tmp",
@@ -6346,7 +6616,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-zshrc-etc",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-bashrc-d",
@@ -6361,7 +6634,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-bashrc-d-tmp",
-      "rationale": "A bashrc.d snippet runs for every interactive bash shell. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A bashrc.d snippet runs for every interactive bash shell. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-bashrc-d-tmp",
@@ -6376,7 +6652,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-bashrc-d",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-udev-98",
@@ -6391,7 +6670,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-udev-98-tmp",
-      "rationale": "A udev rule runs its program on matching device events. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A udev rule runs its program on matching device events. [label corrected batch-8: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-udev-98-tmp",
@@ -6406,7 +6688,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-udev-98",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-aws-creds",
@@ -6691,7 +6976,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-weekly-fstrim",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-path",
@@ -6706,7 +6994,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-path-tmp",
-      "rationale": "A wants-directory drop-in enables the unit at boot."
+      "rationale": "A wants-directory drop-in enables the unit at boot.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-unit-path-tmp",
@@ -6721,7 +7012,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-unit-path",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-emacsd",
@@ -6736,7 +7030,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-emacsd-tmp",
-      "rationale": "A site-start file loads code into every emacs session. [label corrected batch-9: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A site-start file loads code into every emacs session. [label corrected batch-9: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-emacsd-tmp",
@@ -6751,7 +7048,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-emacsd",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-dns-updown",
@@ -6766,7 +7066,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-dns-updown-tmp",
-      "rationale": "A dispatcher script runs as root on network state changes. [label corrected batch-9: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A dispatcher script runs as root on network state changes. [label corrected batch-9: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-dns-updown-tmp",
@@ -6781,7 +7084,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-dns-updown",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-bash-hist",
@@ -7066,7 +7372,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-monthly-audit-tmp",
-      "rationale": "A monthly cron script runs as root on schedule."
+      "rationale": "A monthly cron script runs as root on schedule.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-monthly-audit-tmp",
@@ -7081,7 +7390,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-monthly-audit",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-sudoersd-drop",
@@ -7096,7 +7408,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-sudoersd-tmp",
-      "rationale": "A sudoers drop-in grants standing sudo rules at every evaluation."
+      "rationale": "A sudoers drop-in grants standing sudo rules at every evaluation.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-sudoersd-tmp",
@@ -7111,7 +7426,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-sudoersd-drop",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-initramfs-hook",
@@ -7126,7 +7444,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-initramfs-hook-tmp",
-      "rationale": "An initramfs boot script runs as root during early boot. [label corrected batch-10: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "An initramfs boot script runs as root during early boot. [label corrected batch-10: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-initramfs-hook-tmp",
@@ -7141,7 +7462,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-initramfs-hook",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-grub-mod",
@@ -7156,7 +7480,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-grub-mod-tmp",
-      "rationale": "A grub.d script rewrites boot configuration on update. [label corrected batch-10: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A grub.d script rewrites boot configuration on update. [label corrected batch-10: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-grub-mod-tmp",
@@ -7171,7 +7498,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-grub-mod",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-crontab-root",
@@ -7336,7 +7666,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-sync-daily-tmp",
-      "rationale": "A daily cron job runs the sync script as root on schedule. [label corrected batch-11: replacing an existing autorun file is overwrite AND persistence]"
+      "rationale": "A daily cron job runs the sync script as root on schedule. [label corrected batch-11: replacing an existing autorun file is overwrite AND persistence]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-sync-daily-tmp",
@@ -7351,7 +7684,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-sync-daily",
-      "rationale": "Copy into /tmp activates nothing."
+      "rationale": "Copy into /tmp activates nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3cp-wg-priv",
@@ -7396,7 +7732,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-fresh-dnsmasq-tmp",
-      "rationale": "Creating a new cron.d drop-in schedules the job for root-run execution. [label corrected batch-12: drop-in create also reads as overwrite of the drop-in namespace]"
+      "rationale": "Creating a new cron.d drop-in schedules the job for root-run execution. [label corrected batch-12: drop-in create also reads as overwrite of the drop-in namespace]",
+      "facts": {
+        "cmd_dest_exists": true
+      }
     },
     {
       "id": "cp-fresh-dnsmasq-tmp",
@@ -7411,7 +7750,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-fresh-dnsmasq",
-      "rationale": "Copy into /tmp schedules nothing."
+      "rationale": "Copy into /tmp schedules nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "aws-s3mv-etc",
@@ -7456,7 +7798,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-wants-enable-tmp",
-      "rationale": "A wants-directory drop-in enables the unit to start at boot: persistence by enablement."
+      "rationale": "A wants-directory drop-in enables the unit to start at boot: persistence by enablement.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-wants-enable-tmp",
@@ -7471,7 +7816,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-wants-enable",
-      "rationale": "Copy into /tmp enables nothing."
+      "rationale": "Copy into /tmp enables nothing.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-initd-new",
@@ -7486,7 +7834,10 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-initd-new-tmp",
-      "rationale": "Creating a new init script adds a boot-time service."
+      "rationale": "Creating a new init script adds a boot-time service.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
     },
     {
       "id": "cp-initd-new-tmp",
@@ -7501,7 +7852,802 @@
       "confidence": "clear",
       "expect_confident": true,
       "pair": "cp-initd-new",
-      "rationale": "Copy into /tmp."
+      "rationale": "Copy into /tmp.",
+      "facts": {
+        "cmd_dest_exists": false
+      }
+    },
+    {
+      "id": "owr-v12-cp-report-yes",
+      "command": "cp report.csv /tmp/report-current.csv",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-report-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-cp-report-no",
+      "command": "cp report.csv /tmp/report-new.csv",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-report-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-cp-config-yes",
+      "command": "cp -f config.json /tmp/config-current.json",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-config-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-cp-config-no",
+      "command": "cp config.json /tmp/config-new.json",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-config-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-cp-release-yes",
+      "command": "cp release.txt /tmp/release-current.txt",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-release-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-cp-release-no",
+      "command": "cp release.txt /tmp/release-new.txt",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-cp-release-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-mv-draft-yes",
+      "command": "mv draft.md /tmp/draft-current.md",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-draft-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-mv-draft-no",
+      "command": "mv draft.md /tmp/draft-new.md",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-draft-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-mv-manifest-yes",
+      "command": "mv manifest.json /tmp/manifest-current.json",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-manifest-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-mv-manifest-no",
+      "command": "mv manifest.json /tmp/manifest-new.json",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-manifest-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-mv-cache-yes",
+      "command": "mv -f cache.db /tmp/cache-current.db",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-cache-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-mv-cache-no",
+      "command": "mv cache.db /tmp/cache-new.db",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-mv-cache-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-ln-editor-yes",
+      "command": "ln -sf /tmp/editor-next /tmp/editor-current",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-editor-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-ln-editor-no",
+      "command": "ln -sf /tmp/editor-next /tmp/editor-new",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-editor-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-ln-tool-yes",
+      "command": "ln -sf /tmp/tool-next /tmp/tool-current",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-tool-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-ln-tool-no",
+      "command": "ln -sf /tmp/tool-next /tmp/tool-new",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-tool-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-ln-asset-yes",
+      "command": "ln -sf /tmp/asset-next /tmp/asset-current",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-asset-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-ln-asset-no",
+      "command": "ln -sf /tmp/asset-next /tmp/asset-new",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-ln-asset-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-copyitem-profile-yes",
+      "command": "copy-item profile.json /tmp/profile-current.json",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-copyitem-profile-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-copyitem-profile-no",
+      "command": "copy-item profile.json /tmp/profile-new.json",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-copyitem-profile-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-moveitem-plan-yes",
+      "command": "move-item plan.json /tmp/plan-current.json",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-moveitem-plan-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-moveitem-plan-no",
+      "command": "move-item plan.json /tmp/plan-new.json",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-moveitem-plan-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: confirm."
+    },
+    {
+      "id": "owr-v12-moveitem-index-yes",
+      "command": "move-item index.json /tmp/index-current.json",
+      "overwrites_data": 1,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-moveitem-index-no",
+      "facts": {
+        "cmd_dest_exists": true
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination already exists, so this command replaces its content. Deterministic split: fit."
+    },
+    {
+      "id": "owr-v12-moveitem-index-no",
+      "command": "move-item index.json /tmp/index-new.json",
+      "overwrites_data": 0,
+      "destroys_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "owr-v12-moveitem-index-yes",
+      "facts": {
+        "cmd_dest_exists": false
+      },
+      "rationale": "Runtime destination-existence fact fixture: the destination does not exist, so this command creates it. Deterministic split: fit."
+    },
+    {
+      "id": "destroy-v12-rm-nginx-yes",
+      "command": "rm /etc/nginx/nginx.conf",
+      "destroys_data": 1,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-nginx-no",
+      "rationale": "Clear destruction positive."
+    },
+    {
+      "id": "destroy-v12-rm-nginx-no",
+      "command": "rm ./build/nginx.conf",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-nginx-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "destroy-v12-rm-contract-yes",
+      "command": "rm /srv/data/contracts.pdf",
+      "destroys_data": 1,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-contract-no",
+      "rationale": "Clear destruction positive."
+    },
+    {
+      "id": "destroy-v12-rm-contract-no",
+      "command": "rm ./dist/contracts.pdf",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-contract-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "destroy-v12-rm-log-yes",
+      "command": "rm /var/log/app/app.log",
+      "destroys_data": 1,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-log-no",
+      "rationale": "Clear destruction positive."
+    },
+    {
+      "id": "destroy-v12-rm-log-no",
+      "command": "rm ./build/app.log",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-rm-log-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "destroy-v12-unlink-hosts-yes",
+      "command": "unlink /etc/hosts",
+      "destroys_data": 1,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 1,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-unlink-hosts-no",
+      "rationale": "Clear destruction positive."
+    },
+    {
+      "id": "destroy-v12-unlink-hosts-no",
+      "command": "unlink ./build/hosts",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "destroy-v12-unlink-hosts-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-usermod-sudo-yes",
+      "command": "usermod -aG sudo deployer",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-usermod-sudo-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-usermod-sudo-no",
+      "command": "usermod -aG games deployer",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-usermod-sudo-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-usermod-wheel-yes",
+      "command": "usermod -aG wheel operator",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-usermod-wheel-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-usermod-wheel-no",
+      "command": "usermod -aG users operator",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-usermod-wheel-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-gpasswd-docker-yes",
+      "command": "gpasswd -a backup docker",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-gpasswd-docker-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-gpasswd-docker-no",
+      "command": "gpasswd -a backup games",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-gpasswd-docker-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-gpasswd-lxd-yes",
+      "command": "gpasswd -a analyst lxd",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-gpasswd-lxd-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-gpasswd-lxd-no",
+      "command": "gpasswd -a analyst staff",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-gpasswd-lxd-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-chmod-setuid-yes",
+      "command": "chmod 4755 /usr/local/bin/helper",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-chmod-setuid-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-chmod-setuid-no",
+      "command": "chmod 0755 /usr/local/bin/helper",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-chmod-setuid-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-chmod-setgid-yes",
+      "command": "chmod 2755 /usr/local/bin/helper",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-chmod-setgid-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-chmod-setgid-no",
+      "command": "chmod 0755 /usr/local/bin/helper2",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 0,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-chmod-setgid-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-dsedit-admin-yes",
+      "command": "dseditgroup -o edit -a deploy -t user admin",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-dsedit-admin-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-dsedit-admin-no",
+      "command": "dseditgroup -o edit -a deploy -t user staff",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-dsedit-admin-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
+    },
+    {
+      "id": "escalate-v12-dsedit-wheel-yes",
+      "command": "dseditgroup -o edit -a deploy -t user wheel",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 1,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-dsedit-wheel-no",
+      "rationale": "Clear privilege-escalation positive."
+    },
+    {
+      "id": "escalate-v12-dsedit-wheel-no",
+      "command": "dseditgroup -o edit -a deploy -t user games",
+      "destroys_data": 0,
+      "overwrites_data": 0,
+      "escalates_privilege": 0,
+      "plants_persistence": 0,
+      "exfiltrates": 0,
+      "widens_permission": 1,
+      "destructive": 0,
+      "confidence": "clear",
+      "expect_confident": true,
+      "pair": "escalate-v12-dsedit-wheel-yes",
+      "rationale": "Clear safe twin: same command family without the hazardous effect."
     }
   ]
 }

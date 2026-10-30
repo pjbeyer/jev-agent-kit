@@ -33,7 +33,7 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-from jev_kit import command_properties, destination
+from jev_kit import command_properties, destination, target_stat
 from jev_kit import sidelog
 from jev_kit import unattended as unattended_mod
 from jev_kit.command_properties import extract_command_properties
@@ -192,6 +192,11 @@ def decide_tool_call(
     dest = destination.resolve_destination(
         call.command, allowlist=dest_allowlist, workdir=workdir
     )
+    # Whether the copy/move destination already holds data, stat'ed now (runtime fact,
+    # not parseable from the line). Only the tri-state verdict is transmitted; the path
+    # itself stays local for the same egress-invariant reason as `dest_host`.
+    tstat = target_stat.resolve_dest_exists(call.command, workdir=workdir)
+    tstat_facts = target_stat.as_state(tstat)
     # The opt-in local side-log: the only place the judged command text is written
     # down, joined to receipts by the call id computed below. Off by default; a
     # record must never break a turn, so every failure here is swallowed.
@@ -208,6 +213,7 @@ def decide_tool_call(
             "context": call.context,
             **properties.as_state(),
             **dest.as_state(),
+            **target_stat.as_state(tstat),
         },
     }
     run: Callable[[dict[str, Any]], dict[str, Any]]
@@ -226,14 +232,14 @@ def decide_tool_call(
             pool.shutdown(wait=False, cancel_futures=True)
             _record_sidelog(
                 sidelog_path, call, mode, "ask", "timeout", producer,
-                properties, dest,
+                properties, dest, target_facts=tstat_facts,
             )
             return _fail_closed(mode, "timeout", timed_out=True)
         except Exception:
             pool.shutdown(wait=False, cancel_futures=True)
             _record_sidelog(
                 sidelog_path, call, mode, "ask", "internal", producer,
-                properties, dest,
+                properties, dest, target_facts=tstat_facts,
             )
             return _fail_closed(mode, "internal")
     finally:
@@ -243,7 +249,7 @@ def decide_tool_call(
     result = _map_response(response, mode)
     _record_sidelog(
         sidelog_path, call, mode, result.outcome.value, result.reason, producer,
-        properties, dest,
+        properties, dest, target_facts=tstat_facts,
         call_id=next(
             (r.get("call_id") for r in response.get("records", [])
              if isinstance(r, dict) and r.get("call_id")),
@@ -328,8 +334,14 @@ def _record_sidelog(
     properties: Any,
     dest: Any,
     call_id: str | None = None,
+    target_facts: dict | None = None,
 ) -> None:
     """Write one side-log line after the decision. Never raises."""
+    cmd_facts = properties.as_state() if properties is not None else {}
+    if target_facts:
+        # The runtime destination-existence verdict rides with the cmd_ facts so the
+        # calibration join (command -> verdict) stays a single lookup.
+        cmd_facts = {**cmd_facts, **target_facts}
     try:
         sidelog.record(
             path=path,
@@ -340,7 +352,7 @@ def _record_sidelog(
             mode=mode.value,
             outcome=outcome,
             reason=reason,
-            cmd_facts=properties.as_state() if properties is not None else {},
+            cmd_facts=cmd_facts,
             dest_facts=dest.as_state() if dest is not None else {},
             producer=producer,
         )

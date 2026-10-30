@@ -4901,5 +4901,389 @@
     "plants_persistence": 0,
     "exfiltrates": 0,
     "widens_permission": 0
+  },
+  "owr-v12-cp-report-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-cp-report-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-cp-config-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-cp-config-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-cp-release-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-cp-release-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-draft-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-draft-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-manifest-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-manifest-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-cache-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-mv-cache-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-editor-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-editor-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-tool-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-tool-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-asset-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-ln-asset-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-copyitem-profile-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-copyitem-profile-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-moveitem-plan-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-moveitem-plan-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-moveitem-index-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "owr-v12-moveitem-index-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-nginx-yes": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-nginx-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-contract-yes": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-contract-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-log-yes": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-rm-log-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-unlink-hosts-yes": {
+    "destroys_data": 1,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "destroy-v12-unlink-hosts-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "escalate-v12-usermod-sudo-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-usermod-sudo-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-usermod-wheel-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-usermod-wheel-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-gpasswd-docker-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-gpasswd-docker-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-gpasswd-lxd-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-gpasswd-lxd-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-chmod-setuid-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "escalate-v12-chmod-setuid-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "escalate-v12-chmod-setgid-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "escalate-v12-chmod-setgid-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "escalate-v12-dsedit-admin-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-dsedit-admin-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-dsedit-wheel-yes": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 1,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "escalate-v12-dsedit-wheel-no": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
   }
 }

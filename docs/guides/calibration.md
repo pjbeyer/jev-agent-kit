@@ -188,3 +188,27 @@ and use its reason to choose the next step:
 - The question may simply not be one Jev answers well. Recording `never_auto_accept` for its
   fingerprint keeps it advisory under the built-in policy. Direct consumers still choose
   how to use the returned answers.
+
+## Adding a runtime fact
+
+Some decisions turn on machine state that is not in the command line. `cmd_dest_exists` is
+the shipped example: whether a copy/move/link destination already holds data, stat'ed at
+judgment time. The hook computes it locally and ships only the tri-state verdict in the
+request state; the path itself stays on the machine, same as `dest_host`.
+
+Adding one has a fixed cost, because the fact is part of the question fingerprint:
+
+1. Add the fact to `state_schema` in the question set (`kind: flag`) and bump the version.
+   Changing any field changes every fingerprint for that question set.
+2. Compute it in the hook (`src/jev_kit/`), inject it into the request state, and log it in
+   the side log next to the other `cmd_*` facts.
+3. Extend the calibration harness so static suites can carry labeled `facts` per case
+   (runtime twins: same command, two labeled machine states).
+4. Re-run the whole suite in shadow, rebuild the registry, and re-run a live pilot against
+   the new registry. Bounds from the old fingerprint do not carry over.
+5. Update the reference contract table (`evidence-contracts.md`) so the structural test
+   binding the index to the shipped schema passes.
+
+Treat null as possibly-true in instructions, and make sure the instruction text tells the
+model exactly what null means. The model acts only on what the instructions and facts say,
+never on the file system it cannot see.
