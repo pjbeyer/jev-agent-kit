@@ -1,0 +1,23 @@
+tools/calibration/shadow_pilot/run_pilot.py
+  s_dd517c68a76f60::t_7c0becc966dd6e 64-71,73
+  s_dd517c68a76f60::t_29a58a3b0e7a1b 176-181
+  s_dd517c68a76f60::t_1902fa43994bef 72
+tools/calibration/build_registry.py
+  s_dd517c68a76f60::t_b5eda7b5618a0b 120-123,125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "a8bc796606ee4cfa800beef2ab211257a1e7ecd7",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
