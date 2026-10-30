@@ -35,7 +35,28 @@ from typing import Any
 #: the side-log is disabled: nothing is written, ever.
 SIDELOG_PATH_ENV_VAR = "JEV_KIT_SIDELOG_PATH"
 
+#: Environment variable labelling the traffic class of the running process.
+#: Test suites and calibration batteries set it to `test`; production sessions
+#: leave it unset and records fall back to `real`. Written on every record so
+#: suite traffic that reaches an operator log by accident stays greppable and
+#: excludable — the enforce-era forensics were poisoned by exactly such leak.
+TRAFFIC_ENV_VAR = "JEV_KIT_TRAFFIC"
+TRAFFIC_REAL = "real"
+
 _OFF = frozenset({"off", "none", "false"})
+
+
+def traffic_from_env(environ: Any = None) -> str:
+    """The traffic class label for this process. Never raises."""
+    try:
+        env = os.environ if environ is None else environ
+        if hasattr(env, "get"):
+            value = env.get(TRAFFIC_ENV_VAR, "")
+            if isinstance(value, str) and value.strip():
+                return value.strip()
+    except Exception:
+        pass
+    return TRAFFIC_REAL
 
 
 def path_from_env(environ: Any = None) -> Path | None:
@@ -67,11 +88,17 @@ def record(
     cmd_facts: dict,
     dest_facts: dict,
     producer: str | None = None,
+    traffic: str | None = None,
+    would_outcome: str | None = None,
+    would_reason: str | None = None,
 ) -> None:
     """Append one side-log line. Never raises.
 
     Written after the decision, so `outcome`/`reason` reflect what the gate
     actually did, and the line joins to the receipt batch via `call_id`.
+    In shadow mode `would_outcome`/`would_reason` carry the outcome enforce
+    would have produced for the same response, so a shadow corpus measures the
+    enforce ask-rate directly instead of recording a vacuous all-allow log.
     """
     if path is None:
         return
@@ -88,6 +115,9 @@ def record(
             "cmd_facts": cmd_facts,
             "dest_facts": dest_facts,
             **({"producer": producer} if producer else {}),
+            "traffic": traffic if traffic else traffic_from_env(),
+            **({"would_outcome": would_outcome} if would_outcome else {}),
+            **({"would_reason": would_reason} if would_reason else {}),
         }
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as fh:

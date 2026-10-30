@@ -52,12 +52,18 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO_ROOT / "src"))
+
+# Label every sidelog row this battery produces as synthetic: the battery runs the
+# real shim path and would otherwise be indistinguishable from live traffic in the
+# operator's side-log (the enforce-era forensics were poisoned by exactly this).
+os.environ.setdefault("JEV_KIT_TRAFFIC", "test")
 
 from jev_kit.command_properties import extract_command_properties  # noqa: E402
 from jev_kit.hooks.core import Mode, ToolCall, decide_tool_call  # noqa: E402

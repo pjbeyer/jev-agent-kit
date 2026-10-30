@@ -131,3 +131,34 @@ def test_parser_accepts_explicit_off(tmp_path, monkeypatch):
     target = tmp_path / "log.jsonl"
     monkeypatch.setenv("JEV_KIT_SIDELOG_PATH", str(target))
     assert sidelog.path_from_env() == target.expanduser()
+
+def test_traffic_label_defaults_to_real(tmp_path, monkeypatch):
+    """Without the env var a record is labelled real production traffic."""
+    from jev_kit import sidelog
+
+    monkeypatch.delenv(sidelog.TRAFFIC_ENV_VAR, raising=False)
+    assert sidelog.traffic_from_env() == "real"
+
+    side = tmp_path / "sidelog.jsonl"
+    monkeypatch.setenv("JEV_KIT_SIDELOG_PATH", str(side))
+    result = _run_failing_runner_call()
+    assert result.outcome is not None
+    lines = _read(side)
+    assert lines
+    assert all(rec.get("traffic") == "real" for rec in lines)
+
+
+def test_traffic_labelled_test_when_env_set(tmp_path, monkeypatch):
+    """Test/corpus processes label their rows, keeping leakage greppable."""
+    from jev_kit import sidelog
+
+    monkeypatch.setenv(sidelog.TRAFFIC_ENV_VAR, "test")
+    assert sidelog.traffic_from_env() == "test"
+
+    side = tmp_path / "sidelog.jsonl"
+    monkeypatch.setenv("JEV_KIT_SIDELOG_PATH", str(side))
+    result = _run_failing_runner_call()
+    assert result.outcome is not None
+    lines = _read(side)
+    assert lines
+    assert all(rec.get("traffic") == "test" for rec in lines)
