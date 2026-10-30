@@ -208,11 +208,26 @@ def test_unconfident_command_sends_null_properties(tmp_path: Path) -> None:
 
 @pytest.mark.parametrize("host", HOSTS)
 @pytest.mark.parametrize(
-    "command", ["rm -rf $HOME", "echo 'x'", "bash -c ls", "git nuke", "ls | sh", "x" * 5000]
+    "command", ["rm -rf $HOME", "bash -c ls", "git nuke", "ls | sh", "x" * 5000]
 )
 def test_enforce_never_allows_an_unconfident_command(host: str, command: str) -> None:
     # Even when every gate answer is a clean, allow-listed accept, unknown means ask.
+    # Amended 2026-10-30 (owner decision, option B): "echo 'x'" is no longer on this
+    # list — a quoted line whose locally computed facts prove no hazard and no egress
+    # channel takes the local no-egress fast path and allows; see
+    # test_hooks_core.py::test_fast_path_*. Every OTHER unconfident shape (unknown
+    # program, garbage, redirection of authority like `ls | sh`) still never allows.
     assert _run_host(host, command, Mode.ENFORCE, _all_accept) is HookOutcome.ASK
+
+
+@pytest.mark.parametrize("host", HOSTS)
+def test_enforce_harmless_quoted_command_takes_the_local_fast_path(host: str) -> None:
+    # The amended half of the invariant: a quoted command with no hazard fact and no
+    # egress channel is decided locally, without consulting the gate at all.
+    def _boom(request: dict[str, Any]) -> dict[str, Any]:
+        raise AssertionError("the gate must not be consulted on the fast path")
+
+    assert _run_host(host, "echo 'x'", Mode.ENFORCE, _boom) is HookOutcome.ALLOW
 
 
 @pytest.mark.parametrize("host", HOSTS)

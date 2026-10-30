@@ -26,6 +26,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import re
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -158,6 +159,102 @@ def producer_id(name: str, shim_file: str) -> str:
     return f"hook.{name}@src:{hashlib.sha256(normalized).hexdigest()[:28]}"
 
 
+#: The cmd_ facts that, when True, mean the model must judge even though the line's
+#: syntax is unparseable: any affirmative hazard keeps the call on the normal path.
+#: Facts left out (targets_absolute_path, targets_regenerable_path, validates_only) are
+#: not hazards by themselves.
+_LOCAL_HAZARD_FACTS = (
+    "cmd_recursive_delete",
+    "cmd_force_flag",
+    "cmd_targets_root_or_system_path",
+    "cmd_uses_elevation",
+    "cmd_network_download",
+    "cmd_pipes_to_shell",
+    "cmd_modifies_permissions",
+    "cmd_git_history_rewrite",
+    "cmd_package_install",
+    "cmd_network_upload",
+    "cmd_grants_write_access",
+    "cmd_targets_autorun_path",
+    "cmd_grants_authority",
+    "cmd_grants_privileged_group",
+    "cmd_grants_setuid",
+)
+
+# `targets_home_directory` means a home path APPEARS in the line, not that the line
+# writes there; reads (cat/ls/head of ~/.local/...) are ordinary agent work. For the
+# fast path it counts as a hazard only when a write-shaped verb is present. sed/perl
+# write only with an in-place flag (-i/-pi/-pe with -i); the bare verbs always write.
+_LOCAL_WRITE_VERB = re.compile(
+    r"\b(?:cp|mv|rm|rmdir|chmod|chown|chgrp|touch|install|dd|truncate|ln|mkdir|tee)\b"
+)
+# sed/perl write only with an in-place flag; `-pi`/`-ipe` glue the i into a combined
+# short-option token, so match an `i` inside any leading dashed option of sed/perl.
+_LOCAL_INPLACE_FLAG = re.compile(r"\b(?:sed|perl)\b[^&;|`]*\s-\w*i")
+
+#: The compound-syntax shape the egress reducer refuses (egress.py `_CMD_CONTROL`,
+#: minus `<`/`>` which this predicate excludes separately). Duplicated here rather
+#: than imported because egress is the child's module, not the hook's, and the two
+#: must agree only in the direction "control char present -> refused class".
+_LOCAL_CMD_CONTROL = re.compile(r"[;&|`\n]|\$\(")
+
+#: Reason recorded in the side-log when the local fast path decides a call.
+LOCAL_FAST_PATH_REASON = "local_no_egress_fast_path"
+
+
+def _local_no_egress_verdict(
+    command: str, properties: Any, dest: destination.Destination
+) -> bool:
+    """True when the locally computed facts prove the call needs no judgment.
+
+    For lines the egress reducer refuses (compound, quoted, escaped — ADR 0005), enforce
+    asks on every call, and measured live traffic showed ~40% asking, nearly all of it
+    pure-local (`cd X && bd create ...`, `ps | head`). The model cannot add anything when
+    the whole line was already read locally and no hazard fact is affirmative:
+
+    - the line is in a class the reducer refuses: compound syntax (`; & | backtick
+      newline $(`) or quoting/escapes/expansion that makes the parse unconfident.
+      A confident, simple command stays on the judged path so the calibrated
+      population keeps flowing, and so does any OTHER unreadable line (an unreadable
+      command never reaches ALLOW in enforce — the invariant in
+      test_enforce_unmodeled.py): the fast path fires only on syntax the reducer
+      refuses, not on every unconfident line.
+    - no redirect (`<`/`>`) anywhere: a redirect is a local data flow the facts do not
+      model, so it stays on the judged path;
+    - no cmd_ hazard fact is True (None = unknown is accepted here only because the
+      fact extractors that return None for these lines scanned the FULL line and found
+      nothing affirmative);
+    - a home path plus a write-shaped verb is a hazard (sed/perl only with an in-place
+      flag); a home path on its own is ordinary reads and navigation;
+    - no egress destination is recognized anywhere in the line (`dest.known` False):
+      a URL, host or remote target would have set it True.
+
+    Any doubt returns False and the call proceeds through the normal gate path.
+    """
+    if "<" in command or ">" in command:
+        return False
+    facts = properties.as_state()
+    # Only the refused classes fast-path: compound syntax, or an unconfident parse
+    # CAUSED BY quoting/escape/expansion (a quote character present). Any other
+    # unconfident line (an unknown program, garbage, `bash -c`) stays judged: an
+    # unreadable command never reaches ALLOW in enforce.
+    refused = bool(_LOCAL_CMD_CONTROL.search(command)) or (
+        not properties.parse_confident and ('"' in command or "'" in command)
+    )
+    if not refused:
+        return False
+    if any(facts.get(name) is True for name in _LOCAL_HAZARD_FACTS):
+        return False
+    if facts.get("cmd_targets_home_directory") is True:
+        # A home path appears: reads are fine, writes are not. sed/perl write only
+        # with an in-place flag; the other write verbs always write.
+        if _LOCAL_WRITE_VERB.search(command) or _LOCAL_INPLACE_FLAG.search(command):
+            return False
+    if dest.known:
+        return False
+    return True
+
+
 def decide_tool_call(
     call: ToolCall,
     *,
@@ -201,6 +298,25 @@ def decide_tool_call(
     # down, joined to receipts by the call id computed below. Off by default; a
     # record must never break a turn, so every failure here is swallowed.
     sidelog_path = sidelog.path_from_env()
+    # Local fast path (owner decision 2026-10-30, option B): when the whole line was
+    # read locally and proves no hazard and no egress channel, decide here without a
+    # model call. This is the fix for the enforce ask-storm on compound pure-local
+    # commands the egress reducer refuses. It is an ALLOW, so the unattended policy is
+    # not consulted (an allow is not an escalation). Both modes take it: shadow's
+    # outcome is allow either way, and the side-log records the fast path as the
+    # reason in both, keeping the shadow corpus an honest measurement.
+    if _local_no_egress_verdict(call.command, properties, dest):
+        # In shadow the would-be enforce outcome is this same fast path, so record it
+        # as would_outcome/would_reason too — the shadow corpus must measure enforce
+        # including the fast path, not show a bare allow with no reason.
+        _record_sidelog(
+            sidelog_path, call, mode, HookOutcome.ALLOW.value,
+            LOCAL_FAST_PATH_REASON, producer, properties, dest,
+            target_facts=tstat_facts,
+            would_outcome=HookOutcome.ALLOW if mode is Mode.SHADOW else None,
+            would_reason=LOCAL_FAST_PATH_REASON if mode is Mode.SHADOW else None,
+        )
+        return HookResult(HookOutcome.ALLOW, None, LOCAL_FAST_PATH_REASON, False)
     request = {
         "schema_version": 1,
         "op": "decide",
@@ -247,6 +363,23 @@ def decide_tool_call(
         pool.shutdown(wait=False, cancel_futures=True)
 
     result = _map_response(response, mode)
+    # Shadow rehearses enforce honestly: compute the outcome enforce would have produced
+    # for this same response, including its post-map rules, and write it to the side-log
+    # while still allowing (shadow never changes host behavior). Before this, the shadow
+    # collapse discarded fail reasons, so a sidelog showed ~100% allow even when enforce
+    # would have asked on nearly every non-trivial command — the blind spot that let an
+    # unstable enforce configuration ship. `would_outcome`/`would_reason` make the
+    # shadow corpus a direct measurement of the enforce ask-rate.
+    would_outcome: HookOutcome | None = None
+    would_reason: str | None = None
+    if mode is Mode.SHADOW:
+        would = _map_response(response, Mode.ENFORCE)
+        if would.outcome is HookOutcome.ALLOW and not properties.parse_confident:
+            # Mirror the enforce-only rule below: unknown is risky, never safe.
+            would = HookResult(
+                HookOutcome.ASK, "ask", "command_parse_unconfident", would.is_mock
+            )
+        would_outcome, would_reason = would.outcome, would.reason
     _record_sidelog(
         sidelog_path, call, mode, result.outcome.value, result.reason, producer,
         properties, dest, target_facts=tstat_facts,
@@ -255,6 +388,8 @@ def decide_tool_call(
              if isinstance(r, dict) and r.get("call_id")),
             None,
         ),
+        would_outcome=would_outcome,
+        would_reason=would_reason,
     )
     if mode is Mode.ENFORCE and not properties.parse_confident and result.outcome is not (
         HookOutcome.ASK
@@ -335,6 +470,8 @@ def _record_sidelog(
     dest: Any,
     call_id: str | None = None,
     target_facts: dict | None = None,
+    would_outcome: HookOutcome | None = None,
+    would_reason: str | None = None,
 ) -> None:
     """Write one side-log line after the decision. Never raises."""
     cmd_facts = properties.as_state() if properties is not None else {}
@@ -355,6 +492,8 @@ def _record_sidelog(
             cmd_facts=cmd_facts,
             dest_facts=dest.as_state() if dest is not None else {},
             producer=producer,
+            would_outcome=would_outcome.value if would_outcome else None,
+            would_reason=would_reason,
         )
     except Exception:  # a record must never break a turn
         pass
