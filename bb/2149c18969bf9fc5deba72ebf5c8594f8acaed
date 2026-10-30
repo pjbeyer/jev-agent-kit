@@ -1,0 +1,39 @@
+tests/test_command_properties_gate.py
+  s_dd517c68a76f60::t_b2ba7ce39bc956 211,215-219,223-230
+  s_dd517c68a76f60::t_588025b33c5e9d 231-232
+src/jev_kit/hooks/core.py
+  s_dd517c68a76f60::t_84f70534c23b5b 29
+  s_dd517c68a76f60::t_d457c19295a3d9 191-193
+  s_dd517c68a76f60::t_f66365998d81e8 162-182,194,201-214,222-226,229-236,246-247,253-257
+  s_dd517c68a76f60::t_87f90990c2e2de 183-190
+  s_dd517c68a76f60::t_ae1c0c30a1175e 301-308,312-315,318-319
+  s_dd517c68a76f60::t_937a0816aab824 227-228,245
+  s_dd517c68a76f60::t_5c64e6878d68ff 237-244
+  s_dd517c68a76f60::t_1d9a1763bde72f 309-311,316-317
+  s_dd517c68a76f60::t_50900934ca8e8f 195-200
+  s_dd517c68a76f60::t_a6b18ee3fcca1b 248-252
+  s_dd517c68a76f60::t_4a4a61ce530152 366-382,391-392
+  s_dd517c68a76f60::t_f2f284ceb554fe 473-474,495-496
+  s_dd517c68a76f60::t_35ebce75753178 215-221
+tests/test_hooks_core.py
+  s_dd517c68a76f60::t_c76d4e5d7d84d9 219-306
+  s_dd517c68a76f60::t_aca4e59f0b2d2b 133-176,183-184,188-190,207-218
+  s_dd517c68a76f60::t_e774d00dcfa248 177-182,185-187,191-193,197-199,203-206
+  s_dd517c68a76f60::t_453e7ac1fca7ee 194-196,200-202
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "bb2149c18969bf9fc5deba72ebf5c8594f8acaed",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
