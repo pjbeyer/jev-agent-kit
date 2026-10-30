@@ -117,7 +117,12 @@ def main() -> None:
     import glob
     # Receipts from older question-set versions carry stale fingerprints (any wording change
     # re-keys the question). Only the NEWEST receipt file matches the set being shipped.
+    # Include the kit's own default receipts dir (where run_pilot's live calls actually
+    # write) alongside the legacy calibration dir and the pilot's redirected dir: missing
+    # the real location keys the registry from a stale, unbound receipt.
+    from jev_kit.receipts import receipts_dir
     candidates = [Path.home() / ".local/share/hermes/jev-calibration/receipts",
+                  receipts_dir(),
                   HERE / "shadow_pilot" / "receipts"]
     paths = sorted({str(f) for base in candidates for f in base.glob("*.jsonl")},
                    key=os.path.getmtime)

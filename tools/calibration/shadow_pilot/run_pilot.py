@@ -61,6 +61,16 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from jev_kit.command_properties import extract_command_properties  # noqa: E402
 from jev_kit.hooks.core import Mode, ToolCall, decide_tool_call  # noqa: E402
+from jev_kit.hooks.core import producer_id  # noqa: E402
+
+# The producer identity the production hermes hook computes for itself. Calibration
+# fingerprints must be bound to it or the hook's registry lookups miss (the producer
+# is hashed into every fingerprint by design: state-building code is part of the
+# contract). Kept here rather than imported from jev_kit.hooks.hermes so the pilot
+# does not import the host adapter.
+_HOOK_PRODUCER = producer_id("hermes", str(
+    Path(__file__).resolve().parents[3] / "src" / "jev_kit" / "hooks" / "hermes.py"
+))
 
 QUESTION_SET = REPO_ROOT / "skills" / "jev-runtime" / "questions" / "tool-call-gate.json"
 
@@ -163,6 +173,12 @@ def run(
             mode=Mode.SHADOW,
             question_set_path=str(QUESTION_SET),
             runner=recorder,
+            # Bind the same producer identity the production hook computes (the hermes
+            # shim's bytes plus the state builders'), so the fingerprints scored here
+            # are the fingerprints a registry must hold for the hook to match them.
+            # Without it the registry is keyed to no-producer fingerprints and every
+            # hook-time lookup misses (observed: enforce falls back to uncalibrated).
+            producer=_HOOK_PRODUCER,
         )
         outcomes[result.outcome.value] += 1
         routes[str(result.route)] += 1
