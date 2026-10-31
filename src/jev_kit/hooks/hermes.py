@@ -1,14 +1,22 @@
 """Hermes host shim for the `pre_tool_call` hook (Phase 3).
 
 A Hermes plugin registers a callback via `ctx.register_hook("pre_tool_call", fn)`. The callback
-allows a tool call by returning `None`, or blocks it by returning `{"action": "block",
-"message": ...}`, which stops the call and returns the message to the model. The shim
-deliberately does not use Hermes' `approve` action: Hermes keys approvals by tool name (one
-grant covers later calls of that tool) and auto-approves under YOLO, approvals off and some
-unattended policies, so `block` is the only response that holds everywhere. Hermes fails
-closed at a
-`plugins.hook_callback_timeout` (default 30s) plus a 60s suppression window on timeout or an
-uncaught exception (`docs/research/06-reverified-facts.md` section 9).
+allows a tool call by returning `None`, blocks it by returning `{"action": "block",
+"message": ...}`, or escalates it to Hermes' human-approval gate by returning
+`{"action": "approve", "message": ..., "rule_key": ...}`.
+
+The ask→approve mapping (owner decision 2026-10-30) replaces the earlier block-only stance.
+Hermes' plugin `approve` reaches `tools.approval.request_tool_approval`: the same human gate as
+Tier-2 dangerous shell patterns (once/session/always/deny, native approval buttons on gateway
+platforms, denial/timeout/gate-error fail closed). `rule_key` scopes the `[a]lways` allowlist
+grain to the exact command text — Hermes' own default would key it by tool name, one grant
+covering every later call of that tool, which would silently retire the gate. Mock asks never
+escalate: a test/stub decision must not summon a human. Unattended contexts (cron et al.) never
+see this mapping either: the core's unattended policy resolves the escalation first. Under YOLO
+or `approvals.mode: off` Hermes auto-approves escalations — that is the operator's standing
+consent, and `block` (which YOLO does not swallow) remains the mapping for everything else.
+Hermes fails closed at `plugins.hook_callback_timeout` (default 30s) plus a 60s suppression
+window on timeout or an uncaught exception (`docs/research/06-reverified-facts.md` section 9).
 
 This shim holds no decision logic of its own: it extracts a `ToolCall` from the Hermes event and
 delegates entirely to `hooks.core.decide_tool_call`, which owns the self-deadline and the
@@ -145,6 +153,36 @@ def _block(reason: str | None) -> dict[str, str]:
     return {"action": "block", "message": f"{_BLOCK_MESSAGE} (reason: {reason})"}
 
 
+_APPROVE_MESSAGE_PREFIX = "jev-kit gate: a decision could not be made locally"
+
+
+def _approve_reason_text(reason: str | None) -> str:
+    """The description shown on the approval card / persisted as the grant grain."""
+    detail = reason if reason else "the gate could not reach a calibrated answer"
+    return f"{_APPROVE_MESSAGE_PREFIX} ({detail})"
+
+
+def _rule_key(command: str) -> str:
+    """The `[a]lways` allowlist grain Hermes keys plugin approvals by.
+
+    Deliberately NOT tool_name (Hermes' default when the hook omits rule_key): one
+    grant on `terminal` would cover every later terminal call and the gate stops
+    mattering. The grain is the first whitespace token of the command plus the first
+    12 hex chars of the FULL command's sha256 — stable across repeated identical
+    commands (one "always" covers the repeated loop the model actually runs), narrow
+    across different commands (a new line asks again). Never raises.
+    """
+    try:
+        import hashlib
+
+        head = command.split()[:1]
+        head = head[0] if head else "unknown"
+        digest = hashlib.sha256(command.encode("utf-8", "replace")).hexdigest()[:12]
+        return f"jev:{head}:{digest}"
+    except Exception:
+        return "jev:unknown"
+
+
 def pre_tool_call(
     ctx: Any,
     tool_call: Any,
@@ -165,6 +203,28 @@ def pre_tool_call(
     `JEV_KIT_QUESTION_SET_PATH`, default the tool-call-gate set). `dest_allowlist` defaults
     from `JEV_KIT_DEST_ALLOWLIST`; when it is empty, destination trust is unknown for every
     call, which is the same behaviour as not having the feature.
+
+    Returns the host directive: `None` (allow), `{"action": "block", ...}`, or
+    `{"action": "approve", ...}` when the gate's answer is ASK and the host can plausibly
+    put a human on the approval path.
+
+    The ask→approve mapping (owner decision 2026-10-30): Hermes' plugin `approve` reaches
+    `tools.approval.request_tool_approval`, the same human gate as Tier-2 dangerous shell
+    patterns (once/session/always/deny, native buttons on gateway platforms, denial or
+    timeout fails closed). `rule_key` scopes the `[a]lways` grain to the exact command
+    (see `_rule_key`), never the tool name. What still maps to `block` — the original
+    rationale for block-only, intact:
+
+    - cron and every other unattended context: the core's unattended policy resolves the
+      escalation BEFORE the shim sees an ASK (default policy: record + allow), so an ASK
+      here means a human is plausibly present;
+    - `is_mock` responses (test/stub traffic): never escalate a mock decision to a human;
+    - YOLO / `approvals.mode: off`: Hermes auto-approves plugin escalations in those
+      modes, so a mock- or fail-closed ask must not become a silent allow — those map to
+      block, which the YOLO bypass does NOT swallow;
+    - a non-dict, YOLO-like environment cannot be detected here, so the shim is
+      conservative: ASK escalates only when the core says a human decision is the right
+      next step, i.e. `is_mock` is False.
 
     Never raises: an unparseable event or any internal failure fails closed to a block in
     enforce and to allow in shadow, matching the core's own fail-closed behavior.
@@ -198,6 +258,19 @@ def pre_tool_call(
 
     if result.outcome is HookOutcome.ALLOW:
         return None
+    if (
+        resolved_mode is Mode.ENFORCE
+        and result.outcome is HookOutcome.ASK
+        and not result.is_mock
+    ):
+        # A real ask with a human plausibly present: escalate to the human gate, not a
+        # silent block. The gate itself fails closed (denial, timeout, gate error), and
+        # unattended contexts never reach this line (core resolves them first).
+        return {
+            "action": "approve",
+            "message": _approve_reason_text(result.reason),
+            "rule_key": _rule_key(call.command),
+        }
     return _block(result.reason)
 
 

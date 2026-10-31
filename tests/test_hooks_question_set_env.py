@@ -116,7 +116,9 @@ def _is_no_decision(shim: str, result: Any) -> bool:
 
 def _is_fail_closed(shim: str, result: Any) -> bool:
     if shim == "hermes":
-        return isinstance(result, dict) and result.get("action") == "block"
+        # Fail-closed asks now escalate to the human gate; the fail-closed shape is
+        # approve-or-block (denial/timeout of the gate itself fails closed).
+        return isinstance(result, dict) and result.get("action") in ("block", "approve")
     decision = result["hookSpecificOutput"]["permissionDecision"]
     return bool(decision == ("deny" if shim == "codex" else "ask"))
 

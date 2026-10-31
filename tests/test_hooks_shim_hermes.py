@@ -48,8 +48,24 @@ def test_enforce_all_accept_allows() -> None:
     assert result is None
 
 
-def test_enforce_ask_blocks() -> None:
+def test_enforce_ask_escalates_to_approve() -> None:
+    # Owner decision 2026-10-30: a real (non-mock) ask escalates to Hermes' human
+    # approval gate instead of a silent block. rule_key is scoped to the exact
+    # command, never the tool name (Hermes' own default would grant terminal-wide).
     runner = ok([{"route": "ask", "fail_reason": "uncalibrated", "is_mock": False}])
+    result = hermes.pre_tool_call(
+        FakeCtx(), TOOL_CALL, mode=Mode.ENFORCE, question_set_path=QS, runner=runner
+    )
+    assert result is not None
+    assert result["action"] == "approve"
+    assert "uncalibrated" in result["message"]
+    assert result["rule_key"].startswith("jev:rm")
+    assert result["rule_key"] != "terminal"
+
+
+def test_enforce_mock_ask_still_blocks() -> None:
+    # A mock (test/stub) ask never escalates to a human: it blocks, as before.
+    runner = ok([{"route": "ask", "fail_reason": "uncalibrated", "is_mock": True}])
     result = hermes.pre_tool_call(
         FakeCtx(), TOOL_CALL, mode=Mode.ENFORCE, question_set_path=QS, runner=runner
     )
@@ -57,6 +73,11 @@ def test_enforce_ask_blocks() -> None:
         "action": "block",
         "message": "jev-kit gate: blocked for human review. (reason: uncalibrated)",
     }
+
+
+def test_rule_key_is_stable_for_identical_commands_narrow_across_different() -> None:
+    assert hermes._rule_key("git push origin main") == hermes._rule_key("git push origin main")
+    assert hermes._rule_key("git push origin main") != hermes._rule_key("git push origin dev")
 
 
 def test_shadow_never_blocks_even_when_gate_would_ask() -> None:
@@ -83,7 +104,10 @@ def test_shadow_never_blocks_even_on_slow_runner_past_self_deadline() -> None:
     assert result is None
 
 
-def test_enforce_slow_runner_past_self_deadline_blocks() -> None:
+def test_enforce_slow_runner_past_self_deadline_escalates() -> None:
+    # A timeout ask is a real (non-mock) ask: it escalates to the human gate. The
+    # core's own self-deadline produce the ask; Hermes' approval gate then enforces
+    # its own timeout, so a hung gate still fails closed.
     def slow(req: dict[str, Any]) -> dict[str, Any]:
         time.sleep(2.0)
         return {"schema_version": 1, "status": "ok", "records": [{"route": "accept"}]}
@@ -97,7 +121,7 @@ def test_enforce_slow_runner_past_self_deadline_blocks() -> None:
         self_deadline_s=0.2,
     )
     assert result is not None
-    assert result["action"] == "block"
+    assert result["action"] == "approve"
 
 
 def test_unparseable_event_shadow_allows() -> None:
@@ -135,7 +159,7 @@ def test_register_hook_accepts_kwarg_calling_convention() -> None:
     handler = ctx.hooks["pre_tool_call"]
     result = handler(tool_name="terminal", args={"command": "rm -rf /data"}, task_id="prod")
     assert result is not None
-    assert result["action"] == "block"
+    assert result["action"] == "approve"
 
 
 def test_register_defaults_to_shadow_and_never_blocks(monkeypatch: Any) -> None:

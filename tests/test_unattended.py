@@ -166,8 +166,8 @@ def test_audit_log_path_honours_an_explicit_path(tmp_path: Path) -> None:
 
 
 def _ask(request: dict[str, Any]) -> dict[str, Any]:
-    """A gate that cannot clear: every question asks."""
-    return {"schema_version": 1, "status": "ok", "records": [{"route": "ask"}]}
+    """A gate that cannot clear: every question asks. Non-mock: a real ask."""
+    return {"schema_version": 1, "status": "ok", "records": [{"route": "ask", "is_mock": False}]}
 
 
 def _all_accept(request: dict[str, Any]) -> dict[str, Any]:
@@ -229,7 +229,7 @@ def test_interactive_ask_still_escalates(
         "git status", task_id="interactive-1", mode=Mode.ENFORCE, runner=_ask,
         monkeypatch=monkeypatch, tmp_path=tmp_path,
     )
-    assert out is not None and out["action"] == "block"
+    assert out is not None and out["action"] == "approve"
 
 
 def test_unattended_block_policy_still_escalates(
@@ -240,7 +240,7 @@ def test_unattended_block_policy_still_escalates(
         "git status", task_id="cron:job:run", mode=Mode.ENFORCE, runner=_ask,
         monkeypatch=monkeypatch, tmp_path=tmp_path,
     )
-    assert out is not None and out["action"] == "block"
+    assert out is not None and out["action"] == "approve"
 
 
 def test_env_var_signal_alone_suppresses_in_unattended_context(
@@ -264,7 +264,7 @@ def test_a_session_id_merely_containing_cron_is_still_attended(
         "git status", task_id="my-cron-ish-session", mode=Mode.ENFORCE, runner=_ask,
         monkeypatch=monkeypatch, tmp_path=tmp_path,
     )
-    assert out is not None and out["action"] == "block"
+    assert out is not None and out["action"] == "approve"
 
 
 def test_shadow_is_unaffected_by_the_unattended_policy(

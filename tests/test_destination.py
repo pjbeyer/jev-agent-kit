@@ -510,4 +510,4 @@ def test_an_allowlisted_destination_still_asks_when_the_gate_asks(host: str) -> 
              "task_id": "t"},
             mode=Mode.ENFORCE, question_set_path=GATE, runner=_ask, dest_allowlist=ALLOW,
         )
-        assert blocked is not None and blocked["action"] == "block"
+        assert blocked is not None and blocked["action"] == "approve"

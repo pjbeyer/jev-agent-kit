@@ -113,7 +113,7 @@ Shadow mode prints `None`, which lets the call proceed. With `JEV_KIT_HOOK_MODE=
 and no API key it prints:
 
 ```text
-{'action': 'block', 'message': 'jev-kit gate: blocked for human review. (reason: config)'}
+{'action': 'approve', 'message': 'jev-kit gate: a decision could not be made locally (config)', 'rule_key': 'jev:rm:...'}
 ```
 
 ## What Hermes sees
@@ -122,7 +122,8 @@ and no API key it prints:
 | --- | --- | --- |
 | Shadow mode, any result | `None` | The call proceeds. |
 | Enforce, every gate cleared | `None` | The call proceeds under your usual Hermes rules. |
-| Enforce, a gate not cleared, or any failure | `{"action": "block", ...}` | Hermes blocks the call. |
+| Enforce, a gate not cleared (real ask) | `{"action": "approve", "message": ..., "rule_key": ...}` | Hermes escalates the call to its human-approval gate; `rule_key` scopes any "always" grant to the exact command. |
+| Enforce, a mock ask, or any failure | `{"action": "block", ...}` | Hermes blocks the call. |
 
 Hermes treats a hook that exceeds its 30-second timeout as a block. The hook waits at most
 about 8 seconds for the engine's answer: a worker timeout, backed by a watchdog that kills the
