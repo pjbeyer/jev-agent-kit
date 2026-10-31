@@ -1,0 +1,22 @@
+tools/calibration/smoke_gate.py
+  s_dd517c68a76f60::t_9a23874320dcba 1-40,42-58,60-69,71-75,77-145
+  s_dd517c68a76f60::t_2385cc757f2114 41
+  s_dd517c68a76f60::t_7443e264ef4d94 59,70
+  s_dd517c68a76f60::t_b019cd3842b80e 76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "ba513f1aac366f468c9afaafbad51fd34d0084ee",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
