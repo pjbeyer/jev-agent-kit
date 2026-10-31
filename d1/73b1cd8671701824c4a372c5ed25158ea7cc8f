@@ -1,0 +1,37 @@
+docs/guides/hermes.md
+  s_dd517c68a76f60::t_48ccdd7d8abd84 116,125-126
+tests/test_docs_examples.py
+  s_dd517c68a76f60::t_8410ddfbac1b6a 231
+tests/test_hooks_question_set_env.py
+  s_dd517c68a76f60::t_59dd590c91d30a 119-121
+tests/test_destination.py
+  s_dd517c68a76f60::t_29a20372e4322c 513
+tests/test_hooks_shim_hermes.py
+  s_dd517c68a76f60::t_c48cf40e4255af 107-110,124
+  s_dd517c68a76f60::t_9fec7be68391a8 162
+  s_dd517c68a76f60::t_f79b424783e78c 51-54,59-71,78-80
+  s_dd517c68a76f60::t_5b988b865d9809 81-82
+tests/test_unattended.py
+  s_dd517c68a76f60::t_1561d799f7990c 169-170
+  s_dd517c68a76f60::t_53f6fa01698a2a 232,243,267
+src/jev_kit/hooks/hermes.py
+  s_dd517c68a76f60::t_ea032fb4a96bef 4-19
+  s_dd517c68a76f60::t_11601f87337138 156-185
+  s_dd517c68a76f60::t_695440fd50a29f 207-228,261-273
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "d173b1cd8671701824c4a372c5ed25158ea7cc8f",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
