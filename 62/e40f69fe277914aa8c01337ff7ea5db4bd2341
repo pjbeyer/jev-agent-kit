@@ -1,0 +1,19 @@
+docs/handoff-2026-11-01-jev-gate.md
+  s_dd517c68a76f60::t_5702ec3c6108ac 1-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "62e40f69fe277914aa8c01337ff7ea5db4bd2341",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
