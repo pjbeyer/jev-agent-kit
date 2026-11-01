@@ -82,3 +82,6 @@ bd.db
 
 # Local Beads server connection (host, port, user). Never commit.
 metadata.json
+
+# Added by bd (missing required patterns)
+dolt-server-config.yaml
