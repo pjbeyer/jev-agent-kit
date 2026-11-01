@@ -155,11 +155,55 @@ def _block(reason: str | None) -> dict[str, str]:
 
 _APPROVE_MESSAGE_PREFIX = "jev-kit gate: a decision could not be made locally"
 
+#: Plain-English rendering of the hazard facts for the approval card. Kept short — the
+#: card is one line of description; the goal is that the operator can judge the call
+#: without rubber-stamping, not a full report.
+_HAZARD_LABELS: dict[str, str] = {
+    "cmd_recursive_delete": "recursive delete",
+    "cmd_force_flag": "force flag",
+    "cmd_targets_root_or_system_path": "targets a system path",
+    "cmd_uses_elevation": "uses elevation (sudo)",
+    "cmd_network_download": "downloads from the network",
+    "cmd_pipes_to_shell": "pipes data into a shell",
+    "cmd_modifies_permissions": "changes permissions",
+    "cmd_git_history_rewrite": "rewrites git history",
+    "cmd_package_install": "installs a package",
+    "cmd_network_upload": "sends data to the network",
+    "cmd_grants_write_access": "grants write access",
+    "cmd_targets_autorun_path": "writes an auto-run path",
+    "cmd_grants_authority": "grants authority",
+    "cmd_grants_privileged_group": "grants a privileged group",
+    "cmd_grants_setuid": "sets setuid",
+}
 
-def _approve_reason_text(reason: str | None) -> str:
-    """The description shown on the approval card / persisted as the grant grain."""
+
+def _approve_reason_text(
+    reason: str | None, hazards: tuple[str, ...] = (), command: str | None = None
+) -> str:
+    """The description shown on the approval card / persisted as the grant grain.
+
+    Carries the decision-relevant content the Hermes card has room for: the fail
+    reason AND the affirmative hazard facts in plain English (the rubber-stamp fix —
+    "a decision could not be made locally" alone gives the operator nothing to
+    judge). The card paints the command itself as a synthetic `<terminal>` label, so
+    this description line IS the operator's context; `command` contributes the
+    egress-reduced segment inventory (basenames only — no argument text, so nothing
+    sensitive leaks onto the card).
+    """
     detail = reason if reason else "the gate could not reach a calibrated answer"
-    return f"{_APPROVE_MESSAGE_PREFIX} ({detail})"
+    if not hazards:
+        return f"{_APPROVE_MESSAGE_PREFIX} ({detail})"
+    labels = [_HAZARD_LABELS.get(name, name) for name in hazards]
+    parts = [
+        _APPROVE_MESSAGE_PREFIX,
+        f"({detail})",
+        f"flagged: {', '.join(labels)}",
+    ]
+    if command:
+        from jev_kit.egress import command_inventory
+
+        parts.append(f"commands: {command_inventory(command)}")
+    return "; ".join(parts)
 
 
 def _rule_key(command: str) -> str:
@@ -268,7 +312,9 @@ def pre_tool_call(
         # unattended contexts never reach this line (core resolves them first).
         return {
             "action": "approve",
-            "message": _approve_reason_text(result.reason),
+            "message": _approve_reason_text(
+                result.reason, result.hazard_facts, call.command
+            ),
             "rule_key": _rule_key(call.command),
         }
     return _block(result.reason)

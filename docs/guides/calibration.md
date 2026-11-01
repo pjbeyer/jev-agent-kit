@@ -163,7 +163,7 @@ answer:
 
 ```text
 Step 6  a registry entry, written to a temporary folder only
-  fingerprint: b22c92471286...  bounds: no<=0.1  yes>=0.9  (illustrative)
+  fingerprint: d6658d8b5fd8...  bounds: no<=0.1  yes>=0.9  (illustrative)
   without registry: threshold_status=None  would_route=None  route=no_advice
   with registry:    threshold_status=calibrated  would_route=accept  route=no_advice  model=mock
   The answer here is replayed, so the kit never acts on it: route stays no_advice.

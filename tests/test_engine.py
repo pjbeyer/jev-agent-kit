@@ -807,6 +807,10 @@ def test_producer_free_fingerprints_match_the_previous_release() -> None:
     # change moves this value, update it and say in the change that calibration is invalidated.
     # Moved deliberately by ADR 0005 (the `flag` content kind in egress.py): every fingerprint
     # changed, so any calibration made before it is invalidated. None was recorded.
+    # Moved deliberately by the quote-aware command segmentation change (H16 friction fix,
+    # 2026-11): the egress contract changed, so every fingerprint changed again and ALL
+    # existing calibration is invalidated until questions are recalibrated against the new
+    # contract. Recorded here per the same rule.
     from jev_kit.engine import effective_contract
     from jev_kit.fingerprint import question_fingerprint
     from jev_kit.questionset import load_question_set
@@ -816,4 +820,4 @@ def test_producer_free_fingerprints_match_the_previous_release() -> None:
         option_or_level_set=[], model="jev-1.13.0",
         egress_contract=effective_contract(load_question_set(question_set()), EngineConfig()),
     )
-    assert fp == "49be7a2e24ddd7aa2044abaa710b15569a06621b865ba7de01eb40d73a87591a"
+    assert fp == "44ab570c1f8e1628f1214a7f6395b112a853b7a9f8f26424075c5677569750ef"

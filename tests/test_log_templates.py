@@ -170,7 +170,8 @@ def test_free_form_log_unchanged_without_templates(tmp_path: Any) -> None:
         rec(host="db01", attempts="{reason}", reason="timeout"),  # slot syntax in a metric
         rec(host="db01", attempts="1" * 33, reason="timeout"),  # numeric string too long
         {"level": "error", "template_id": "conn_failed", "params": "host=db01"},
-        rec("user_login", "info", email="a@b.co", path="/x", tool="ls; cat /etc/passwd"),
+        # A command param the reducer refuses (backtick) still fails closed ...
+        rec("user_login", "info", email="a@b.co", path="/x", tool="tool `id -u`"),
         42,
     ],
 )
@@ -185,6 +186,18 @@ def test_identifier_injection_is_tokenized_not_expanded(tmp_path: Any) -> None:
     msg = wire["state"]["events"][0]["message"]
     assert "{" not in msg and "\n" not in msg
     assert msg.count("failed after") == 1
+
+
+def test_command_param_compound_reduces_to_inventory(tmp_path: Any) -> None:
+    # A command-kind param with compound syntax reduces to the segment inventory —
+    # argument text (here the sensitive path) never reaches the outgoing line, which
+    # is the same no-argument invariant as the egress command reduction itself.
+    wire = sent(tmp_path, {"events": [
+        rec("user_login", "info", email="a@b.co", path="/x", tool="ls; cat /etc/passwd")
+    ]})
+    msg = wire["state"]["events"][0]["message"]
+    assert "via ls | cat" in msg
+    assert "/etc/passwd" not in msg and "passwd" not in msg
 
 
 @pytest.mark.parametrize("pan", [4111111111111111, "4111111111111111", "5555555555554444"])

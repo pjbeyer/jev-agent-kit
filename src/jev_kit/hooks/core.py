@@ -28,7 +28,7 @@ import json
 import os
 import re
 from collections.abc import Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 from enum import StrEnum
 from pathlib import Path
@@ -111,6 +111,12 @@ class HookResult:
     reason: str | None  # fail reason when the outcome is a failure
     is_mock: bool
     timed_out: bool = False
+    #: Fact names that are True on this call and count as hazards (_LOCAL_HAZARD_FACTS
+    #: plus anything else the operators consider worth surfacing). Populated for ASK
+    #: results so an escalation message can tell the human WHAT made the call risky
+    #: instead of a bare fail-reason (the rubber-stamp fix: a card that says only
+    #: "a decision could not be made locally" gives the operator nothing to judge).
+    hazard_facts: tuple[str, ...] = ()
 
 
 def _default_runner(request: dict[str, Any], timeout_s: float) -> dict[str, Any]:
@@ -121,14 +127,28 @@ def _default_runner(request: dict[str, Any], timeout_s: float) -> dict[str, Any]
 
 
 def _fail_closed(
-    mode: Mode, reason: str, *, is_mock: bool = False, timed_out: bool = False
+    mode: Mode, reason: str, *, is_mock: bool = False, timed_out: bool = False,
+    hazard_facts: tuple[str, ...] = (),
 ) -> HookResult:
     # Shadow never changes behavior; enforce fails closed to ask.
     outcome = HookOutcome.ALLOW if mode is Mode.SHADOW else HookOutcome.ASK
-    return HookResult(outcome, None, reason, is_mock, timed_out)
+    return HookResult(outcome, None, reason, is_mock, timed_out, hazard_facts)
 
 
 PRODUCER_UNAVAILABLE = "unavailable"
+
+
+def _hazard_facts(properties: Any) -> tuple[str, ...]:
+    """The affirmative hazard-fact names for this call, in declaration order.
+
+    Attached to every ASK result so the escalation message can tell the operator WHAT
+    made the call risky (finding: a bare fail-reason on the approval card forces a
+    rubber-stamp). None of this text is transmitted anywhere — it is rendered locally.
+    """
+    if properties is None:
+        return ()
+    facts = properties.as_state()
+    return tuple(name for name in _LOCAL_HAZARD_FACTS if facts.get(name) is True)
 
 
 def producer_id(name: str, shim_file: str) -> str:
@@ -350,14 +370,18 @@ def decide_tool_call(
                 sidelog_path, call, mode, "ask", "timeout", producer,
                 properties, dest, target_facts=tstat_facts,
             )
-            return _fail_closed(mode, "timeout", timed_out=True)
+            return _fail_closed(
+                mode, "timeout", timed_out=True, hazard_facts=_hazard_facts(properties)
+            )
         except Exception:
             pool.shutdown(wait=False, cancel_futures=True)
             _record_sidelog(
                 sidelog_path, call, mode, "ask", "internal", producer,
                 properties, dest, target_facts=tstat_facts,
             )
-            return _fail_closed(mode, "internal")
+            return _fail_closed(
+                mode, "internal", hazard_facts=_hazard_facts(properties)
+            )
     finally:
         # Do not block on a still-running worker; a hung runner must not hang the hook.
         pool.shutdown(wait=False, cancel_futures=True)
@@ -397,7 +421,12 @@ def decide_tool_call(
         # Unknown is risky, never safe: a command the property parser could not read never
         # reaches ALLOW in enforce, whatever the gate answered. The call still runs so the
         # decision leaves its receipt. Shadow never changes host behavior.
-        result = HookResult(HookOutcome.ASK, "ask", "command_parse_unconfident", result.is_mock)
+        result = HookResult(
+            HookOutcome.ASK, "ask", "command_parse_unconfident", result.is_mock,
+            hazard_facts=_hazard_facts(properties),
+        )
+    if result.outcome is HookOutcome.ASK and not result.hazard_facts:
+        result = replace(result, hazard_facts=_hazard_facts(properties))
 
     # An ASK is an escalation that presumes a human. Where there is no human, the unattended
     # policy decides instead. Only ASK reaches this branch: a gate that affirmatively judged

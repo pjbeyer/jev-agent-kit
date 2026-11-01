@@ -168,46 +168,155 @@ def _reduce_log(text: str) -> str:
 # or more of these are dropped in full, name and value alike.
 _ENV_ASSIGNMENT = re.compile(r"^(?:\$env:|\$)?[A-Za-z_][A-Za-z0-9_]*=")
 
-# Compound, redirecting or substituting shell syntax: a semicolon, pipe, background/and/or,
-# redirect, backtick or "$(" substitution. Such a line names more than one command or a data
-# sink, so it cannot be reduced to a single safe command word and is blocked (finding H16). This
-# is dialect-neutral: it holds for POSIX shells, cmd.exe and PowerShell alike.
-_CMD_CONTROL = re.compile(r"[;&|<>`\n]|\$\(")
+# Redirects and pipes join commands into a pipeline: each segment still has a locatable
+# command word, so a compound line reduces to the ordered inventory of its segment command
+# basenames (a pipeline shape, not a single word). `>` redirects are allowed and bound to
+# the segment's tail; refused outright are backticks, command substitution `$(`, any `<`
+# (a stdin redirect is a data source the reduction cannot name), and a bare single `;`/`&`
+# (sequencing/backgrounding — checked per segment after the split, since `&&` consumes
+# both `&` characters as a boundary).
+_CMD_SEGMENT = re.compile(r"\|\||&&|\||\n")
+# A `2>&1` fd duplication: stream-to-stream, no new sink, no new command — stripped
+# before the refuse scan so it does not read as a backgrounding `&`.
+_CMD_FD_DUP = re.compile(r"\d?>&\d+(?=\s|$)")
+# Refused per segment: `<<` anywhere (heredoc — its body is arbitrary stdin text the
+# reduction would misparse as segment command words), a bare single `;` or `&`
+# (sequencing/backgrounding — `&&` was a split boundary, so a surviving `&` is one of
+# these), backticks, command substitution `$(`, and any single `<` (stdin redirect — a
+# data source the reduction cannot name). `>` output redirects stay allowed: the
+# segment's command word is still locatable and the model judges the full inventory
+# plus the cmd_ facts computed from the raw line.
+_CMD_REFUSE = re.compile(r"<<|[;&`]|(?<!<)<(?=\s|$)|\$\(")
+
+
+def _split_unquoted(text: str, char: str) -> list[str]:
+    """Split on `char` only where it is unquoted (quote-aware: ';'/';' inside single or
+    double quotes is command text, not a separator). Backslash escapes are honored
+    inside quotes. Never raises; an unterminated quote just returns the whole text."""
+    parts: list[str] = []
+    buf: list[str] = []
+    in_single = in_double = False
+    i = 0
+    while i < len(text):
+        ch = text[i]
+        if ch == "\\" and (in_single or in_double):
+            buf.append(text[i : i + 2])
+            i += 2
+            continue
+        if ch == "'" and not in_double:
+            in_single = not in_single
+        elif ch == '"' and not in_single:
+            in_double = not in_double
+        elif ch == char and not in_single and not in_double:
+            parts.append("".join(buf))
+            buf = []
+            i += 1
+            continue
+        buf.append(ch)
+        i += 1
+    parts.append("".join(buf))
+    return parts
+
+
+def _command_segments(text: str) -> list[str]:
+    """The command's segment list: split on unquoted newlines, then unquoted `;`, then
+    on pipes/`&&`/newlines (which have no quoting subtlety beyond what remains)."""
+    pieces: list[str] = []
+    for line in _split_unquoted(text, "\n"):
+        pieces.extend(_split_unquoted(line, ";"))
+    segments: list[str] = []
+    for piece in pieces:
+        segments.extend(_CMD_SEGMENT.split(piece))
+    return segments
+
 
 # A backslash that escapes whitespace, or a trailing backslash (line continuation): both join
 # tokens across a whitespace split and are rejected (finding H16). A backslash followed by a
 # non-whitespace path character (a Windows path) does not match.
 _CMD_ESCAPE = re.compile(r"\\(\s|$)")
 
+#: Downstream pipe segments that execute whatever text flows into them. A pipeline
+#: ending in one of these is a remote-code-execution channel and fails closed (see
+#: _reduce_command).
+_SHELL_INTERPRETERS = frozenset(
+    {"sh", "bash", "zsh", "dash", "ksh", "fish", "csh", "tcsh", "powershell",
+     "pwsh", "python", "python3", "perl", "ruby", "node", "lua", "osascript",
+     "eval", "source", "bc", "awk"}
+)
+
+
 def _reduce_command(text: str) -> str:
-    # Emit ONLY the command basename; every argument token is dropped (finding H16). Without a
-    # per-command option-arity grammar we cannot tell a flag name from an option's argument
-    # value: "git -C --PRIVATE_CUSTOMER ..." feeds --PRIVATE_CUSTOMER to -C as a directory, so a
-    # token starting with a dash is not proof of a flag. Rather than guess, we keep nothing after
-    # the command word. A declared safe option grammar that could retain known flags is deferred
-    # (tracked as a follow-up). Compound/redirecting, quoted and escaped inputs are rejected
-    # first, since even the command word cannot be located unambiguously in them.
-    if _CMD_CONTROL.search(text):
-        raise ValidationError(FailReason.EGRESS_BLOCKED, "command_compound_unsupported")
+    # Emit ONLY command basenames — one for a simple line, the ordered segment inventory
+    # for a compound line; every argument token is dropped (finding H16). Without a
+    # per-command option-arity grammar we cannot tell a flag name from an option's
+    # argument value: "git -C --PRIVATE_CUSTOMER ..." feeds --PRIVATE_CUSTOMER to -C as a
+    # directory, so a token starting with a dash is not proof of a flag. Rather than
+    # guess, we keep nothing after any command word.
+    # Segmentation is quote-aware (`;` and newline inside quotes are command text), so
+    # pipelines, `&&` chains, `;` sequences and multi-line pastes all reduce to their
+    # segment inventory. `2>&1` fd-dups are inert. Refused outright, per segment:
+    # backticks, `$(` substitution and unquoted `<` (stdin redirect — a data source the
+    # reduction cannot name); and the whole text still refuses when quoting is
+    # unbalanced (an unterminated quote makes even the segment list a guess) or an
+    # escape/line-continuation joins tokens. Argument text — quoted or not — never
+    # reaches the output: only the basename of each segment's first token survives.
     if '"' in text or "'" in text:
-        raise ValidationError(FailReason.EGRESS_BLOCKED, "command_quoting_unsupported")
+        import shlex
+
+        try:
+            shlex.split(text)
+        except ValueError:
+            # An unterminated quote: even the segment list is a guess — fail closed.
+            raise ValidationError(FailReason.EGRESS_BLOCKED, "command_quoting_unsupported")
+    segments = _command_segments(text)
+    for segment in segments:
+        if _CMD_REFUSE.search(_CMD_FD_DUP.sub(" ", segment)):
+            raise ValidationError(FailReason.EGRESS_BLOCKED, "command_compound_unsupported")
     # A backslash before whitespace (escaped space) or at end of a token (line continuation)
     # joins tokens across the whitespace split, so it is rejected; a Windows path backslash
     # (followed by a path character, not whitespace) is unaffected.
     if _CMD_ESCAPE.search(text):
         raise ValidationError(FailReason.EGRESS_BLOCKED, "command_escape_unsupported")
-    tokens = text.split()
-    idx = 0
-    while idx < len(tokens) and _ENV_ASSIGNMENT.match(tokens[idx]):
-        idx += 1
-    if idx >= len(tokens):
-        return ""
-    # Command word: basename only, dropping any POSIX or Windows directory path. If anything odd
-    # survives (a quote or '='), emit a placeholder rather than a guess.
-    name = tokens[idx].replace("\\", "/").rsplit("/", 1)[-1]
-    if not name or any(ch in name for ch in "'\"="):
-        name = "<command>"
-    return name
+    names: list[str] = []
+    for segment in segments:
+        tokens = segment.split()
+        idx = 0
+        while idx < len(tokens) and _ENV_ASSIGNMENT.match(tokens[idx]):
+            idx += 1
+        if idx >= len(tokens):
+            names.append("<command>")
+            continue
+        # Command word: basename only, dropping any POSIX or Windows directory path. If
+        # anything odd survives (a quote or '='), emit a placeholder rather than a guess.
+        name = tokens[idx].replace("\\", "/").rsplit("/", 1)[-1]
+        if not name or any(ch in name for ch in "'\"="):
+            name = "<command>"
+        names.append(name)
+    # A shell interpreter as a downstream segment of a pipe is a remote-code-execution
+    # channel (`curl ... | sh`): the piped data is arbitrary text and the egress
+    # reduction cannot summarize what flows into it. Fail closed before any model call
+    # — this is the one pipe shape the segmentation may NOT liberalize (H16/GATE-02).
+    if any(name in _SHELL_INTERPRETERS for name in names[1:] if name != "<command>"):
+        raise ValidationError(FailReason.EGRESS_BLOCKED, "command_pipes_to_interpreter")
+    unique: list[str] = []
+    for name in names:
+        if name not in unique:
+            unique.append(name)
+    return " | ".join(unique)
+
+
+def command_inventory(text: str) -> str:
+    """Best-effort segment-command inventory for display, never raises.
+
+    The message-rendering counterpart of _reduce_command: where the reducer refuses
+    (backticks, heredocs, unterminated quotes, ...) it returns a fixed placeholder
+    instead of raising, because card text must never fail a call. Emits basenames
+    only — the same no-argument-text invariant as the reducer.
+    """
+    try:
+        return _reduce_command(text)
+    except Exception:
+        return "<unreduced>"
 
 
 def _require_named_source(params: Mapping[str, Any], ctx: EgressContext) -> None:

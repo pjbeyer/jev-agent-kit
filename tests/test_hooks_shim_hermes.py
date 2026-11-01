@@ -63,6 +63,24 @@ def test_enforce_ask_escalates_to_approve() -> None:
     assert result["rule_key"] != "terminal"
 
 
+def test_enforce_ask_message_carries_hazards_and_inventory() -> None:
+    # The rubber-stamp fix: the approval card's only operator-readable content is the
+    # plugin's message, so it must name the affirmative hazard facts (plain English)
+    # and the egress-reduced command inventory — never argument text (no leak onto
+    # the card).
+    runner = ok([{"route": "ask", "fail_reason": "uncalibrated", "is_mock": False}])
+    result = hermes.pre_tool_call(
+        FakeCtx(), TOOL_CALL, mode=Mode.ENFORCE, question_set_path=QS, runner=runner
+    )
+    message = result["message"] if result else ""
+    assert "flagged:" in message  # rm -rf -> recursive delete + force flag
+    assert "recursive delete" in message
+    assert "force flag" in message
+    assert "commands: rm" in message
+    assert "/data" not in message  # argument text never reaches the card
+    assert "db01" not in message
+
+
 def test_enforce_mock_ask_still_blocks() -> None:
     # A mock (test/stub) ask never escalates to a human: it blocks, as before.
     runner = ok([{"route": "ask", "fail_reason": "uncalibrated", "is_mock": True}])
