@@ -1,0 +1,57 @@
+tests/test_engine.py
+  s_dd517c68a76f60::t_d5bb92c3bf461f 810-813
+  s_dd517c68a76f60::t_9ca2f4fe9832c3 823
+src/jev_kit/hooks/core.py
+  s_dd517c68a76f60::t_b5dedb8fe8f981 373-375,382-384
+  s_dd517c68a76f60::t_0f9a410c7643cf 141-153
+  s_dd517c68a76f60::t_01cfac1f5036be 31
+  s_dd517c68a76f60::t_ce0b4630adf433 130-131,135
+  s_dd517c68a76f60::t_3a2ac06a04de49 424-429
+  s_dd517c68a76f60::t_295c37a69d8f4f 114-119
+tests/test_log_templates.py
+  s_dd517c68a76f60::t_22edccf4f36d9a 191-202
+  s_dd517c68a76f60::t_601a7bb995bcc0 173-174
+src/jev_kit/egress.py
+  s_dd517c68a76f60::t_22c6aac49f7bb4 182-189
+  s_dd517c68a76f60::t_ddd391921547df 271,281
+  s_dd517c68a76f60::t_02d02e555ea321 238-246
+  s_dd517c68a76f60::t_3ed4288d95149b 308-319
+  s_dd517c68a76f60::t_8ccbed1ca5953a 173-177,247,274
+  s_dd517c68a76f60::t_2ac0870d9f15a8 295-300
+  s_dd517c68a76f60::t_56ed168b80fe06 179-181
+  s_dd517c68a76f60::t_5e1940a14748b4 250-262,264-270
+  s_dd517c68a76f60::t_80b7f09bc7d481 192-231
+  s_dd517c68a76f60::t_c906eee3d538de 171-172,178,249,280,282-294,301-305
+  s_dd517c68a76f60::t_c7c4efb5f0d00a 272-273
+  s_dd517c68a76f60::t_d86fde4e7a3746 190-191
+  s_dd517c68a76f60::t_939318306dfede 306-307
+tests/test_egress.py
+  s_dd517c68a76f60::t_603e68f0cea349 484-485,487,493-502
+  s_dd517c68a76f60::t_e6bd45fbddba54 503-508,510-519
+  s_dd517c68a76f60::t_a6260202c540dd 522-531,533-538
+  s_dd517c68a76f60::t_24dd0e18ce0dff 520-521
+src/jev_kit/hooks/hermes.py
+  s_dd517c68a76f60::t_2ae4deb2a060c3 180-182,188-191,197-206
+  s_dd517c68a76f60::t_619892647b4c80 315-317
+  s_dd517c68a76f60::t_a7ad69fdf891f8 158-179,183-187,192,194-196
+tests/test_hooks_shim_hermes.py
+  s_dd517c68a76f60::t_0ab2a468e4412d 66-83
+docs/guides/calibration.md
+  s_dd517c68a76f60::t_9253574aa9b109 166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "af6002cf45a53169d1ed43adf72d75746de74531",
+  "prompts": {},
+  "sessions": {
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
