@@ -1,0 +1,19 @@
+docs/guides/calibration.md
+  s_1b795e7935f7e0::t_24b3fd3d6b1cb7 174-180
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "f87f29defb7b5acb40fe03d228a4d2c50f8b0528",
+  "prompts": {},
+  "sessions": {
+    "s_1b795e7935f7e0": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261102_054740_cb06e1f9",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
