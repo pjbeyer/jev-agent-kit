@@ -171,9 +171,13 @@ Step 6  a registry entry, written to a temporary folder only
 ```
 
 Comparing `would_route` with labels from shadow traffic helps evaluate the built-in policy.
-Changing to `"mode": "enforce"` activates that policy. The shipped hooks then add their
-checks while preserving the host's existing permission flow. A custom application can use
-the answers with a different policy.
+`would_route` is the candidate a calibrated threshold implies: it ignores the hook layer's
+own authorization rule that an accepted label must be listed in the gate's `allow_labels`
+(so an accepted dangerous label still asks in enforce). The shipped hooks surface the
+post-rule outcome in their side-log (`would_outcome`), which is the number to compare
+against a shadow week. Changing to `"mode": "enforce"` activates that policy. The shipped
+hooks then add their checks while preserving the host's existing permission flow. A custom
+application can use the answers with a different policy.
 
 ## When promotion is declined
 
