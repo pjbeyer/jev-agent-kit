@@ -540,12 +540,17 @@ def _map_response(response: dict[str, Any], mode: Mode) -> HookResult:
     is_mock = any(bool(r.get("is_mock")) for r in records if isinstance(r, dict))
 
     if mode is Mode.SHADOW:
-        # Shadow never changes behavior: allow regardless, but surface the would-be route.
-        would = next(
-            (r.get("would_route") for r in records if isinstance(r, dict) and r.get("would_route")),
-            None,
-        )
-        return HookResult(HookOutcome.ALLOW, would, None, is_mock)
+        # Shadow never changes behavior: allow regardless. The surfaced route must be the
+        # would-be ENFORCE outcome, not the engine's raw candidate: the engine's
+        # `would_route` is the candidate a calibrated threshold implies (accept whenever
+        # candidate.clears) and deliberately ignores the hook-layer authorization rule
+        # (finding H1) that an accepted label must be in the gate's allow_labels. Surfacing
+        # the candidate here made shadow telemetry overstate accept-rate (jak-8oj: `rm -rf
+        # /data` shadowed as accept while enforce would ASK). Re-map the same records
+        # through the enforce path so what we surface is what enforce would have done,
+        # exactly as the side-log's would_outcome rehearsal below already does.
+        would = _map_response(response, Mode.ENFORCE)
+        return HookResult(HookOutcome.ALLOW, would.route, would.reason, is_mock)
 
     # Enforce: any gate not clearing to accept means ask (fail closed). The tool-call-gate set
     # is all gate questions, so a single non-accept route escalates.
