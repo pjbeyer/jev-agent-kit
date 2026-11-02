@@ -1,0 +1,19 @@
+src/jev_kit/hooks/core.py
+  s_1b795e7935f7e0::t_5cb171de2148a6 543-553
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "c9c58b759a87bd0e35e522060c2711a56a8447c8",
+  "prompts": {},
+  "sessions": {
+    "s_1b795e7935f7e0": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261102_054740_cb06e1f9",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
