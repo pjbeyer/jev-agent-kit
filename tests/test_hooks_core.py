@@ -58,6 +58,41 @@ def test_enforce_accept_without_allow_labels_asks() -> None:
     assert res.outcome is HookOutcome.ASK
 
 
+def test_shadow_surfaces_would_be_enforce_route_not_raw_candidate() -> None:
+    # jak-8oj: the engine's would_route is the raw candidate (accept whenever the
+    # candidate clears) and ignores the hook-layer H1 label check. Shadow must surface
+    # the would-be ENFORCE outcome instead: here enforce would ASK on the dangerous
+    # label, so the surfaced route is ask with the fail reason, while the host still
+    # sees ALLOW (shadow never changes behavior).
+    runner = ok([{"route": "accept", "label": "yes", "allow_labels": ["no"], "is_mock": False}])
+    res = decide_tool_call(CALL, mode=Mode.SHADOW, question_set_path=QS, runner=runner)
+    assert res.outcome is HookOutcome.ALLOW
+    assert res.route == "ask"
+    assert res.reason is None
+
+
+def test_shadow_surfaces_ask_when_allow_labels_missing() -> None:
+    # The backstop applies to the surfaced route too: an accept without a declared
+    # allow-list never allows in enforce, so shadow must not surface accept.
+    runner = ok([{"route": "accept", "label": "no", "is_mock": False}])
+    res = decide_tool_call(CALL, mode=Mode.SHADOW, question_set_path=QS, runner=runner)
+    assert res.outcome is HookOutcome.ALLOW
+    assert res.route == "ask"
+
+
+def test_shadow_surfaces_accept_only_on_h1_clean_accept() -> None:
+    # A fully-clean accept (safe label inside the allow-list) is the only case where
+    # shadow surfaces accept as the would-be route.
+    runner = ok([
+        {"route": "accept", "label": "no", "allow_labels": ["no"], "is_mock": False},
+        {"route": "accept", "label": "no", "allow_labels": ["no"], "is_mock": False},
+    ])
+    res = decide_tool_call(CALL, mode=Mode.SHADOW, question_set_path=QS, runner=runner)
+    assert res.outcome is HookOutcome.ALLOW
+    assert res.route == "accept"
+    assert res.reason is None
+
+
 def test_enforce_any_ask_escalates() -> None:
     runner = ok([
         {"route": "accept", "is_mock": False},
