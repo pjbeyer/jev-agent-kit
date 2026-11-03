@@ -1,0 +1,19 @@
+docs/research/13-hermes-native-comparison.md
+  s_1b795e7935f7e0::t_98ba47622a817b 1-107
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "afdef20130d67f66aab4cbf934a0086d6941dcf3",
+  "prompts": {},
+  "sessions": {
+    "s_1b795e7935f7e0": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261102_054740_cb06e1f9",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
