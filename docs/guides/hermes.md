@@ -131,11 +131,15 @@ engine's child process. If that budget runs out, the hook answers fail-closed wi
 further, and a worker still finishing keeps running in the background. Loading the engine also
 comes on top of the budget. That still leaves a wide margin under 30 seconds.
 
-In enforce mode the plugin returns Hermes' `block` action, so the call is stopped and the
-message goes back to the model. It does not use Hermes' `approve` action on purpose: Hermes
-remembers an approval for the whole tool (one "allow for session" covers later calls of that
-tool, whatever their arguments), and approves without asking under YOLO mode, with approvals
-turned off, and under some cron or unattended policies. `block` holds in all of those.
+In enforce mode the gate maps its outcomes deliberately: a **real ask** escalates to Hermes'
+human-approval gate via the `approve` action (owner decision 2026-10-30), with `rule_key`
+scoping any "always" grant to the exact command (`jev:<cmd-head>:<sha12>`, never the tool
+name, so one grant cannot retire the gate for every later call of that tool). The human gate
+itself fails closed (deny/timeout = blocked). Everything else is `block`: mock asks, YOLO
+or `approvals.mode: off` contexts (where Hermes would auto-approve an escalation, so a
+fail-closed ask must not become a silent allow — `block` is the one directive YOLO does not
+swallow), and unattended contexts, which the core resolves before the shim ever sees an ask
+(default record-and-continue, see the unattended policy docs).
 
 ## 5. Record real evidence (optional)
 
