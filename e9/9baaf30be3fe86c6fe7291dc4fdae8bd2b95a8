@@ -1,0 +1,30 @@
+tools/calibration/shadow_pilot/build_probes.py
+  s_1b795e7935f7e0::t_c88897d8042eb3 55
+  s_1b795e7935f7e0::t_8310bf6da17f8a 1-54,56-134
+.gitignore
+  s_e53ab9a371976c::t_ae199df2b14204 48-52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "e99baaf30be3fe86c6fe7291dc4fdae8bd2b95a8",
+  "prompts": {},
+  "sessions": {
+    "s_1b795e7935f7e0": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261102_054740_cb06e1f9",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    },
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
