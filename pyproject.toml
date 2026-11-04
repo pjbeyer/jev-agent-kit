@@ -20,12 +20,9 @@ jev-kit = "jev_kit.cli:main"
 packages = ["src/jev_kit"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = "-q"
-# Worktree isolation (jak-baw): the shared venv resolves bare `import jev_kit` to the
-# MAIN checkout's src/. Tests must import the worktree's own src/ or a worktree edit is
-# silently untested — the exact trap that hid the extraction fix's effect under pytest.
-pythonpath = ["src"]
 
 [tool.ruff]
 line-length = 100
