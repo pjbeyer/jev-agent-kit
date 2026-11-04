@@ -1,0 +1,19 @@
+pyproject.toml
+  s_e53ab9a371976c::t_b40a7265287980 23
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "5c6e70201dbd1b2da8547fe2a43357c04efcf98c",
+  "prompts": {},
+  "sessions": {
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
