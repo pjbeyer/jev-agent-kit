@@ -1,0 +1,33 @@
+src/jev_kit/command_properties.py
+  s_e53ab9a371976c::t_2955f51af7a3e3 652
+  s_e53ab9a371976c::t_1446c9c486cc51 649-651
+src/jev_kit/hermes_tools.py
+  s_e53ab9a371976c::t_aac8e18f2254ee 1-68,70-78,80-82
+  s_e53ab9a371976c::t_dd83921b6e882d 69
+  s_e53ab9a371976c::t_8a6ece01fbe593 79,83-104
+  s_e53ab9a371976c::t_060a01ece1ab1d 105-107
+  s_e53ab9a371976c::t_fe60c80bbc32f3 108-129
+src/jev_kit/target_stat.py
+  s_e53ab9a371976c::t_30de70cf7c10cb 47-48
+  s_e53ab9a371976c::t_4f5238a6d32f20 139-145
+src/jev_kit/hooks/hermes.py
+  s_e53ab9a371976c::t_76760a87e1e6c3 150-152,156,178-182,205-213,215-217,219-220,224-226
+tests/test_hooks_shim_hermes.py
+  s_e53ab9a371976c::t_d532ee7ac36bf6 194-199,203,208,212,217,220,225,228-248,253-254,257-259,264-267,270,273-293,304-306,311,314,319,322-323,328-445
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "21cb61449c34742d49a3ef35bc850f2149b0c1a7",
+  "prompts": {},
+  "sessions": {
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
