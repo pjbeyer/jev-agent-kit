@@ -188,3 +188,97 @@ def test_register_defaults_to_shadow_and_never_blocks(monkeypatch: Any) -> None:
 
     result = ctx.hooks["pre_tool_call"](TOOL_CALL)
     assert result is None
+
+
+# ---------------------------------------------------------------------------
+# jak-baw scope 2: non-shell tool extraction. A bare tool name used to land in
+# ToolCall.command (unparseable -> blind ask on 4,459/4,460 measured calls).
+# Reader-class tools now map their defining argument to a parser-modeled
+# pseudo-command; writers and unmapped tools keep the bare name (fail-closed).
+# ---------------------------------------------------------------------------
+
+
+def test_read_file_maps_to_modeled_reader_pseudo_command() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "read_file", "args": {"path": "/Users/x/.hermes/config.yaml"}}
+    )
+    assert call is not None
+    assert call.command == "cat /Users/x/.hermes/config.yaml"
+    assert hermes._parse_confident(call.command) is True
+
+
+def test_search_files_maps_pattern_to_grep() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "search_files", "args": {"pattern": "JEV_KIT", "path": "/Users/x/p"}}
+    )
+    assert call is not None
+    assert call.command == "grep JEV_KIT"
+
+
+def test_skill_view_maps_name_to_cat() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "skill_view", "args": {"name": "memory"}}
+    )
+    assert call is not None
+    assert call.command == "cat memory"
+
+
+def test_writer_tools_keep_bare_name_and_fail_closed() -> None:
+    # write_file's `content` is the file BODY, not a command; it must never become
+    # ToolCall.command. The call keeps the bare tool name and stays unparseable.
+    call = hermes._extract_tool_call(
+        {"tool_name": "write_file", "args": {"path": "/tmp/x", "content": "rm -rf /"}}
+    )
+    assert call is not None
+    assert call.command == "write_file"
+    assert hermes._parse_confident(call.command) is False
+
+
+def test_execute_code_body_never_becomes_command() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "execute_code", "args": {"code": "import os; os.system('rm -rf /')"}}
+    )
+    assert call is not None
+    assert call.command == "execute_code"
+
+
+def test_unmapped_tool_keeps_bare_name() -> None:
+    call = hermes._extract_tool_call({"tool_name": "delegate_task", "args": {"tasks": []}})
+    assert call is not None
+    assert call.command == "delegate_task"
+
+
+def test_shell_command_extraction_unchanged() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "terminal", "args": {"command": "git status"}}
+    )
+    assert call is not None
+    assert call.command == "git status"
+
+
+def test_non_simple_argument_keeps_bare_name() -> None:
+    # quoted / shell-syntax args must NOT be embedded in a pseudo-command
+    call = hermes._extract_tool_call(
+        {"tool_name": "read_file", "args": {"path": "a;rm -rf /tmp"}}
+    )
+    assert call is not None
+    assert call.command == "read_file"
+
+
+def test_semantic_hazard_still_detected_through_mapping() -> None:
+    # A hostile path arg cannot smuggle a hazard: cat treats everything as filenames.
+    call = hermes._extract_tool_call(
+        {"tool_name": "read_file", "args": {"path": "rm -rf /tmp"}}
+    )
+    assert call is not None
+    assert call.command == "cat rm -rf /tmp"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    # no HAZARD facts fire (the lone positive is targets_absolute_path, a true statement
+    # about a filename in the line, not a hazard); the questions still judge the call.
+    from jev_kit.command_properties import PROPERTY_NAMES  # noqa: I001
+
+    hazards = [
+        v for k, v in props.values.items() if v and k != "targets_absolute_path"
+    ]
+    assert not hazards

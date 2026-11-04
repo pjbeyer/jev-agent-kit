@@ -53,6 +53,23 @@ from jev_kit.types import Mode
 
 _MODE_ENV_VAR = "JEV_KIT_HOOK_MODE"
 
+# Test-facing helpers (jak-baw): thin, stable aliases so tests exercise the REAL parser
+# and confidence rule without reaching into jev_kit.command_properties internals per test.
+
+
+def _parse_confident(command: str) -> bool:
+    """Whether the local parser proves this command line safe to read."""
+    from jev_kit.command_properties import extract_command_properties
+
+    return extract_command_properties(command).parse_confident
+
+
+def _command_properties(command: str):
+    """The full property set of one command line (test-facing passthrough)."""
+    from jev_kit.command_properties import extract_command_properties
+
+    return extract_command_properties(command)
+
 _BLOCK_MESSAGE = "jev-kit gate: blocked for human review."
 
 
@@ -99,6 +116,25 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
     arguments. Hermes event shapes are not pinned by a verified schema, so this reads
     defensively (`.get`, never attribute access) and returns `None` for anything unrecognized
     rather than raising; the caller fails closed (or allows, in shadow) on `None`.
+
+    Non-shell tools (jak-baw scope 2, measured 2026-11-04): Hermes passes the full `args`
+    dict, and for tools whose operation-defining argument is NOT `command`/`content` the old
+    fallback chain landed on the bare tool NAME as `ToolCall.command` — an opaque token the
+    parser can never prove safe, which fail-closed to ask on 4,459 of 4,460 measured calls
+    (61% of all would-asks were blind). The extractor table below maps known non-shell tools
+    to a parseable pseudo-command (`<verb> <arg>`) built from the argument that defines the
+    operation. Discipline (measured, not assumed):
+
+    - Only `str` args that are simple (non-empty, no quotes/redirects/expansion, one line,
+      within the parser's MAX_COMMAND_CHARS) are mapped; anything else keeps the bare tool
+      name, so the fail-closed behaviour for exotic payloads is unchanged.
+    - The table stays conservative and small: reader-class tools only, each mapped to a
+      parser-MODELED head word with the same effect class (`cat` for path readers, `grep`
+      for search, `ls` for listing). Writer-class tools (write_file, patch) are deliberately
+      NOT mapped: the parser models no honest overwrite verb, and a wrong mapping would let
+      a call allow that the questions should have judged — those calls keep the bare name
+      and stay fail-closed. Tools with richer payloads (execute_code script bodies, MCP
+      bridges, delegate_task) are likewise unmapped pending reviewed per-tool semantics.
     """
     get = getattr(event, "get", None)
     if not callable(get):
@@ -107,17 +143,26 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
         args = event.get("args")
         args_map: dict[str, Any] = args if isinstance(args, dict) else {}
 
+        tool_name = event.get("tool_name") or event.get("name") or event.get("tool")
+        # `content` is a COMMAND only for message-like tools; for writer tools (write_file)
+        # it is the PAYLOAD body, which must never become ToolCall.command (it would be
+        # judged as a command line and misparse). Reader-class extraction below decides.
         command = (
             args_map.get("command")
-            or args_map.get("content")
             or event.get("command")
-            or event.get("tool_name")
-            or event.get("name")
-            or event.get("tool")
+            or (args_map.get("content") if not _is_writer_tool(tool_name) else None)
+            or tool_name
         )
         command_str = _as_str(command)
         if not command_str:
             return None
+
+        # jak-baw: the bare tool name is a non-shell tool's opaque stand-in. If the
+        # operation-defining argument is a simple string, map it to a pseudo-command the
+        # local parser can prove safe (e.g. `read_file /path` reads like a reader verb).
+        tool_name_str = _as_str(tool_name)
+        if tool_name_str and command_str == tool_name_str:
+            command_str = _nonshell_pseudo_command(tool_name_str, args_map) or command_str
 
         target = args_map.get("target") or args_map.get("path") or args_map.get("file")
         context = event.get("context") or event.get("task_id")
@@ -125,6 +170,74 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
         return ToolCall(command=command_str, target=_as_str(target), context=_as_str(context))
     except Exception:
         return None
+
+
+#: Per-tool extractors for non-shell Hermes tools (jak-baw): tool name ->
+#: (argument names to try, MODELED head word to substitute). The head word is a
+#: program the parser already models with the SAME effect class as the tool, so
+#: the pseudo-command's cmd_* facts are true statements about the call:
+#:   read_file/search_files/skill_view read -> `cat` (modeled reader)
+#:   write_file/patch write                -> `cp` would lie about source; use `touch`?
+#: NO — touch models "create empty file", not overwrite. Writers get `tee`?
+#: Not modeled either. Writers stay OUT of this table until the parser models
+#: an honest writer verb; a wrong writer mapping would let a call allow that
+#: the questions should have judged. Conservative: readers only.
+_NONSHELL_EXTRACTORS: dict[str, tuple[tuple[str, ...], str]] = {
+    "read_file": (("path", "file"), "cat"),
+    "search_files": (("pattern", "path"), "grep"),  # reads filenames/content, writes nothing
+    "skill_view": (("name",), "cat"),
+    "skills_list": (("category",), "ls"),
+}
+
+
+#: Tools whose `content`/`code` args are payloads, never command lines. A payload that
+#: reaches ToolCall.command gets judged as a shell line and misparses (write_file's file
+#: body is the measured case). These tools have no reviewed reader mapping, so their calls
+#: keep the bare tool name and fail closed — correct, since the parser cannot prove a
+#: script body safe. Listed here to make the `content`-as-command fallback stop firing.
+_WRITER_TOOLS = frozenset({"write_file", "patch", "execute_code", "text_to_speech", "browser_exec"})
+
+
+def _is_writer_tool(tool_name: Any) -> bool:
+    """True when this tool's `content` arg is a payload, not a command line."""
+    name = _as_str(tool_name)
+    return bool(name) and name in _WRITER_TOOLS
+
+
+def _simple_arg(value: Any) -> str | None:
+    """A string argument safe to embed in a pseudo-command, else None.
+
+    Mirrors the parser's own confidence discipline: quotes, redirects, expansions, control
+    characters, non-ASCII and oversized values are NOT mapped (the call keeps its bare tool
+    name and fails closed as before). Never raises.
+    """
+    if not isinstance(value, str):
+        return None
+    stripped = value.strip()
+    if not stripped or "\n" in stripped or "\r" in stripped:
+        return None
+    if not stripped.isascii():
+        return None
+    if any(ch in stripped for ch in "\"'`\\$<>|;&(){}[]"):
+        return None
+    return stripped
+
+
+def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | None:
+    """Map a non-shell tool's defining argument to a parseable pseudo-command.
+
+    Returns None when the tool has no reviewed extractor or no simple defining argument —
+    the caller keeps the bare tool name and the call fails closed exactly as before.
+    """
+    extractor = _NONSHELL_EXTRACTORS.get(tool_name)
+    if not extractor:
+        return None
+    arg_names, head = extractor
+    for arg_name in arg_names:
+        simple = _simple_arg(args_map.get(arg_name))
+        if simple:
+            return f"{head} {simple}"
+    return None
 
 
 def _task_id_from(event: Any) -> str | None:

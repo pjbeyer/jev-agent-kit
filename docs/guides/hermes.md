@@ -137,7 +137,7 @@ scoping any "always" grant to the exact command (`jev:<cmd-head>:<sha12>`, never
 name, so one grant cannot retire the gate for every later call of that tool). The human gate
 itself fails closed (deny/timeout = blocked). Everything else is `block`: mock asks, YOLO
 or `approvals.mode: off` contexts (where Hermes would auto-approve an escalation, so a
-fail-closed ask must not become a silent allow — `block` is the one directive YOLO does not
+fail-closed ask must not become a silent allow: `block` is the one directive YOLO does not
 swallow), and unattended contexts, which the core resolves before the shim ever sees an ask
 (default record-and-continue, see the unattended policy docs).
 
