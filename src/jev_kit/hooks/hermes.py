@@ -214,6 +214,20 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
     """
     from jev_kit import hermes_tools
 
+    if tool_name == "mcp__local_mcp_aggregator__call_tool":
+        # jak-b8n: the dispatched target's `name` NAMES the operation's object
+        # (the same rule that maps read_file's `path`), so it rides as the
+        # operand; the nested `arguments` payload is never embedded. A payload
+        # dict, a multi-call batch, or an un-simple name keeps the bare bridge
+        # name (unmodeled, fail-closed).
+        calls = args_map.get("calls")
+        if isinstance(calls, list) and len(calls) == 1:
+            first = calls[0]
+            if isinstance(first, dict):
+                target = _simple_arg(first.get("name"))
+                if target:
+                    return f"{hermes_tools.PREFIX}mcp_call_tool {target}"
+        return None
     if tool_name not in hermes_tools.MODELED:
         return None
     arg_names = hermes_tools.ARG_SOURCES.get(tool_name, ())

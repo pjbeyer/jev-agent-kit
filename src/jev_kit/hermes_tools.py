@@ -19,7 +19,9 @@ source (agent/tool_executor.py and the tool schemas), not guessed:
 - network (web_search, web_extract, browser_exec) — outbound;
 - code-exec (execute_code, jupyter, delegate_task) — run unseen code, unconfident
   by design, same rule as interpreters;
-- MCP bridges (mcp__*) and cron (cronjob_manage) — arbitrary effects, unconfident.
+- MCP discovery (mcp__* search_tools/get_tool_schema) — read-only;
+- MCP dispatch (call_tool) — the dispatched target's effect, per mcp_tools;
+- cron (cronjob_manage) — scheduled/persistent effects;
 
 Trust boundary: the `hermes.` prefix is only ever emitted by the shim, and only
 from arguments that passed the shim's simple-string filter (ASCII, one line, no
@@ -51,6 +53,9 @@ READERS = frozenset({
     "session_search",      # reads session history (FTS5) — read-only
     "vision_analyze",      # loads an image for the model — read-only
     "clarify",             # asks the user a question — no file/system effect
+    # MCP discovery (jak-b8n): listing/describing remote tools is read-only.
+    "mcp__local_mcp_aggregator__search_tools",
+    "mcp__local_mcp_aggregator__get_tool_schema",
 })
 
 #: Tools that create or overwrite files at a `path` argument. Modeled as writers
@@ -94,6 +99,15 @@ PERSISTENCE = frozenset({
 AUTHORITY = frozenset({
     "manage_connections",  # connect/disconnect/rename app accounts (OAuth grants)
 })
+
+#: The MCP dispatch pseudo-tool. It is NOT a Hermes tool: the shim emits
+#: `hermes.mcp_call_tool <target>` when the aggregator bridge dispatches a
+#: single named target, and the parser classifies the target via mcp_tools.
+#: A `hermes.mcp_call_tool` line from any other path is a spoof, but the
+#: judgment stays conservative: reader targets fire network_upload (a true,
+#: conservative statement for any network call) and writers/exec/unknown
+#: fail closed, so a spoof gains nothing.
+MCP_DISPATCH_TOOL = "mcp_call_tool"
 
 #: Every modeled Hermes tool name, for the parser's allowlist.
 MODELED = READERS | WRITERS | NETWORK | CODE_EXEC | PERSISTENCE | AUTHORITY

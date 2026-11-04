@@ -443,3 +443,141 @@ def test_browser_exec_is_unseen_code_not_network() -> None:
     props = hermes._command_properties(call.command)
     assert props.parse_confident is False
     assert props.reason == "runs_unseen_code"
+
+
+# ---------------------------------------------------------------------------
+# jak-b8n: MCP bridge coverage. Discovery heads read-only; dispatch classified
+# per mcp_tools inventory; unmodeled targets fail closed; payloads never ride.
+# ---------------------------------------------------------------------------
+
+
+def test_mcp_discovery_heads_are_readers() -> None:
+    for tool in (
+        "mcp__local_mcp_aggregator__search_tools",
+        "mcp__local_mcp_aggregator__get_tool_schema",
+    ):
+        call = hermes._extract_tool_call({"tool_name": tool, "args": {}})
+        assert call is not None
+        assert call.command == f"hermes.{tool}"
+        props = hermes._command_properties(call.command)
+        assert props.parse_confident is True
+        assert not any(v for v in props.values.values() if v)
+
+
+def test_mcp_dispatch_reader_target_confident_with_egress_fact() -> None:
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "calls": [
+                    {"name": "slack-slack_search_public", "arguments": {"query": "x"}}
+                ]
+            },
+        }
+    )
+    assert call is not None
+    assert call.command == "hermes.mcp_call_tool slack-slack_search_public"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+
+
+def test_mcp_dispatch_writer_target_stays_unconfident() -> None:
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "calls": [
+                    {
+                        "name": "slack-slack_send_message",
+                        "arguments": {"channel_id": "C1"},
+                    }
+                ]
+            },
+        }
+    )
+    assert call is not None
+    assert call.command == "hermes.mcp_call_tool slack-slack_send_message"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "remote_state_write"
+
+
+def test_mcp_dispatch_code_exec_and_authority_fail_closed() -> None:
+    for target, reason in (
+        ("aws_mcp-aws___run_script", "runs_unseen_code"),
+        ("aws_mcp-aws___get_presigned_url", "mcp_grants_authority"),
+        ("obscura-browser_click", "runs_unseen_code"),
+    ):
+        call = hermes._extract_tool_call(
+            {
+                "tool_name": "mcp__local_mcp_aggregator__call_tool",
+                "args": {"calls": [{"name": target, "arguments": {}}]},
+            }
+        )
+        assert call is not None
+        props = hermes._command_properties(call.command)
+        assert props.parse_confident is False
+        assert props.reason == reason
+
+
+def test_mcp_dispatch_navigator_is_download() -> None:
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "calls": [
+                    {"name": "obscura-browser_navigate", "arguments": {"url": "u"}}
+                ]
+            },
+        }
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_download") is True
+
+
+def test_mcp_dispatch_unknown_target_fails_closed() -> None:
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {"calls": [{"name": "newserver-future_tool", "arguments": {}}]},
+        }
+    )
+    assert call is not None
+    assert call.command == "hermes.mcp_call_tool newserver-future_tool"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "mcp_dispatch_target_unknown"
+
+
+def test_mcp_dispatch_never_embeds_payload_or_batch() -> None:
+    # The nested arguments payload must not ride; a multi-call batch or missing
+    # name keeps the bare bridge name (unmodeled, fail-closed).
+    for args in (
+        {},
+        {"calls": []},
+        {"calls": [{"name": "a", "arguments": {}}, {"name": "b", "arguments": {}}]},
+        {"calls": [{"arguments": {"name": "no-name-key"}}]},
+        {"calls": [{"name": "slack-slack_send_message; rm -rf /", "arguments": {}}]},
+    ):
+        call = hermes._extract_tool_call(
+            {"tool_name": "mcp__local_mcp_aggregator__call_tool", "args": args}
+        )
+        assert call is not None
+        assert call.command == "mcp__local_mcp_aggregator__call_tool"
+        assert hermes._parse_confident(call.command) is False
+        assert not call.command.startswith("hermes.")
+
+
+def test_mcp_spoofed_dispatch_head_gains_nothing() -> None:
+    # A hermes.mcp_call_tool line from any path other than the shim's single-
+    # target extraction would have to be a typed line — but the parser's own
+    # grammar makes such a head impossible from a shell, and even a forced
+    # one gains nothing: writer/exec/unknown targets fail closed, reader
+    # targets fire the true network_upload fact.
+    props = hermes._command_properties("hermes.mcp_call_tool slack-slack_send_message")
+    assert props.parse_confident is False
+    props = hermes._command_properties("hermes.mcp_call_tool newserver-future_tool")
+    assert props.parse_confident is False

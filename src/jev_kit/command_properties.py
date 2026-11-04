@@ -596,9 +596,13 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             found.hit("network_upload")  # cannot tell which side; conservative: leaves
         if found.unconfident_reason is None:
             return
-    if program not in _MODELED:
+    is_hermes_ns = program.startswith(hermes_tools.PREFIX)
+    if program not in _MODELED and not (
+        is_hermes_ns and program[len(hermes_tools.PREFIX):] == hermes_tools.MCP_DISPATCH_TOOL
+    ):
         # Confident is an allowlist (ADR 0005): a program whose effects this module does not
-        # model is unknown. Positive detections below still count.
+        # model is unknown. Positive detections below still count. The MCP dispatch head is
+        # judged by its dispatched target (below), not by this program-level allowlist.
         found.unsure("unmodeled_program")
     if program.startswith(hermes_tools.PREFIX):
         # Hermes host-tool pseudo-program (jak-baw full coverage): the shim emits
@@ -646,6 +650,37 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             return
         if tool in hermes_tools.AUTHORITY:
             found.hit("grants_authority")
+            return
+        if tool == "mcp_call_tool":
+            # jak-b8n: the operand is the DISPATCHED TARGET's name (only the
+            # name rides; the arguments payload never leaves). The bridge's
+            # effect is the target's effect, so classify from the per-server
+            # inventory in mcp_tools — evidence-based, not guessed.
+            from jev_kit import mcp_tools
+
+            target = args[0] if args else ""
+            cls = mcp_tools.classify(target)
+            if cls == "reader":
+                # A remote read still crosses the proxy: egress is TRUE.
+                found.hit("network_upload")
+                return
+            if cls == "writer":
+                # Remote state mutation the parser cannot see the payload of:
+                # never confident (same rule as blind local writes).
+                found.unsure("remote_state_write")
+                return
+            if cls == "code_exec":
+                found.unsure("runs_unseen_code")
+                return
+            if cls == "navigator":
+                found.hit("network_download")
+                return
+            if cls == "authority":
+                found.unsure("mcp_grants_authority")
+                return
+            # Unknown/unmodeled target (new server, renamed tool, hostile or
+            # malformed name): fail closed like any unmodeled program.
+            found.unsure("mcp_dispatch_target_unknown")
             return
         # Unmapped hermes tool: unmodeled like any unknown program.
         found.unsure("unmodeled_program")
