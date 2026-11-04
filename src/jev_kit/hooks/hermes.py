@@ -147,10 +147,13 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
         # `content` is a COMMAND only for message-like tools; for writer tools (write_file)
         # it is the PAYLOAD body, which must never become ToolCall.command (it would be
         # judged as a command line and misparse). Reader-class extraction below decides.
+        from jev_kit import hermes_tools
+
+        modeled = _as_str(tool_name) in hermes_tools.MODELED
         command = (
             args_map.get("command")
             or event.get("command")
-            or (args_map.get("content") if not _is_writer_tool(tool_name) else None)
+            or (args_map.get("content") if not modeled else None)
             or tool_name
         )
         command_str = _as_str(command)
@@ -172,36 +175,11 @@ def _extract_tool_call(event: Any) -> ToolCall | None:
         return None
 
 
-#: Per-tool extractors for non-shell Hermes tools (jak-baw): tool name ->
-#: (argument names to try, MODELED head word to substitute). The head word is a
-#: program the parser already models with the SAME effect class as the tool, so
-#: the pseudo-command's cmd_* facts are true statements about the call:
-#:   read_file/search_files/skill_view read -> `cat` (modeled reader)
-#:   write_file/patch write                -> `cp` would lie about source; use `touch`?
-#: NO — touch models "create empty file", not overwrite. Writers get `tee`?
-#: Not modeled either. Writers stay OUT of this table until the parser models
-#: an honest writer verb; a wrong writer mapping would let a call allow that
-#: the questions should have judged. Conservative: readers only.
-_NONSHELL_EXTRACTORS: dict[str, tuple[tuple[str, ...], str]] = {
-    "read_file": (("path", "file"), "cat"),
-    "search_files": (("pattern", "path"), "grep"),  # reads filenames/content, writes nothing
-    "skill_view": (("name",), "cat"),
-    "skills_list": (("category",), "ls"),
-}
-
-
-#: Tools whose `content`/`code` args are payloads, never command lines. A payload that
-#: reaches ToolCall.command gets judged as a shell line and misparses (write_file's file
-#: body is the measured case). These tools have no reviewed reader mapping, so their calls
-#: keep the bare tool name and fail closed — correct, since the parser cannot prove a
-#: script body safe. Listed here to make the `content`-as-command fallback stop firing.
-_WRITER_TOOLS = frozenset({"write_file", "patch", "execute_code", "text_to_speech", "browser_exec"})
-
-
-def _is_writer_tool(tool_name: Any) -> bool:
-    """True when this tool's `content` arg is a payload, not a command line."""
-    name = _as_str(tool_name)
-    return bool(name) and name in _WRITER_TOOLS
+#: Modeled Hermes tools and their extraction sources live in hermes_tools (jak-baw
+#: full coverage): one source of truth for the shim's emission and the parser's
+#: modeling. The pseudo-program namespace is `hermes.<tool>` — `.` is not a valid
+#: shell program word in the parser's own grammar, so the head can only have come
+#: from this emission path, never from a typed shell line or a bare tool name.
 
 
 def _simple_arg(value: Any) -> str | None:
@@ -224,20 +202,28 @@ def _simple_arg(value: Any) -> str | None:
 
 
 def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | None:
-    """Map a non-shell tool's defining argument to a parseable pseudo-command.
+    """Emit `hermes.<tool> [simple naming args...]` for a MODELED Hermes tool.
 
-    Returns None when the tool has no reviewed extractor or no simple defining argument —
-    the caller keeps the bare tool name and the call fails closed exactly as before.
+    Returns None for tools not in hermes_tools.MODELED — the caller keeps the bare
+    tool name and the call fails closed exactly as before. Payload arguments are
+    never embedded; only arguments that NAME the operation's object (per
+    hermes_tools.ARG_SOURCES) are, and only when they pass the simple-string
+    filter. A modeled tool with no mappable argument still emits the bare
+    `hermes.<tool>` head: its effect facts (network, code-exec) fire without
+    any argument text leaving the machine beyond the names.
     """
-    extractor = _NONSHELL_EXTRACTORS.get(tool_name)
-    if not extractor:
+    from jev_kit import hermes_tools
+
+    if tool_name not in hermes_tools.MODELED:
         return None
-    arg_names, head = extractor
+    arg_names = hermes_tools.ARG_SOURCES.get(tool_name, ())
+    parts: list[str] = [hermes_tools.PREFIX + tool_name]
     for arg_name in arg_names:
         simple = _simple_arg(args_map.get(arg_name))
         if simple:
-            return f"{head} {simple}"
-    return None
+            parts.append(simple)
+            break  # first naming argument only: one object per call, no payload drift
+    return " ".join(parts)
 
 
 def _task_id_from(event: Any) -> str | None:

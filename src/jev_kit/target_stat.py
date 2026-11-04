@@ -44,6 +44,8 @@ WIRE_FIELD = "cmd_dest_exists"
 #: `rsync`/`scp` are excluded: their operands may be remote specs, and the last
 #: operand of a push is a remote. `install` is included (copy semantics).
 _COPY_PROGRAMS = frozenset({"cp", "mv", "install", "copy-item", "cpi", "move-item", "mi"})
+# Hermes writer pseudo-programs whose single path operand is the overwrite target.
+_HERMES_WRITER_PROGRAMS = frozenset({"hermes.write_file", "hermes.patch"})
 
 #: `ln -sf` replaces a link target only with the force flag; plain `ln` fails when
 #: the target exists, so existence is not an overwrite for it.
@@ -134,6 +136,13 @@ def resolve_dest_exists(command: object, workdir: str | None = None) -> TargetSt
             dest = operands[-1]
         else:
             return TargetStat(None, "missing_operands", None)
+    elif program in _HERMES_WRITER_PROGRAMS:
+        # Hermes writer pseudo-programs (jak-baw): `hermes.write_file <path>` /
+        # `hermes.patch <path>` — the single path operand IS the destination.
+        rest = tokens[1:]
+        if len(rest) != 1:
+            return TargetStat(None, "hermes_writer_ambiguous", None)
+        dest = rest[0]
     else:
         return TargetStat(None, "not_copy_family", None)
 

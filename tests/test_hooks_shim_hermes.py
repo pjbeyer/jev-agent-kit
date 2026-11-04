@@ -191,61 +191,106 @@ def test_register_defaults_to_shadow_and_never_blocks(monkeypatch: Any) -> None:
 
 
 # ---------------------------------------------------------------------------
-# jak-baw scope 2: non-shell tool extraction. A bare tool name used to land in
-# ToolCall.command (unparseable -> blind ask on 4,459/4,460 measured calls).
-# Reader-class tools now map their defining argument to a parser-modeled
-# pseudo-command; writers and unmapped tools keep the bare name (fail-closed).
+# jak-baw full coverage: non-shell tool extraction into the `hermes.<tool>`
+# pseudo-program namespace. A bare tool name used to land in ToolCall.command
+# (unparseable -> blind ask on 4,459/4,460 measured calls). Modeled tools now
+# emit `hermes.<tool> [naming args]`; the parser (command_properties +
+# hermes_tools) models each tool's true effect class. Unmapped tools (MCP
+# bridges, cron) keep the bare name and fail closed.
 # ---------------------------------------------------------------------------
 
 
-def test_read_file_maps_to_modeled_reader_pseudo_command() -> None:
+def test_read_file_emits_namespaced_reader() -> None:
     call = hermes._extract_tool_call(
         {"tool_name": "read_file", "args": {"path": "/Users/x/.hermes/config.yaml"}}
     )
     assert call is not None
-    assert call.command == "cat /Users/x/.hermes/config.yaml"
+    assert call.command == "hermes.read_file /Users/x/.hermes/config.yaml"
     assert hermes._parse_confident(call.command) is True
 
 
-def test_search_files_maps_pattern_to_grep() -> None:
+def test_search_files_emits_pattern_only() -> None:
     call = hermes._extract_tool_call(
         {"tool_name": "search_files", "args": {"pattern": "JEV_KIT", "path": "/Users/x/p"}}
     )
     assert call is not None
-    assert call.command == "grep JEV_KIT"
+    assert call.command == "hermes.search_files JEV_KIT"
 
 
-def test_skill_view_maps_name_to_cat() -> None:
+def test_skill_view_emits_name() -> None:
     call = hermes._extract_tool_call(
         {"tool_name": "skill_view", "args": {"name": "memory"}}
     )
     assert call is not None
-    assert call.command == "cat memory"
+    assert call.command == "hermes.skill_view memory"
 
 
-def test_writer_tools_keep_bare_name_and_fail_closed() -> None:
-    # write_file's `content` is the file BODY, not a command; it must never become
-    # ToolCall.command. The call keeps the bare tool name and stays unparseable.
+def test_writer_emits_namespaced_writer_with_dest_exists() -> None:
+    # write_file is MODELED as a writer now: the path is the destination and
+    # target_stat must stat it so overwrites_data can discriminate.
+    import tempfile
+    from pathlib import Path
+
+    from jev_kit import target_stat
+
+    with tempfile.NamedTemporaryFile(suffix=".txt") as tf:
+        existing = str(Path(tf.name))
+        call = hermes._extract_tool_call(
+            {"tool_name": "write_file", "args": {"path": existing, "content": "x"}}
+        )
+        assert call is not None
+        assert call.command.startswith("hermes.write_file ")
+        assert hermes._parse_confident(call.command) is True
+        stat = target_stat.resolve_dest_exists(call.command)
+        assert stat.dest_exists is True  # the temp file existed at judge time
+
+
+def test_writer_payload_never_becomes_command() -> None:
     call = hermes._extract_tool_call(
         {"tool_name": "write_file", "args": {"path": "/tmp/x", "content": "rm -rf /"}}
     )
     assert call is not None
-    assert call.command == "write_file"
-    assert hermes._parse_confident(call.command) is False
+    assert call.command == "hermes.write_file /tmp/x"
+    assert "rm -rf" not in call.command
 
 
-def test_execute_code_body_never_becomes_command() -> None:
+def test_execute_code_emits_code_exec_head() -> None:
+    # execute_code is MODELED (code-exec class): the head fires runs_unseen_code
+    # (unconfident by design) even though the script body is never embedded.
     call = hermes._extract_tool_call(
         {"tool_name": "execute_code", "args": {"code": "import os; os.system('rm -rf /')"}}
     )
     assert call is not None
-    assert call.command == "execute_code"
+    assert call.command == "hermes.execute_code"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"
 
 
-def test_unmapped_tool_keeps_bare_name() -> None:
+def test_delegate_task_emits_code_exec_head() -> None:
     call = hermes._extract_tool_call({"tool_name": "delegate_task", "args": {"tasks": []}})
     assert call is not None
-    assert call.command == "delegate_task"
+    assert call.command == "hermes.delegate_task"
+
+
+def test_mcp_bridge_stays_bare_and_fail_closed() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "mcp__local_mcp_aggregator__call_tool", "args": {"calls": []}}
+    )
+    assert call is not None
+    assert call.command == "mcp__local_mcp_aggregator__call_tool"
+    assert hermes._parse_confident(call.command) is False
+
+
+def test_web_search_fires_network_upload_fact() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "web_search", "args": {"query": "jev kit", "limit": 5}}
+    )
+    assert call is not None
+    assert call.command == "hermes.web_search jev kit"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
 
 
 def test_shell_command_extraction_unchanged() -> None:
@@ -256,29 +301,145 @@ def test_shell_command_extraction_unchanged() -> None:
     assert call.command == "git status"
 
 
-def test_non_simple_argument_keeps_bare_name() -> None:
-    # quoted / shell-syntax args must NOT be embedded in a pseudo-command
+def test_non_simple_argument_keeps_head_only() -> None:
+    # quoted / shell-syntax args must NOT be embedded in the pseudo-command;
+    # the modeled head still carries the effect facts.
     call = hermes._extract_tool_call(
         {"tool_name": "read_file", "args": {"path": "a;rm -rf /tmp"}}
     )
     assert call is not None
-    assert call.command == "read_file"
+    assert call.command == "hermes.read_file"
 
 
-def test_semantic_hazard_still_detected_through_mapping() -> None:
-    # A hostile path arg cannot smuggle a hazard: cat treats everything as filenames.
+def test_semantic_hazard_cannot_smuggle_through_path_arg() -> None:
     call = hermes._extract_tool_call(
         {"tool_name": "read_file", "args": {"path": "rm -rf /tmp"}}
     )
     assert call is not None
-    assert call.command == "cat rm -rf /tmp"
+    assert call.command == "hermes.read_file rm -rf /tmp"
     props = hermes._command_properties(call.command)
     assert props.parse_confident is True
-    # no HAZARD facts fire (the lone positive is targets_absolute_path, a true statement
-    # about a filename in the line, not a hazard); the questions still judge the call.
-    from jev_kit.command_properties import PROPERTY_NAMES  # noqa: I001
-
+    # `rm` here is a FILENAME the reader would open, not a program: no hazard
+    # facts fire (only path truths), and the questions still judge the call.
     hazards = [
         v for k, v in props.values.items() if v and k != "targets_absolute_path"
     ]
     assert not hazards
+
+
+def test_spoofed_namespace_head_in_shell_stays_unmodeled() -> None:
+    # A typed `hermes.unknown_tool` in a SHELL line must not gain confidence
+    # from the namespace: only modeled tool names are in the allowlist.
+    assert hermes._parse_confident("hermes.unknown_tool /tmp/x") is False
+    assert hermes._parse_confident("hermes.read_file /etc/passwd") is True
+
+
+def test_bare_tool_name_without_prefix_stays_unconfident() -> None:
+    # The bare name (extraction failure / spoof) must never parse confidently.
+    assert hermes._parse_confident("read_file") is False
+    assert hermes._parse_confident("execute_code") is False
+
+
+def test_writer_to_auto_run_path_fires_the_autorun_fact() -> None:
+    # write_file to a LaunchAgent dir fires targets_autorun_path. Same semantics
+    # as `cp x ~/Library/LaunchAgents/e.plist`: a FACT the questions judge, not a
+    # parse-unsure (the planted-code unsures cover auto-run FILE NAMES, not dirs).
+    call = hermes._extract_tool_call(
+        {"tool_name": "write_file", "args": {"path": "/Users/x/Library/LaunchAgents/e.plist"}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.values.get("targets_autorun_path") is True
+
+
+def test_writer_to_auto_run_file_name_is_unconfident() -> None:
+    # Writing a file whose NAME tools auto-run (Makefile, package.json...) stays
+    # unconfident via the planted-code rule, same as cp.
+    call = hermes._extract_tool_call(
+        {"tool_name": "write_file", "args": {"path": "/Users/x/proj/package.json"}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "writes_auto_run_file"
+
+
+# ---------------------------------------------------------------------------
+# jak-baw full coverage: extended taxonomy (writers without paths, persistence,
+# authority, deferred dispatch). Effect facts must be TRUE statements.
+# ---------------------------------------------------------------------------
+
+
+def test_cron_create_fires_autorun_fact() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "cronjob_manage", "args": {"action": "create"}}
+    )
+    assert call is not None
+    assert call.command == "hermes.cronjob_manage create"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("targets_autorun_path") is True
+
+
+def test_cron_list_is_clean() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "cronjob_manage", "args": {"action": "list"}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert not any(v for v in props.values.values() if v)
+
+
+def test_cron_run_is_unseen_code() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "cronjob_manage", "args": {"action": "run"}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"
+
+
+def test_blind_write_never_parses_confidently() -> None:
+    # skill_manage/memory operate via payload dicts (no path operand): a blind
+    # write must stay unconfident — writer_target_unknown.
+    for tool in ("skill_manage", "memory"):
+        call = hermes._extract_tool_call(
+            {"tool_name": tool, "args": {"operations": [{"action": "create"}]}}
+        )
+        assert call is not None
+        assert call.command == f"hermes.{tool}"
+        props = hermes._command_properties(call.command)
+        assert props.parse_confident is False
+        assert props.reason == "writer_target_unknown"
+
+
+def test_connection_grant_fires_authority_fact() -> None:
+    call = hermes._extract_tool_call(
+        {"tool_name": "manage_connections", "args": {"action": "connect"}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("grants_authority") is True
+
+
+def test_deferred_dispatch_is_unseen_code() -> None:
+    call = hermes._extract_tool_call({"tool_name": "tool_call", "args": {"calls": []}})
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"
+
+
+def test_browser_exec_is_unseen_code_not_network() -> None:
+    # browser_exec drives JS in a real browser: code-exec class outranks network.
+    call = hermes._extract_tool_call(
+        {"tool_name": "browser_exec", "args": {"code": "x=1"}}
+    )
+    assert call is not None
+    assert call.command == "hermes.browser_exec"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"

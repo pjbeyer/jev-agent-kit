@@ -32,6 +32,8 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from jev_kit import hermes_tools
+
 #: The property names, in the order they appear in state. State keys add the `cmd_` prefix.
 PROPERTY_NAMES: tuple[str, ...] = (
     "recursive_delete",
@@ -598,6 +600,56 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
         # Confident is an allowlist (ADR 0005): a program whose effects this module does not
         # model is unknown. Positive detections below still count.
         found.unsure("unmodeled_program")
+    if program.startswith(hermes_tools.PREFIX):
+        # Hermes host-tool pseudo-program (jak-baw full coverage): the shim emits
+        # `hermes.<tool> <simple args>` and the modeling lives in hermes_tools.
+        # A `hermes.` head can only come from the shim's simple-string filter, but
+        # treat the TOOL NAME as data anyway: unknown tools stay unmodeled, so a
+        # spoofed prefix with an unmapped name fails closed.
+        tool = program[len(hermes_tools.PREFIX):]
+        if tool in hermes_tools.READERS:
+            # Pure reads; the args (paths/patterns/names) were already path-checked
+            # by the token loop, so absolute-path etc. facts ride along.
+            return
+        if tool in hermes_tools.WRITERS:
+            # Create/overwrite at `path`. Run the planted-code check on the args
+            # (writing an auto-run file must stay unconfident). No writer options
+            # exist in these calls: a dashed arg is data the shim would not have
+            # mapped, so treat any as unconfident.
+            for tok in args:
+                if tok.startswith("-"):
+                    found.unsure("writer_option_unknown")
+            if not args:
+                # A blind write (payload-only operation, no path operand) can never
+                # be proved safe: unconfident, the questions never judge nothing.
+                found.unsure("writer_target_unknown")
+                return
+            _check_planted_code("cp", args, found)
+            return
+        if tool in hermes_tools.NETWORK:
+            found.hit("network_upload")
+            return
+        if tool in hermes_tools.CODE_EXEC:
+            found.unsure("runs_unseen_code")
+            return
+        if tool in hermes_tools.PERSISTENCE:
+            # Creating or changing a scheduled job plants work that auto-runs later:
+            # the closest TRUE property is targets_autorun_path (the auto-run store
+            # is the target), and the calibrated plants_persistence question judges
+            # the state. Read verbs and disable/delete are confident-clean; `run`
+            # executes a job's script now (unseen code).
+            action = args[0].lower() if args else ""
+            if action in ("create", "edit", "update", "enable", "rename", ""):
+                found.hit("targets_autorun_path")
+            elif action in ("run", "trigger", "test"):
+                found.unsure("runs_unseen_code")
+            return
+        if tool in hermes_tools.AUTHORITY:
+            found.hit("grants_authority")
+            return
+        # Unmapped hermes tool: unmodeled like any unknown program.
+        found.unsure("unmodeled_program")
+        return
     if program in _DOWNLOADERS and any(
         "askpass" in t.lower() or t in {"-e", "--execute", "-K", "--config"} for t in args
     ):
@@ -1602,7 +1654,7 @@ _MODELED = frozenset({
     # Closed-subcommand CLIs (ADR 0005 amendment 2): confidence only for the shapes
     # _cloud_cli and _dseditgroup decide; every other invocation stays unconfident.
     "aws", "gh", "dseditgroup",
-}) | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
+} | frozenset(hermes_tools.PREFIX + tool for tool in hermes_tools.MODELED)) | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
                                                                "run0"})
 # git is not on the allowlist: every git command can run programs named by the repository's
 # own config (core.fsmonitor, diff.external, textconv, filters, pager), and -C, --git-dir and
