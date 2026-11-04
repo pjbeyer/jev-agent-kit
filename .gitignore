@@ -45,3 +45,8 @@ tools/calibration/shadow_pilot/receipts/*.jsonl
 tools/calibration/_rescore_commands.json
 tools/calibration/_rescore_rows*.jsonl
 tools/calibration/_suite_commands*
+
+# Local-only calibration data: real command text, never committed
+# (see tools/calibration/hook_fp/measure.py for the discipline)
+tools/calibration/shadow_pilot/probes_confident.json
+tools/calibration/shadow_pilot/probe_*.json
