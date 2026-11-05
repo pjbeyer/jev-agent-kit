@@ -74,6 +74,8 @@ _UNCONFIDENT_CHARS = frozenset(";&|<>`\"'$%!(){}^")
 _CONTROL = re.compile(r"[\x00-\x08\x0a-\x1f\x7f]")
 _ENV_ASSIGNMENT = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 _SAFE_PROGRAM = re.compile(r"^[a-z0-9][a-z0-9._+-]*$")
+# Aggregator catalog tool_ids: 32 hex chars, opaque to this parser (jak-b8n).
+_MCP_OPAQUE_ID = re.compile(r"^[0-9a-f]{32}$")
 _GLOB = frozenset("*?[")
 
 _ELEVATION = frozenset({"sudo", "doas", "su", "pkexec", "runas", "gsudo", "run0"})
@@ -662,6 +664,12 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             # member fail-closes the whole batch. One batch = one effect.
             from jev_kit import mcp_tools
 
+            # Opaque catalog ids (canonical aggregator form): a 32-hex tool_id
+            # names a target whose semantics cannot be verified offline. Fail
+            # closed with the honest reason; never guess from a cached map.
+            if any(_MCP_OPAQUE_ID.fullmatch(a) for a in args):
+                found.unsure("mcp_dispatch_target_id")
+                return
             classes = [mcp_tools.classify(a) for a in args]
             if not classes:
                 found.unsure("mcp_dispatch_target_unknown")

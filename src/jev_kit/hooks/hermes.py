@@ -228,6 +228,17 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
         # rule is: judge by the WORST member. The parser therefore also
         # accepts the single-token form for batches: every member's name
         # rides, and command_properties routes on the worst class present.
+        # Canonical aggregator form (skill: hermes-plugin-and-mcp-customizations):
+        # {"tool_id": "<opaque hex>", "arguments": {...}}. The tool_id NAMES the
+        # target, but it is an opaque catalog ID -- classification by name is
+        # impossible offline, and a cached id->name map would be server state
+        # (stale-misclassification risk). Emit the id as the operand; the parser
+        # fail-closes opaque ids with an honest reason (mcp_dispatch_target_id).
+        tool_id = _simple_arg(args_map.get("tool_id"))
+        if tool_id:
+            return f"{hermes_tools.PREFIX}mcp_call_tool {tool_id}"
+        # Batch form (Hermes deferred dispatcher shape): every member's name
+        # rides, judged by the worst member in command_properties.
         calls = args_map.get("calls")
         if not isinstance(calls, list) or not calls:
             return None

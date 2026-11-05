@@ -635,3 +635,38 @@ def test_mcp_spoofed_dispatch_head_gains_nothing() -> None:
     assert props.parse_confident is False
     props = hermes._command_properties("hermes.mcp_call_tool newserver-future_tool")
     assert props.parse_confident is False
+
+
+def test_mcp_canonical_tool_id_dispatch_fails_closed_with_honest_reason() -> None:
+    # The canonical aggregator form ({"tool_id": "<opaque hex>", "arguments": ...})
+    # extracts the id as the operand; an opaque catalog id cannot be verified
+    # offline, so it fail-closes as mcp_dispatch_target_id -- never blind.
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "tool_id": "9f9d9f4eaa4842e03da39c1668270019",
+                "arguments": {"query": "x"},
+            },
+        }
+    )
+    assert call is not None
+    assert call.command == (
+        "hermes.mcp_call_tool 9f9d9f4eaa4842e03da39c1668270019"
+    )
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "mcp_dispatch_target_id"
+
+
+def test_mcp_non_hex_tool_id_fails_closed_as_unknown() -> None:
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {"tool_id": "not-hex-unknown-id", "arguments": {}},
+        }
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "mcp_dispatch_target_unknown"
