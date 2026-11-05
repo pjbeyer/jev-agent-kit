@@ -1,0 +1,19 @@
+src/jev_kit/command_properties.py
+  s_e53ab9a371976c::t_80df330c521504 655-662,665-667,669-670,672,675,678-686
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "3cbe72ce1847fefdd3f457fda0481b799d0c594b",
+  "prompts": {},
+  "sessions": {
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
