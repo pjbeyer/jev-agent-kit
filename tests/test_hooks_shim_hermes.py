@@ -552,15 +552,16 @@ def test_mcp_dispatch_unknown_target_fails_closed() -> None:
     assert props.reason == "mcp_dispatch_target_unknown"
 
 
-def test_mcp_dispatch_never_embeds_payload_or_batch() -> None:
-    # The nested arguments payload must not ride; a multi-call batch or missing
-    # name keeps the bare bridge name (unmodeled, fail-closed).
+def test_mcp_dispatch_never_embeds_payload() -> None:
+    # The nested arguments payload must not ride; a missing name, non-dict
+    # member, or un-simple (hostile) name keeps the bare bridge name
+    # (unmodeled, fail-closed).
     for args in (
         {},
         {"calls": []},
-        {"calls": [{"name": "a", "arguments": {}}, {"name": "b", "arguments": {}}]},
         {"calls": [{"arguments": {"name": "no-name-key"}}]},
         {"calls": [{"name": "slack-slack_send_message; rm -rf /", "arguments": {}}]},
+        {"calls": [{"name": "a", "arguments": {}}, "not-a-dict"]},
     ):
         call = hermes._extract_tool_call(
             {"tool_name": "mcp__local_mcp_aggregator__call_tool", "args": args}
@@ -569,6 +570,59 @@ def test_mcp_dispatch_never_embeds_payload_or_batch() -> None:
         assert call.command == "mcp__local_mcp_aggregator__call_tool"
         assert hermes._parse_confident(call.command) is False
         assert not call.command.startswith("hermes.")
+
+
+def test_mcp_batch_judged_by_worst_member() -> None:
+    # jak-b8n multi-call (2026-11-05): a batch dispatches several named tools;
+    # every member name rides, and the parse is judged by the WORST member.
+    reader = {"name": "slack-slack_search_public", "arguments": {}}
+    writer = {"name": "slack-slack_send_message", "arguments": {}}
+    exec_ = {"name": "aws_mcp-aws___run_script", "arguments": {}}
+    unknown = {"name": "newserver-future_tool", "arguments": {}}
+
+    def extract(calls):
+        call = hermes._extract_tool_call(
+            {"tool_name": "mcp__local_mcp_aggregator__call_tool",
+             "args": {"calls": calls}}
+        )
+        assert call is not None
+        return call
+
+    # all readers: confident, egress fact fires once
+    call = extract([reader, reader])
+    assert call.command.startswith("hermes.mcp_call_tool slack-slack_search_public")
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+
+    # reader + writer: the writer fail-closes the whole batch
+    props = hermes._command_properties(extract([reader, writer]).command)
+    assert props.parse_confident is False
+    assert props.reason == "remote_state_write"
+
+    # writer is outranked by code-exec
+    props = hermes._command_properties(extract([reader, writer, exec_]).command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"
+
+    # any unknown member fail-closes even if the rest are readers
+    props = hermes._command_properties(extract([reader, unknown]).command)
+    assert props.parse_confident is False
+    assert props.reason == "mcp_dispatch_target_unknown"
+
+
+def test_mcp_batch_reader_navigator_fires_both_facts() -> None:
+    reader = {"name": "slack-slack_search_public", "arguments": {}}
+    nav = {"name": "obscura-browser_navigate", "arguments": {}}
+    call = hermes._extract_tool_call(
+        {"tool_name": "mcp__local_mcp_aggregator__call_tool",
+         "args": {"calls": [reader, nav]}}
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+    assert props.values.get("network_download") is True
 
 
 def test_mcp_spoofed_dispatch_head_gains_nothing() -> None:

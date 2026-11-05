@@ -218,16 +218,28 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
         # jak-b8n: the dispatched target's `name` NAMES the operation's object
         # (the same rule that maps read_file's `path`), so it rides as the
         # operand; the nested `arguments` payload is never embedded. A payload
-        # dict, a multi-call batch, or an un-simple name keeps the bare bridge
-        # name (unmodeled, fail-closed).
+        # dict or an un-simple name keeps the bare bridge name (unmodeled,
+        # fail-closed).
+        #
+        # jak-b8n (multi-call, 2026-11-05): a batch dispatches several named
+        # tools in one call. Each member is emitted as its own pseudo-command
+        # operand line joined by ` ;; ` (a separator the parser treats as a
+        # compound line, so the parser alone fail-closes it); but the batch
+        # rule is: judge by the WORST member. The parser therefore also
+        # accepts the single-token form for batches: every member's name
+        # rides, and command_properties routes on the worst class present.
         calls = args_map.get("calls")
-        if isinstance(calls, list) and len(calls) == 1:
-            first = calls[0]
-            if isinstance(first, dict):
-                target = _simple_arg(first.get("name"))
-                if target:
-                    return f"{hermes_tools.PREFIX}mcp_call_tool {target}"
-        return None
+        if not isinstance(calls, list) or not calls:
+            return None
+        names: list[str] = []
+        for entry in calls:
+            if not isinstance(entry, dict):
+                return None
+            target = _simple_arg(entry.get("name"))
+            if not target:
+                return None
+            names.append(target)
+        return f"{hermes_tools.PREFIX}mcp_call_tool " + " ".join(names)
     if tool_name not in hermes_tools.MODELED:
         return None
     arg_names = hermes_tools.ARG_SOURCES.get(tool_name, ())

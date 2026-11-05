@@ -652,35 +652,38 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             found.hit("grants_authority")
             return
         if tool == "mcp_call_tool":
-            # jak-b8n: the operand is the DISPATCHED TARGET's name (only the
-            # name rides; the arguments payload never leaves). The bridge's
-            # effect is the target's effect, so classify from the per-server
-            # inventory in mcp_tools — evidence-based, not guessed.
+            # jak-b8n: the operands are the DISPATCHED TARGET names (only the
+            # names ride; the arguments payload never leaves). The bridge's
+            # effect is the effect of its targets, so classify each from the
+            # per-server inventory in mcp_tools — evidence-based, not guessed.
+            # A batch (jak-b8n multi-call, 2026-11-05) is judged by its WORST
+            # member: the parse is confident only if every member is a known
+            # reader/navigator; any writer, code-exec, authority, or unknown
+            # member fail-closes the whole batch. One batch = one effect.
             from jev_kit import mcp_tools
 
-            target = args[0] if args else ""
-            cls = mcp_tools.classify(target)
-            if cls == "reader":
-                # A remote read still crosses the proxy: egress is TRUE.
-                found.hit("network_upload")
+            classes = [mcp_tools.classify(a) for a in args]
+            if not classes:
+                found.unsure("mcp_dispatch_target_unknown")
                 return
-            if cls == "writer":
-                # Remote state mutation the parser cannot see the payload of:
-                # never confident (same rule as blind local writes).
-                found.unsure("remote_state_write")
+            if any(c == "unknown" for c in classes):
+                found.unsure("mcp_dispatch_target_unknown")
                 return
-            if cls == "code_exec":
+            if any(c == "code_exec" for c in classes):
                 found.unsure("runs_unseen_code")
                 return
-            if cls == "navigator":
-                found.hit("network_download")
-                return
-            if cls == "authority":
+            if any(c == "authority" for c in classes):
                 found.unsure("mcp_grants_authority")
                 return
-            # Unknown/unmodeled target (new server, renamed tool, hostile or
-            # malformed name): fail closed like any unmodeled program.
-            found.unsure("mcp_dispatch_target_unknown")
+            if any(c == "writer" for c in classes):
+                found.unsure("remote_state_write")
+                return
+            # All members are readers/navigators: the batch egresses (each call
+            # crosses the proxy) and/or downloads; both facts are TRUE.
+            if any(c == "navigator" for c in classes):
+                found.hit("network_download")
+            if any(c == "reader" for c in classes):
+                found.hit("network_upload")
             return
         # Unmapped hermes tool: unmodeled like any unknown program.
         found.unsure("unmodeled_program")
