@@ -114,6 +114,29 @@ def test_benign_child_command_emits_children() -> None:
     assert ";;" not in pseudo  # single child, no separator
 
 
+def test_benign_child_with_path_facts_emits_children() -> None:
+    # Regression (found by the live probe): children touching /tmp carry TRUE
+    # location facts (targets_absolute_path, targets_regenerable_path) —
+    # those are not hazards. Only hazard facts (recursive_delete, ...) may
+    # bounce the clean form.
+    code = 'import subprocess\nsubprocess.run(["wc", "-l", "/tmp/rows.jsonl"])'
+    pseudo = _pseudo(code)
+    assert pseudo is not None
+    assert "/tmp/rows.jsonl" in pseudo
+
+
+def test_multi_child_payload_joins_with_separator() -> None:
+    code = (
+        'import subprocess\n'
+        'subprocess.run(["ls", "-la"])\n'
+        'subprocess.run(["wc", "-l", "/tmp/rows.jsonl"])'
+    )
+    pseudo = _pseudo(code)
+    assert pseudo is not None
+    assert " ;; " in pseudo
+    assert "ls -la" in pseudo and "wc -l /tmp/rows.jsonl" in pseudo
+
+
 def test_dangerous_dynamic_argv_keeps_opaque_head() -> None:
     code = "cmd = 'rm -rf /data'\nsubprocess.run(cmd.split())"
     assert _pseudo(code) == "hermes.execute_code"

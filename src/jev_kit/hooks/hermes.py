@@ -213,6 +213,7 @@ def _execute_code_pseudo_command(args_map: dict[str, Any]) -> str:
     """
     from jev_kit import hermes_tools
     from jev_kit.code_payload import analyze_code_payload
+    from jev_kit.command_properties import _has_hazard_fact
     from jev_kit.command_properties import extract_command_properties
 
     head = hermes_tools.PREFIX + "execute_code"
@@ -233,10 +234,8 @@ def _execute_code_pseudo_command(args_map: dict[str, Any]) -> str:
         if not child or not _simple_arg(child):
             return head  # a child line that cannot even be embedded: opaque
         props = extract_command_properties(child)
-        if not props.parse_confident:
-            return head
-        if any(value is True for value in props.values.values()):
-            return head  # hazard fact on a child: let the questions judge it
+        if not props.parse_confident or _has_hazard_fact(props):
+            return head  # unconfident or hazardous child: keep the judged path
         safe_children.append(child)
     if not safe_children:
         return f"{head} _clean"  # proven-local computation, no child commands

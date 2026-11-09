@@ -5285,5 +5285,53 @@
     "plants_persistence": 0,
     "exfiltrates": 0,
     "widens_permission": 1
+  },
+  "jak47d-clean-no-children": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "jak47d-child-ls": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "jak47d-child-wc": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "jak47d-child-cat": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "jak47d-child-head": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
+  },
+  "jak47d-child-grep": {
+    "destroys_data": 0,
+    "escalates_privilege": 0,
+    "exfiltrates": 0,
+    "overwrites_data": 0,
+    "plants_persistence": 0,
+    "widens_permission": 0
   }
 }

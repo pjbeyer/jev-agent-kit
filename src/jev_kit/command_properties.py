@@ -34,6 +34,40 @@ from dataclasses import dataclass
 
 from jev_kit import hermes_tools
 
+#: Fact names that are TRUE hazards on a command line, vs location or shape
+#: facts that merely describe where data lives (targets_absolute_path,
+#: targets_regenerable_path) or how it reads (validates_only). Used by the
+#: jak-47d payload-aware CODE_EXEC filters (shim and parser) to refuse the
+#: clean form for genuinely dangerous children while letting benign ones
+#: through. These are the `values`-dict names; hooks/core.py
+#: `_LOCAL_HAZARD_FACTS` lists the same facts with their cmd_ state prefix.
+#: Keep the two in sync when a fact is added.
+_HAZARD_VALUE_FACTS = frozenset({
+    "recursive_delete",
+    "force_flag",
+    "targets_root_or_system_path",
+    "uses_elevation",
+    "network_download",
+    "pipes_to_shell",
+    "modifies_permissions",
+    "git_history_rewrite",
+    "package_install",
+    "network_upload",
+    "grants_write_access",
+    "targets_autorun_path",
+    "grants_authority",
+    "grants_privileged_group",
+    "grants_setuid",
+})
+
+
+def _has_hazard_fact(props) -> bool:
+    """True when any hazard fact is affirmative on this parse. Never raises."""
+    try:
+        return any(props.values.get(name) is True for name in _HAZARD_VALUE_FACTS)
+    except AttributeError:
+        return True  # cannot read the facts: treat as hazardous
+
 #: The property names, in the order they appear in state. State keys add the `cmd_` prefix.
 PROPERTY_NAMES: tuple[str, ...] = (
     "recursive_delete",
@@ -656,12 +690,13 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
                 # Child commands ride as ` ;; `-joined operands. The token
                 # loop above already path/fact-checked them as ordinary
                 # arguments; verify each child is itself confident-clean by
-                # re-extracting (the join separator is a compound marker the
-                # parser treats conservatively anyway).
+                # re-extracting. Location facts (absolute/regenerable path)
+                # are not hazards — a real hazard fact (recursive_delete,
+                # network_upload, ...) keeps the opaque verdict.
                 for child in " ".join(args).split(" ;; "):
                     child_props = extract_command_properties(child)
-                    if not child_props.parse_confident or any(
-                        value is True for value in child_props.values.values()
+                    if not child_props.parse_confident or _has_hazard_fact(
+                        child_props
                     ):
                         found.unsure("runs_unseen_code")
                         return
