@@ -9,6 +9,7 @@ fake HTTP server, since accept requires a non-mock transport.
 from __future__ import annotations
 
 import json
+from pathlib import Path
 from typing import Any, ClassVar
 
 import pytest
@@ -781,6 +782,61 @@ def test_state_producer_is_part_of_calibration_identity(
         req["producer"] = sent
     rec = only(decide(req, transport=reply(0.1), config=cfg))
     assert (rec["threshold_status"] == "calibrated") is calibrated
+
+
+def test_registry_producer_stamp_mismatch_fails_loudly(tmp_path: Any) -> None:
+    """A registry stamped with a different producer than the request's fails every
+    question with fail_reason=config (jak-6lt): silent uncalibrated fallback was the
+    2026-11-08 ask-storm. Like other whole-request failures (GATE-08), the response
+    still carries records; the loudness is every record's fail_reason."""
+    reg = tmp_path / "registry.json"
+    reg.write_text(
+        json.dumps({
+            "schema_version": 1,
+            "producer": PRODUCER_OLD,
+            "entries": {},
+        }),
+        encoding="utf-8",
+    )
+    cfg = EngineConfig(
+        hmac_key=HMAC_KEY, writer=ReceiptWriter(directory=tmp_path), rate_budget=RateBudget(),
+        registry_path=str(reg),
+    )
+    req = request("shadow")
+    req["producer"] = PRODUCER_NEW
+    resp = decide(req, transport=reply(0.1), config=cfg)
+    assert resp["status"] == "ok"
+    assert resp["records"], "expected per-question records carrying the failure"
+    for rec in resp["records"]:
+        assert rec["fail_reason"] == "config"
+
+
+def test_registry_producer_stamp_match_calibrates(tmp_path: Any) -> None:
+    reg = _registry_for(tmp_path, PRODUCER_NEW)
+    # Add the stamp matching the request producer; entries must still apply.
+    data = json.loads(Path(reg).read_text())
+    data["producer"] = PRODUCER_NEW
+    Path(reg).write_text(json.dumps(data), encoding="utf-8")
+    cfg = EngineConfig(
+        hmac_key=HMAC_KEY, writer=ReceiptWriter(directory=tmp_path), rate_budget=RateBudget(),
+        registry_path=str(reg),
+    )
+    req = request("shadow")
+    req["producer"] = PRODUCER_NEW
+    rec = only(decide(req, transport=reply(0.1), config=cfg))
+    assert rec["threshold_status"] == "calibrated"
+
+
+def test_registry_without_stamp_still_loads(tmp_path: Any) -> None:
+    reg = _registry_for(tmp_path, PRODUCER_NEW)  # pre-stamp format: no producer key
+    cfg = EngineConfig(
+        hmac_key=HMAC_KEY, writer=ReceiptWriter(directory=tmp_path), rate_budget=RateBudget(),
+        registry_path=str(reg),
+    )
+    req = request("shadow")
+    req["producer"] = PRODUCER_NEW
+    rec = only(decide(req, transport=reply(0.1), config=cfg))
+    assert rec["threshold_status"] == "calibrated"
 
 
 @pytest.mark.parametrize(

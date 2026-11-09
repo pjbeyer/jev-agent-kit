@@ -25,6 +25,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO / "src"))
 
 from jev_kit.calibration.promotion import select_bounds  # noqa: E402
+from jev_kit.hooks.core import producer_id  # noqa: E402
 from jev_kit.registry import load_registry  # noqa: E402
 
 HERE = Path(__file__).parent
@@ -154,7 +155,15 @@ def main() -> None:
     if receipt_mtime < qs_mtime:
         raise SystemExit("scored rows predate the current question set -- re-score first")
 
-    reg = {"schema_version": 1, "entries": {}}
+    reg = {
+        "schema_version": 1,
+        "entries": {},
+        # Stamp the producer whose fingerprints these entries are keyed from
+        # (jak-6lt). The engine compares this to the request's producer and fails
+        # CONFIG loudly on mismatch, so a registry left behind by a producer
+        # rotation can never silently degrade every question to uncalibrated ask.
+        "producer": producer_id("hermes", str(REPO / "src" / "jev_kit" / "hooks" / "hermes.py")),
+    }
     for q in QUESTIONS:
         info = entries[q]
         if info["sufficient"]:

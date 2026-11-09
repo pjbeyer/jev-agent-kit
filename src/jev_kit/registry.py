@@ -47,6 +47,16 @@ SCHEMA_VERSION = 1
 # Fingerprints are hex SHA-256 digests (spec stories 69 to 71).
 _FINGERPRINT_RE = re.compile(r"^[0-9a-f]{64}$")
 
+# Optional registry-root producer stamp (jak-6lt): the producer id whose fingerprints the
+# registry was keyed from. The engine compares it to the runtime producer and fails CONFIG
+# (loudly) on mismatch, so a stale registry after hook-source churn can never silently
+# degrade every question to uncalibrated ask (the 2026-11-08 ask-storm). Registries
+# without a stamp stay loadable for backward compatibility. Shape matches the request
+# producer grammar (engine._PRODUCER_PATTERN); the exact engine pattern lives there, this
+# only guards against a malformed stamp in the file.
+_REGISTRY_ROOT_ALLOWED_KEYS = {"schema_version", "entries", "producer"}
+_REGISTRY_PRODUCER_RE = re.compile(r"^[a-z][a-z0-9._-]{0,39}@src:[0-9a-f]{28}$")
+
 # Registry-supplied labels: bounded, plain, no separators that could carry structure
 # (spec story 79a).
 _SAFE_STRING_RE = re.compile(r"^[A-Za-z0-9 ._:-]{1,200}$")
@@ -255,13 +265,23 @@ def loads_registry(text: str) -> dict[str, RegistryEntry]:
 
     Raises ``ValidationError(FailReason.CONFIG, ...)`` on any malformed input. Never
     echoes offending values (spec stories 63, 79a).
+
+    The optional root ``producer`` stamp is validated here but not returned; use
+    :func:`loads_registry_metadata` when the caller needs it for the producer-match
+    check (jak-6lt).
     """
     data = _parse_json(text)
     root = _require_object(data, "registry_root_not_object")
 
-    unknown_top = set(root.keys()) - {"schema_version", "entries"}
+    unknown_top = set(root.keys()) - _REGISTRY_ROOT_ALLOWED_KEYS
     if unknown_top:
         raise ValidationError(FailReason.CONFIG, "registry_unknown_field")
+
+    producer = root.get("producer")
+    if producer is not None and (
+        not isinstance(producer, str) or not _REGISTRY_PRODUCER_RE.fullmatch(producer)
+    ):
+        raise ValidationError(FailReason.CONFIG, "registry_bad_producer")
 
     schema_version = root.get("schema_version")
     # Exact integer only: 1.0 == 1 and True == 1 in Python, so a bare inequality would accept a
@@ -278,6 +298,22 @@ def loads_registry(text: str) -> dict[str, RegistryEntry]:
         fingerprint = _require_fingerprint(key)
         entries[fingerprint] = _build_entry(value)
     return entries
+
+
+def loads_registry_metadata(text: str) -> tuple[dict[str, RegistryEntry], str | None]:
+    """Parse registry JSON text, also returning the root ``producer`` stamp.
+
+    Same validation as :func:`loads_registry`; the stamp is ``None`` when absent
+    (a registry written before the stamp existed). The engine uses the stamp for
+    the producer-match check (jak-6lt): a stamped registry whose producer differs
+    from the runtime producer must fail loudly (CONFIG), not silently degrade to
+    uncalibrated asks.
+    """
+    entries = loads_registry(text)
+    data = _parse_json(text)
+    root = _require_object(data, "registry_root_not_object")
+    producer = root.get("producer")
+    return entries, producer if isinstance(producer, str) else None
 
 
 def load_registry(path: str | os.PathLike[str]) -> dict[str, RegistryEntry]:

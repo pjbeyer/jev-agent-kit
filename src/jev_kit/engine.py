@@ -447,12 +447,36 @@ def _decide(
         whole_fail = FailReason.CONFIG
 
     registry: dict[str, RegistryEntry] = {}
+    registry_producer: str | None = None
     if whole_fail is None:
         try:
             registry_path = registry_mod.resolve_registry_path(config.registry_path)
-            registry = registry_mod.load_registry(registry_path) if registry_path else {}
+            if registry_path:
+                with open(registry_path, encoding="utf-8") as handle:
+                    text = handle.read()
+                registry, registry_producer = registry_mod.loads_registry_metadata(text)
+        except FileNotFoundError:
+            # A missing registry file is NOT a config failure (spec story 72): every
+            # question is treated as uncalibrated, exactly like load_registry did.
+            registry, registry_producer = {}, None
         except ValidationError:
             whole_fail = FailReason.CONFIG
+        except OSError:
+            whole_fail = FailReason.CONFIG
+
+    # Producer-match check (jak-6lt): a stamped registry keyed from a different
+    # producer than the one running now is a silent ask-storm in the making — every
+    # fingerprint lookup would miss and every question would fall back to
+    # uncalibrated. Fail the whole request loudly instead (CONFIG), so the
+    # misbinding is visible in the decision record the moment it happens. An
+    # unstamped registry (pre-stamp format) keeps working unchanged.
+    if (
+        whole_fail is None
+        and registry_producer is not None
+        and producer is not None
+        and registry_producer != producer
+    ):
+        whole_fail = FailReason.CONFIG
 
     if whole_fail is None:
         try:

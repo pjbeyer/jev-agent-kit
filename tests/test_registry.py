@@ -16,7 +16,7 @@ from typing import Any
 import pytest
 
 from jev_kit.errors import FailReason, ValidationError
-from jev_kit.registry import load_registry, loads_registry, resolve_registry_path
+from jev_kit.registry import load_registry, loads_registry, loads_registry_metadata, resolve_registry_path
 from jev_kit.routing import ChoiceThreshold, NoulThreshold, ScoreThreshold, ThresholdStatus
 
 FP_NOUL = "a" * 64
@@ -338,6 +338,27 @@ def test_unknown_top_level_field_rejected() -> None:
     with pytest.raises(ValidationError) as exc_info:
         loads_registry(json.dumps(registry))
     assert exc_info.value.reason is FailReason.CONFIG
+
+
+def test_producer_stamp_accepted_and_returned() -> None:
+    registry = dict(_valid_registry(), producer="hook.hermes@src:" + "0" * 28)
+    entries, producer = loads_registry_metadata(json.dumps(registry))
+    assert producer == "hook.hermes@src:" + "0" * 28
+    assert entries  # entries load as before
+
+
+def test_producer_stamp_absent_returns_none() -> None:
+    entries, producer = loads_registry_metadata(json.dumps(_valid_registry()))
+    assert producer is None
+    assert entries  # backward compatible: unstamped registries load unchanged
+
+
+def test_producer_stamp_malformed_rejected() -> None:
+    for bad in ("not-a-producer", "hook.hermes@src:xyz", 123, ""):
+        registry = dict(_valid_registry(), producer=bad)
+        with pytest.raises(ValidationError) as exc_info:
+            loads_registry(json.dumps(registry))
+        assert exc_info.value.reason is FailReason.CONFIG
 
 
 def test_unknown_entry_field_rejected() -> None:
