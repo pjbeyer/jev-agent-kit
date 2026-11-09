@@ -201,6 +201,48 @@ def _simple_arg(value: Any) -> str | None:
     return stripped
 
 
+def _execute_code_pseudo_command(args_map: dict[str, Any]) -> str:
+    """(jak-47d) Payload-aware pseudo-command for execute_code.
+
+    Analyzes the `code` argument statically. Clean payload + all extracted
+    child command lines judged confident by the property parser:
+    `hermes.execute_code <children joined by ' ;; '>`. Anything else: the
+    bare `hermes.execute_code` head (fail-closed runs_unseen_code as before).
+    Never raises; never embeds payload text — only extracted child commands,
+    each re-judged by the parser independently of this function's verdict.
+    """
+    from jev_kit import hermes_tools
+    from jev_kit.code_payload import analyze_code_payload
+    from jev_kit.command_properties import extract_command_properties
+
+    head = hermes_tools.PREFIX + "execute_code"
+    code = args_map.get("code")
+    if not isinstance(code, str) or not code.strip():
+        return head
+    try:
+        clean, children, _reason = analyze_code_payload(code)
+    except Exception:
+        return head  # never raise; opaque by rule
+    if not clean:
+        return head
+    # Children must survive the simple filter AND independent re-judgment:
+    # every child line must parse confident with no hazard fact. The parser
+    # does the judging; this function only decides what to hand it.
+    safe_children: list[str] = []
+    for child in children:
+        if not child or not _simple_arg(child):
+            return head  # a child line that cannot even be embedded: opaque
+        props = extract_command_properties(child)
+        if not props.parse_confident:
+            return head
+        if any(value is True for value in props.values.values()):
+            return head  # hazard fact on a child: let the questions judge it
+        safe_children.append(child)
+    if not safe_children:
+        return f"{head} _clean"  # proven-local computation, no child commands
+    return f"{head} " + " ;; ".join(safe_children)
+
+
 def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | None:
     """Emit `hermes.<tool> [simple naming args...]` for a MODELED Hermes tool.
 
@@ -253,6 +295,20 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
         return f"{hermes_tools.PREFIX}mcp_call_tool " + " ".join(names)
     if tool_name not in hermes_tools.MODELED:
         return None
+    # Payload-aware CODE_EXEC modeling (jak-47d): for execute_code only, the
+    # shim statically analyzes the `code` argument locally (never executes it,
+    # never embeds it). A payload proven clean, whose extracted child command
+    # lines all judge confident-benign in the property parser, is emitted as
+    # `hermes.execute_code <child lines joined by ' ;; '>` — the parser judges
+    # the children and, when all are confident and hazard-free, treats the
+    # call as proven local computation. Anything opaque (dynamic argv, eval,
+    # unknown imports...) keeps the bare `hermes.execute_code` head and fails
+    # closed to runs_unseen_code exactly as before. The payload text itself
+    # NEVER rides: only extracted child command lines do, and only after the
+    # parser independently re-judges them — the shim's claim is not trusted,
+    # it is verified.
+    if tool_name == "execute_code":
+        return _execute_code_pseudo_command(args_map)
     arg_names = hermes_tools.ARG_SOURCES.get(tool_name, ())
     parts: list[str] = [hermes_tools.PREFIX + tool_name]
     for arg_name in arg_names:

@@ -636,6 +636,38 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             found.hit("network_upload")
             return
         if tool in hermes_tools.CODE_EXEC:
+            # jak-47d payload-aware forms: the shim emits
+            # `hermes.execute_code _clean` when the payload was statically
+            # proven to be pure local computation with no child commands, or
+            # `hermes.execute_code <child> [ ;; <child>...]` when the payload's
+            # subprocess-family calls extracted to literal child command lines
+            # that the parser judged confident and hazard-free in the shim.
+            # The head can only come from the shim, but judge by CONTENT, not
+            # trust: children were re-judged token-by-token by this same
+            # parser in the shim — and they are re-checked here for the same
+            # reason (a spoofed `hermes.execute_code` line with operands is
+            # judged by the children, which is at least as conservative).
+            # Everything else — bare head, any other CODE_EXEC tool — keeps
+            # the fail-closed verdict.
+            if tool == "execute_code" and args:
+                if args == ["_clean"]:
+                    # Proven local computation (no child commands extracted).
+                    return
+                # Child commands ride as ` ;; `-joined operands. The token
+                # loop above already path/fact-checked them as ordinary
+                # arguments; verify each child is itself confident-clean by
+                # re-extracting (the join separator is a compound marker the
+                # parser treats conservatively anyway).
+                for child in " ".join(args).split(" ;; "):
+                    child_props = extract_command_properties(child)
+                    if not child_props.parse_confident or any(
+                        value is True for value in child_props.values.values()
+                    ):
+                        found.unsure("runs_unseen_code")
+                        return
+                # All children confident and hazard-free: the payload's
+                # effects are these children; nothing else executes.
+                return
             found.unsure("runs_unseen_code")
             return
         if tool in hermes_tools.PERSISTENCE:
