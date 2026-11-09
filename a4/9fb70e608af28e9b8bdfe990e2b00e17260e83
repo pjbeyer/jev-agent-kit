@@ -1,0 +1,29 @@
+tools/calibration/build_registry.py
+  s_e53ab9a371976c::t_deecd9f7a1a0fc 116-131,134-135,146
+tools/calibration/shadow_pilot/run_chunk.py
+  s_331de11c1f0764::t_7a78babf270a4f 1-74
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "a49fb70e608af28e9b8bdfe990e2b00e17260e83",
+  "prompts": {},
+  "sessions": {
+    "s_331de11c1f0764": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_063947_a7ae99",
+        "model": "glm-5.3"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    },
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
