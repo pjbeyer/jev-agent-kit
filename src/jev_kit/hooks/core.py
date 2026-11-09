@@ -563,7 +563,19 @@ def _map_response(response: dict[str, Any], mode: Mode) -> HookResult:
         return _fail_closed(mode, "malformed_records")
 
     def _may_allow(rec: dict[str, Any]) -> bool:
-        if rec.get("route") != "accept":
+        # Shadow records carry route=no_advice by design (resolve_route rule 3: a successful
+        # shadow evaluation gives no advice), so the would-be enforce route is NOT rec["route"]
+        # for them — it is rec["would_route"], the calibrated candidate. Reading rec["route"]
+        # here made the shadow would_outcome rehearsal ask on nearly every successful call
+        # (ask-storm artifact, found 2026-11-08). The candidate alone is not permission: the
+        # H1 label-authorization rule still applies, and any record without a candidate
+        # (whole-failure, mock, uncalibrated) never allows.
+        route = rec.get("route")
+        if rec.get("mode") == "shadow":
+            route = rec.get("would_route")
+            if route is None:
+                return False  # no calibrated candidate: fail closed
+        if route != "accept":
             return False
         allow_labels = rec.get("allow_labels")
         if not isinstance(allow_labels, list):

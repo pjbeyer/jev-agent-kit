@@ -113,21 +113,26 @@ def main() -> None:
                       "no_bound": res.no_bound, "yes_bound": res.yes_bound,
                       "pos": pos, "neg": neg}
 
-    # fingerprints come from the receipts of the scored run, not from recomputation
-    import glob
-    # Receipts from older question-set versions carry stale fingerprints (any wording change
-    # re-keys the question). Only the NEWEST receipt file matches the set being shipped.
-    # Include the kit's own default receipts dir (where run_pilot's live calls actually
-    # write) alongside the legacy calibration dir and the pilot's redirected dir: missing
-    # the real location keys the registry from a stale, unbound receipt.
-    from jev_kit.receipts import receipts_dir
-    candidates = [Path.home() / ".local/share/hermes/jev-calibration/receipts",
-                  receipts_dir(),
-                  HERE / "shadow_pilot" / "receipts"]
-    paths = sorted({str(f) for base in candidates for f in base.glob("*.jsonl")},
-                   key=os.path.getmtime)
+    # Fingerprints come from the receipts of the scored run, not from recomputation.
+    # The scored run for the CURRENT producer is the isolated probe corpus
+    # (run_chunk.py redirects JEV_KIT_RECEIPTS_DIR to probe-receipts). Picking the
+    # "newest receipt file with all 6 questions" from the ambient dirs is racy and
+    # wrong: the live gateway's receipts dir receives a continuous stream written
+    # under whatever producer is deployed, so its newest file can carry a stale
+    # (old-producer) fingerprint set — exactly the defect that keyed the registry
+    # to the previous producer on 2026-11-05 and made every runtime lookup miss
+    # (ask-storm, found 2026-11-08). Require the explicit probe receipts dir.
+    probe_receipts = Path(
+        os.environ.get("JEV_KIT_PROBE_RECEIPTS",
+                       str(Path.home() / ".local/share/hermes/jev-calibration/probe-receipts"))
+    )
+    if not probe_receipts.is_dir():
+        raise SystemExit(f"probe receipts dir not found: {probe_receipts} — re-run the probe corpus first")
+    paths = sorted(probe_receipts.glob("*.jsonl"), key=os.path.getmtime)
     fps: dict[str, str] = {}
     newest_path = paths[-1] if paths else None
+    # Take fingerprints from the newest probe file that carries all questions; earlier
+    # files may come from an older question set or producer.
     for path in reversed(paths):
         with open(path) as fh:
             recs = [json.loads(line) for line in fh]
@@ -138,6 +143,7 @@ def main() -> None:
                 found.setdefault(qid, fp)
         if len(found) == len(QUESTIONS):
             fps = found
+            newest_path = path
             break
     if len(fps) != len(QUESTIONS):
         raise SystemExit("missing fingerprints; score the suite first")
