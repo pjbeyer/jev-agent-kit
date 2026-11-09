@@ -1,0 +1,40 @@
+src/jev_kit/engine.py
+  s_e53ab9a371976c::t_f7cfcac26cbda2 458-461
+  s_e53ab9a371976c::t_51255431ef643c 450,454-457,464-479
+tests/test_engine.py
+  s_e53ab9a371976c::t_5989366b4800c6 788-791,808-811
+  s_e53ab9a371976c::t_c65599084ee73e 12
+  s_e53ab9a371976c::t_7e1b750705c44f 787,792-807,812-816,818,820-841
+  s_e53ab9a371976c::t_dd9338560b218b 817,819
+src/jev_kit/registry.py
+  s_e53ab9a371976c::t_d748de7a0f0373 268-271
+  s_e53ab9a371976c::t_da98729f85eeba 50-53,57,59
+  s_e53ab9a371976c::t_00aac0cdacc527 276,280-281,283-284
+  s_e53ab9a371976c::t_46c170a8b207ef 303-318
+  s_e53ab9a371976c::t_5af6847226d25a 54-56,58
+  s_e53ab9a371976c::t_61d73de565f9c8 282
+  s_e53ab9a371976c::t_1ae434683ff551 285
+tools/calibration/build_registry.py
+  s_e53ab9a371976c::t_161d04f9154f1a 158-166
+  s_e53ab9a371976c::t_361f05edc42b69 28
+tests/test_registry.py
+  s_e53ab9a371976c::t_d7bde0318f0581 19
+  s_e53ab9a371976c::t_8cf20b1d1838a5 343,345,347-363
+  s_e53ab9a371976c::t_a9dabbb846943f 344,346
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "60218b5c53462edb30bea9a694cdfae7a9741682",
+  "prompts": {},
+  "sessions": {
+    "s_e53ab9a371976c": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261104_064027_1230e8",
+        "model": "smart-router"
+      },
+      "human_author": null
+    }
+  }
+}
