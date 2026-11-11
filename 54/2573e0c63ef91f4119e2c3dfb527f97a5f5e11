@@ -1,0 +1,24 @@
+src/jev_kit/mcp_tools.py
+  s_3491c30f7d8273::t_f9516a806399ac 153-179,184-188,192
+src/jev_kit/command_properties.py
+  s_3491c30f7d8273::t_00aef38137d58d 735-742,745-746
+tests/test_hooks_shim_hermes.py
+  s_3491c30f7d8273::t_6e04c3251a21a8 642-644,663-705
+  s_3491c30f7d8273::t_e7bf175c4420ba 706-708
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "542573e0c63ef91f4119e2c3dfb527f97a5f5e11",
+  "prompts": {},
+  "sessions": {
+    "s_3491c30f7d8273": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261111_170759_a9d431",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}
