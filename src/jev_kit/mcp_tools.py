@@ -150,15 +150,46 @@ AUTHORITY: frozenset[str] = frozenset(
 
 _KNOWN = READERS | WRITERS | CODE_EXEC | NAVIGATORS | AUTHORITY
 
+#: Provisioned catalog ids (jak-77q): the aggregator's canonical dispatch form
+#: carries a server-assigned 32-hex `tool_id` that cannot be derived from the
+#: target name (no hash construction matched; ids are assigned by the aggregator
+#: at server-registration time). A *cached runtime* lookup would be server state
+#: with stale-misclassification risk, but ids have proven stable across the full
+#: 2026-11-10→11 shadow window (201 dispatches to the top id). So these entries
+#: are PROVISIONED, each verified live through the aggregator
+#: (`get_tool_schema(tool_id=...)`) on the marked date — the same evidence rule
+#: as the name inventory above. Classification remains name-based: the id maps
+#: only to a name, and the name still must exist in the per-server inventory
+#: above; an id whose name is absent from the inventory fails closed exactly as
+#: an unknown name. An id absent from this map fails closed as
+#: `mcp_dispatch_target_id` in the parser — never blind.
+TOOL_IDS: dict[str, str] = {
+    # Verified live via get_tool_schema 2026-11-11 (OBS).
+    "a1ca5a74ba5ff9eea51b378d98c14791": "slack-slack_read_channel",
+    "eda3f9b6f661059347c6c54eb5043bf8": "slack-slack_read_thread",
+    "883ba0404b04dee9f72f4f4259a29b74": "slack-slack_search_channels",
+    "9cd0cba24732beaf23e5bf3c9b67f919": "notion_personal-notion-search",
+    "ab98dadf00943b898e593d6772db1077": "notion_personal-notion-fetch",
+    "6d4bc5df651c74e808ec75fcb50c86ee": "notion_personal-notion-query-data-sources",
+    "d87c5d6e63f767e354026dd268391adf": "notion_personal-notion-get-self",
+    "f3ae5871231c4b11eb8b4dccb14dc5fb": "notion_personal-notion-update-page",
+    "b53929f48f4c714264aff5ebb9c34641": "flex-litellm-gateway-mcp_tool_search",
+    "a26a54776da7d49225faf341ccf2e2fa": "flex-litellm-gateway-mcp_tool_call",
+}
+
 
 def classify(target: str) -> str:
     """The effect class of one dispatched target name, or "unknown".
 
-    Pure and total: any string returns a class; an empty or unknown name
-    returns "unknown" and the parser fails closed on it. Never raises.
+    Accepts either the target NAME (``<server>-<tool>``, as the aggregator
+    exposes it) or a provisioned catalog tool_id (jak-77q) — a tool_id maps to
+    its name first, and only the name is classified. Pure and total: any string
+    returns a class; an empty, unknown, or unprovisioned value returns
+    "unknown" and the parser fails closed on it. Never raises.
     """
     if not target:
         return "unknown"
+    target = TOOL_IDS.get(target, target)
     if target in READERS:
         return "reader"
     if target in WRITERS:

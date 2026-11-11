@@ -732,12 +732,18 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             from jev_kit import mcp_tools
 
             # Opaque catalog ids (canonical aggregator form): a 32-hex tool_id
-            # names a target whose semantics cannot be verified offline. Fail
-            # closed with the honest reason; never guess from a cached map.
-            if any(_MCP_OPAQUE_ID.fullmatch(a) for a in args):
+            # names a target whose semantics cannot be derived offline. An id
+            # PROVISIONED in mcp_tools.TOOL_IDS (jak-77q — each entry verified
+            # live via get_tool_schema at provisioning time) resolves to its
+            # name and is classified by the evidence-based inventory below,
+            # exactly as a named dispatch. An id NOT provisioned fails closed
+            # with the honest reason; never guess from a runtime-cached map.
+            opaque = [a for a in args if _MCP_OPAQUE_ID.fullmatch(a)]
+            if any(a not in mcp_tools.TOOL_IDS for a in opaque):
                 found.unsure("mcp_dispatch_target_id")
                 return
-            classes = [mcp_tools.classify(a) for a in args]
+            names = [mcp_tools.TOOL_IDS[a] if a in mcp_tools.TOOL_IDS else a for a in args]
+            classes = [mcp_tools.classify(a) for a in names]
             if not classes:
                 found.unsure("mcp_dispatch_target_unknown")
                 return

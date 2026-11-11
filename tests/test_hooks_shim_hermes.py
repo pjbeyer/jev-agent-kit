@@ -639,8 +639,9 @@ def test_mcp_spoofed_dispatch_head_gains_nothing() -> None:
 
 def test_mcp_canonical_tool_id_dispatch_fails_closed_with_honest_reason() -> None:
     # The canonical aggregator form ({"tool_id": "<opaque hex>", "arguments": ...})
-    # extracts the id as the operand; an opaque catalog id cannot be verified
-    # offline, so it fail-closes as mcp_dispatch_target_id -- never blind.
+    # extracts the id as the operand. An id NOT provisioned in mcp_tools.TOOL_IDS
+    # (jak-77q) cannot be verified offline, so it fail-closes as
+    # mcp_dispatch_target_id -- never blind.
     call = hermes._extract_tool_call(
         {
             "tool_name": "mcp__local_mcp_aggregator__call_tool",
@@ -655,6 +656,52 @@ def test_mcp_canonical_tool_id_dispatch_fails_closed_with_honest_reason() -> Non
         "hermes.mcp_call_tool 9f9d9f4eaa4842e03da39c1668270019"
     )
     props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "mcp_dispatch_target_id"
+
+
+def test_mcp_provisioned_tool_id_dispatch_classifies_by_name() -> None:
+    # jak-77q: a tool_id provisioned in mcp_tools.TOOL_IDS (verified live via
+    # get_tool_schema at provisioning time) resolves to its name and is judged
+    # by the same evidence-based inventory as a named dispatch: a reader id
+    # parses confident with the true network_upload fact...
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "tool_id": "a1ca5a74ba5ff9eea51b378d98c14791",  # slack-slack_read_channel
+                "arguments": {"channel_id": "C123"},
+            },
+        }
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+
+    # ...and a writer id stays unconfident (remote_state_write), exactly as
+    # its named form.
+    call = hermes._extract_tool_call(
+        {
+            "tool_name": "mcp__local_mcp_aggregator__call_tool",
+            "args": {
+                "tool_id": "f3ae5871231c4b11eb8b4dccb14dc5fb",  # notion update-page
+                "arguments": {"page_id": "abc"},
+            },
+        }
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "remote_state_write"
+
+    # A provisioned id whose name left the inventory would fail closed as
+    # unknown -- the catalog grants no classification of its own. Simulated by
+    # a hex id that IS provisioned-shaped but absent (unprovisioned hex still
+    # bounces as mcp_dispatch_target_id, covered above).
+    props = hermes._command_properties(
+        "hermes.mcp_call_tool 0123456789abcdef0123456789abcdef"
+    )
     assert props.parse_confident is False
     assert props.reason == "mcp_dispatch_target_id"
 
