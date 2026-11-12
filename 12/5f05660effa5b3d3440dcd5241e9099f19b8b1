@@ -1,0 +1,23 @@
+src/jev_kit/mcp_tools.py
+  s_755da7a430a0e8::t_a91872c89ea60c 73-77
+  s_755da7a430a0e8::t_8cf9aa9caaa5ee 185-196
+  s_755da7a430a0e8::t_63876c4637efcb 56-57
+tests/test_hooks_shim_hermes.py
+  s_755da7a430a0e8::t_9463ba783e0811 650-651,656,663
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "125f05660effa5b3d3440dcd5241e9099f19b8b1",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
