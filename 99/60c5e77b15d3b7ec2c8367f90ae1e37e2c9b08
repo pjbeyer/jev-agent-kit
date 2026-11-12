@@ -1,0 +1,19 @@
+docs/specs/jev-gate-plugin.md
+  s_3491c30f7d8273::t_8f1196c74e29bd 1-118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "9960c5e77b15d3b7ec2c8367f90ae1e37e2c9b08",
+  "prompts": {},
+  "sessions": {
+    "s_3491c30f7d8273": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261111_170759_a9d431",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
