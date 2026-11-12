@@ -766,6 +766,74 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
             if any(c == "reader" for c in classes):
                 found.hit("network_upload")
             return
+        if tool == "tool_call":
+            # jak-a2p: the native deferred dispatcher's batch form. The shim
+            # emits `hermes.tool_call <member names...>` when every member's
+            # name passed the simple-string filter. A bare head (no args —
+            # unextractable batch, spoof, or extraction gap) is UNREADABLE:
+            # the dispatcher runs whatever members the payloads name, so it
+            # fail-closes exactly as the old runs_unseen_code verdict did.
+            # With args, the members' NAMEs ride (never their arguments
+            # payloads) and the batch is judged by its WORST member,
+            # mirroring the mcp_call_tool rule. Members route through BOTH
+            # inventories: a Hermes tool name via hermes_tools classes, an
+            # aggregator catalog id or server-tool name via mcp_tools (ids
+            # resolve through TOOL_IDS). Worst class wins: unknown >
+            # code_exec/persistence > authority > writer > navigator >
+            # network > reader. Only reader/network members parse
+            # confident; each fires its TRUE facts.
+            from jev_kit import mcp_tools
+
+            if not args:
+                found.unsure("dispatch_batch_unreadable")
+                return
+            classes: list[str] = []
+            for member in args:
+                if member in hermes_tools.READERS:
+                    classes.append("reader")
+                elif member in hermes_tools.NETWORK:
+                    classes.append("network")
+                elif member in hermes_tools.WRITERS:
+                    classes.append("writer")
+                elif member in hermes_tools.PERSISTENCE:
+                    classes.append("persistence")
+                elif member in hermes_tools.AUTHORITY:
+                    classes.append("authority")
+                elif member in hermes_tools.CODE_EXEC:
+                    classes.append("code_exec")
+                else:
+                    classes.append(mcp_tools.classify(member))
+            if any(c == "unknown" for c in classes):
+                found.unsure("dispatch_member_unknown")
+                return
+            if any(c in ("code_exec", "persistence") for c in classes):
+                found.unsure("runs_unseen_code")
+                return
+            if any(c == "authority" for c in classes):
+                found.unsure("mcp_grants_authority")
+                return
+            if any(c == "writer" for c in classes):
+                # A local writer member (write_file, patch, ...) is a blind
+                # write from this line's viewpoint (its path operand is in
+                # the member's own payload, which never rode): unconfident,
+                # exactly as a bare hermes.write_file with no path operand.
+                found.unsure("writer_target_unknown")
+                return
+            # Surviving members are readers/navigators/network. An MCP member
+            # crosses the proxy (egress); a navigator fetches a page. Fire
+            # the TRUE facts and stay confident so the calibrated questions
+            # judge the egress. A pure Hermes-reader member adds no fact
+            # (local read).
+            if any(
+                c == "reader" and mem not in hermes_tools.READERS
+                for mem, c in zip(args, classes)
+            ):
+                found.hit("network_upload")
+            if any(c == "navigator" for c in classes):
+                found.hit("network_download")
+            if any(c == "network" for c in classes):
+                found.hit("network_upload")
+            return
         # Unmapped hermes tool: unmodeled like any unknown program.
         found.unsure("unmodeled_program")
         return
@@ -1773,8 +1841,15 @@ _MODELED = frozenset({
     # Closed-subcommand CLIs (ADR 0005 amendment 2): confidence only for the shapes
     # _cloud_cli and _dseditgroup decide; every other invocation stays unconfident.
     "aws", "gh", "dseditgroup",
-} | frozenset(hermes_tools.PREFIX + tool for tool in hermes_tools.MODELED)) | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
-                                                               "run0"})
+} | frozenset(hermes_tools.PREFIX + tool for tool in hermes_tools.MODELED) | {
+    # jak-a2p: the native dispatcher's head is judged by its dispatched member
+    # names in the dedicated tool_call branch above, not by this program-level
+    # allowlist (same treatment as the MCP dispatch head). A bare head fails
+    # closed there (dispatch_batch_unreadable), so a spoof gains nothing.
+    hermes_tools.PREFIX + "tool_call",
+} | _PERMISSIONS | (_PLAIN_WRAPPERS - {"exec"}) | frozenset({"sudo", "doas", "gsudo",
+                                                               "run0"}))
+
 # git is not on the allowlist: every git command can run programs named by the repository's
 # own config (core.fsmonitor, diff.external, textconv, filters, pager), and -C, --git-dir and
 # --work-tree can point it at any repository. These read-only or index-only subcommands are

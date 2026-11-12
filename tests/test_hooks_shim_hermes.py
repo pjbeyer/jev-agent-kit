@@ -426,11 +426,17 @@ def test_connection_grant_fires_authority_fact() -> None:
 
 
 def test_deferred_dispatch_is_unseen_code() -> None:
+    # jak-a2p: an EMPTY calls list keeps the bare tool name; the bare head
+    # (unprefixed, extraction-gap shape) fail-closes as unmodeled_program.
     call = hermes._extract_tool_call({"tool_name": "tool_call", "args": {"calls": []}})
     assert call is not None
     props = hermes._command_properties(call.command)
     assert props.parse_confident is False
-    assert props.reason == "runs_unseen_code"
+    # And the shim-emitted bare head with NO extractable members is the
+    # dispatcher's honest unreadable verdict (was runs_unseen_code pre-jak-a2p).
+    props = hermes._command_properties("hermes.tool_call")
+    assert props.parse_confident is False
+    assert props.reason == "dispatch_batch_unreadable"
 
 
 def test_browser_exec_is_unseen_code_not_network() -> None:
@@ -717,3 +723,81 @@ def test_mcp_non_hex_tool_id_fails_closed_as_unknown() -> None:
     props = hermes._command_properties(call.command)
     assert props.parse_confident is False
     assert props.reason == "mcp_dispatch_target_unknown"
+
+
+# ------------------------------------------------------------------ jak-a2p
+
+
+def _native_call(members: list[dict]) -> object:
+    return hermes._extract_tool_call(
+        {"tool_name": "tool_call", "args": {"calls": members}}
+    )
+
+
+def test_native_dispatcher_batch_members_names_ride() -> None:
+    # jak-a2p: the native deferred dispatcher delivers the same {"calls": ...}
+    # batch shape as the aggregator bridge; member NAMEs ride, judged by worst
+    # member. A Hermes reader + an MCP reader parses confident and fires the
+    # TRUE network_upload fact (the MCP member crosses the proxy).
+    call = _native_call(
+        [{"name": "session_search", "arguments": {}},
+         {"name": "slack-slack_read_channel", "arguments": {}}]
+    )
+    assert call is not None
+    assert call.command == "hermes.tool_call session_search slack-slack_read_channel"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+
+
+def test_native_dispatcher_provisioned_id_member_classifies() -> None:
+    # A provisioned aggregator catalog id resolves through TOOL_IDS and
+    # classifies like its name (reader -> network_upload TRUE).
+    call = _native_call(
+        [{"name": "a1ca5a74ba5ff9eea51b378d98c14791", "arguments": {}}]
+    )
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is True
+    assert props.values.get("network_upload") is True
+
+
+def test_native_dispatcher_writer_member_fails_closed() -> None:
+    # A local writer member is a blind write from the dispatcher line's
+    # viewpoint: unconfident writer_target_unknown.
+    call = _native_call([{"name": "write_file", "arguments": {"path": "/x"}}])
+    assert call is not None
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "writer_target_unknown"
+
+
+def test_native_dispatcher_worst_member_failures() -> None:
+    # code_exec member -> runs_unseen_code; unknown member -> dispatch_member_unknown.
+    call = _native_call([{"name": "delegate_task", "arguments": {}}])
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "runs_unseen_code"
+    call = _native_call(
+        [{"name": "session_search"}, {"name": "newserver-future_tool"}]
+    )
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    assert props.reason == "dispatch_member_unknown"
+
+
+def test_native_dispatcher_unsimple_or_missing_batch_keeps_bare_head() -> None:
+    # A non-simple member name keeps the bare tool name (no hermes. prefix),
+    # which fail-closes as unmodeled_program — same verdict as before jak-a2p.
+    call = hermes._extract_tool_call(
+        {"tool_name": "tool_call",
+         "args": {"calls": [{"name": "x$HOME", "arguments": {}}]}}
+    )
+    assert call is not None
+    assert call.command == "tool_call"
+    props = hermes._command_properties(call.command)
+    assert props.parse_confident is False
+    # The shim-emitted head with unknown members fail-closes on the members.
+    props = hermes._command_properties("hermes.tool_call newserver-future_tool")
+    assert props.parse_confident is False
+    assert props.reason == "dispatch_member_unknown"

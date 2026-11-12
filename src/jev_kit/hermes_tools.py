@@ -79,13 +79,15 @@ NETWORK = frozenset({
 
 #: Tools that execute code the parser cannot see. Same verdict as interpreters
 #: (runs_unseen_code): unconfident by design; positive detections still count.
+#: `tool_call` is NOT here: the native dispatcher's batch form is judged by
+#: its member names in the parser's dedicated tool_call branch (jak-a2p) —
+#: its bare head fail-closes as dispatch_batch_unreadable there.
 CODE_EXEC = frozenset({
     "execute_code",        # arbitrary Python in the session kernel
     "jupyter",             # live kernel execution
     "delegate_task",       # spawns subagents that use tools of their own
     "computer_use",        # drives the desktop (mouse/keyboard = arbitrary effect)
     "browser_exec",        # drives a real browser: JS execution + network + local state
-    "tool_call",           # dispatches deferred tools (browser, computer_use, ...)
     "process_manage",      # writes to a live process's stdin / signals it: arbitrary effect
 })
 

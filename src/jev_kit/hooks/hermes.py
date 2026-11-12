@@ -255,6 +255,29 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
     """
     from jev_kit import hermes_tools
 
+    if tool_name == "tool_call":
+        # jak-a2p: Hermes' native deferred dispatcher delivers the same
+        # {"calls": [{"name", "arguments"}]} batch shape as the aggregator
+        # bridge, but had no branch here — every call fell back to the bare
+        # `hermes.tool_call` head and fail-closed as runs_unseen_code even
+        # when the batch members were known readers (114/114 bare rows in
+        # the 2026-11-10/11 shadow window). Each member's NAME rides (the
+        # same rule as the aggregator batch form); the nested `arguments`
+        # payloads never leave. A member with an un-simple or missing name,
+        # or a non-list `calls`, keeps the bare head — fail-closed exactly
+        # as before. The parser classifies the batch by its WORST member.
+        calls = args_map.get("calls")
+        if not isinstance(calls, list) or not calls:
+            return None
+        names: list[str] = []
+        for entry in calls:
+            if not isinstance(entry, dict):
+                return None
+            target = _simple_arg(entry.get("name"))
+            if not target:
+                return None
+            names.append(target)
+        return hermes_tools.PREFIX + "tool_call " + " ".join(names)
     if tool_name == "mcp__local_mcp_aggregator__call_tool":
         # jak-b8n: the dispatched target's `name` NAMES the operation's object
         # (the same rule that maps read_file's `path`), so it rides as the
