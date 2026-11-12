@@ -264,6 +264,14 @@ def resolve_destination(
     if not isinstance(command, str) or not command.strip():
         return UNKNOWN
     try:
+        if _provisioned_dispatch(command):
+            # The destination is the operator's own aggregator endpoint:
+            # known and allowlisted by construction (never a false deny,
+            # and a spoofed line cannot forge provisioning — the target
+            # must classify through the provisioned inventory).
+            return Destination(
+                host="local-mcp-aggregator", known=True, allowlisted=True
+            )
         tokens = _tokens(command)
         hosts: set[str] = set()
         for token in tokens:
@@ -281,6 +289,37 @@ def resolve_destination(
         return Destination(host=host, known=True, allowlisted=is_allowlisted(host, allowlist))
     except Exception:  # a bug here must mean unknown, never a wrong host or a False
         return UNKNOWN
+
+
+def _provisioned_dispatch(command: str) -> bool:
+    """Whether `command` is a modeled dispatch pseudo-command to a PROVISIONED target.
+
+    `hermes.mcp_call_tool <target>` / a `hermes.tool_call` batch whose every member
+    resolves through mcp_tools: the destination of such a call is the operator's own
+    configured aggregator endpoint — a service the operator explicitly connected —
+    so it is allowlisted BY CONSTRUCTION (jak-7c9 egress band). Unknown/unprovisioned
+    targets fail closed in the parser and never reach here confidently; this check
+    re-derives the same classification, so a spoofed line gains nothing.
+    """
+    try:
+        from jev_kit import mcp_tools
+
+        tokens = command.split()
+        if len(tokens) == 2 and tokens[0] == "hermes.mcp_call_tool":
+            return mcp_tools.classify(tokens[1]) in ("reader", "navigator")
+        if len(tokens) >= 2 and tokens[0] == "hermes.tool_call":
+            from jev_kit import hermes_tools
+
+            for m in tokens[1:]:
+                if m in hermes_tools.READERS:
+                    continue  # local read: no egress, nothing to claim
+                if m in mcp_tools.READERS or m in mcp_tools.NAVIGATORS:
+                    continue  # provisioned remote read
+                return False
+            return True
+        return False
+    except Exception:
+        return False
 
 
 def _workdir_path(workdir: str | None) -> Path | None:
