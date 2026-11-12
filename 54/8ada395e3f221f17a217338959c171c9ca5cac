@@ -1,0 +1,31 @@
+src/jev_kit/destination.py
+  s_755da7a430a0e8::t_917e2af5f966e7 294-310,320-324
+  s_755da7a430a0e8::t_2c7485962c4ec9 311-319
+  s_755da7a430a0e8::t_46f02d2d80712b 267-274
+tools/calibration/add_family_batch15.py
+  s_755da7a430a0e8::t_5fde2fad4c2c78 1-141
+tools/calibration/score_batch15.py
+  s_755da7a430a0e8::t_4d532bec1f653f 1-53
+tools/calibration/_batch15_corpus.json
+  s_755da7a430a0e8::t_35e00c3b63e792 1
+tools/calibration/dangerous_suite.json
+  s_755da7a430a0e8::t_212c7d8fad17b3 9503-10282
+tools/calibration/question_labels.json
+  s_755da7a430a0e8::t_a71a9d8b8efae1 5768-6183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "548ada395e3f221f17a217338959c171c9ca5cac",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
