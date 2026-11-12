@@ -53,6 +53,8 @@ READERS: frozenset[str] = frozenset(
         "notion_personal-notion-search",
         "notion_personal-notion-connector-search",
         "notion_personal-notion-get-tool-access",
+        # identity read: the connection's own account info (OBS 2026-11-11)
+        "notion_personal-notion-get-self",
         "notion_personal-notion-get-comments",
         "notion_personal-notion-get-file-download-urls",
         "notion_personal-notion-query-data-sources",
@@ -68,6 +70,11 @@ READERS: frozenset[str] = frozenset(
         "superblocks-list_dependency_scan_findings",
         "superblocks-get_dependency_scan_summary",
         "superblocks-list_cve_exceptions",
+        # superblocks platform reads (OBS 2026-11-12, live via get_tool_schema:
+        # audit-log fetch, app summary, deployment history — all read-only)
+        "superblocks-get_audit_events",
+        "superblocks-get_application_summary",
+        "superblocks-get_application_deployment_history",
         # dryrun_security reports (OBS)
         "dryrun_security-get_security_report",
         "dryrun_security-get_pr_insight",
@@ -175,6 +182,18 @@ TOOL_IDS: dict[str, str] = {
     "f3ae5871231c4b11eb8b4dccb14dc5fb": "notion_personal-notion-update-page",
     "b53929f48f4c714264aff5ebb9c34641": "flex-litellm-gateway-mcp_tool_search",
     "a26a54776da7d49225faf341ccf2e2fa": "flex-litellm-gateway-mcp_tool_call",
+    # Verified live via get_tool_schema 2026-11-12 (OBS) — ids observed in the
+    # live shadow log (32 rows) but absent from the 2026-11-11 provisioning.
+    "adc9faf0db414a2cc297683a414e72a1": "slack-slack_search_public_and_private",
+    "6a18c926e75cd28a56948741667e6b4a": "slack-slack_search_public",
+    "8d011d97690530ee680cb8afa788147b": "notion_personal-notion-create-pages",
+    "ef9e38db24eb913b36cea114a3faacf6": "notion_personal-notion-connector-search",
+    "25c5c0b3781f74d07feb6e1ff13e4e4a": "slack-slack_send_message_draft",
+    "2a5a3a24f0eb8e2a77466cdada0390c6": "notion_personal-notion-get-tool-access",
+    "aef1b3392e9b8bd5b55fa40f155d3998": "superblocks-get_audit_events",
+    "651d790c69ae5f7e5ea175cac28be4ad": "superblocks-get_application_summary",
+    "9f9d9f4eaa4842e03da39c1668270019": "obscura-browser_get_attribute",
+    "cddfe918379acec98e417668f965d578": "superblocks-get_application_deployment_history",
 }
 
 

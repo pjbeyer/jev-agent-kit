@@ -647,19 +647,20 @@ def test_mcp_canonical_tool_id_dispatch_fails_closed_with_honest_reason() -> Non
     # The canonical aggregator form ({"tool_id": "<opaque hex>", "arguments": ...})
     # extracts the id as the operand. An id NOT provisioned in mcp_tools.TOOL_IDS
     # (jak-77q) cannot be verified offline, so it fail-closes as
-    # mcp_dispatch_target_id -- never blind.
+    # mcp_dispatch_target_id -- never blind. (9f9d9f... was provisioned
+    # 2026-11-12 as obscura-browser_get_attribute; use a genuinely stale id.)
     call = hermes._extract_tool_call(
         {
             "tool_name": "mcp__local_mcp_aggregator__call_tool",
             "args": {
-                "tool_id": "9f9d9f4eaa4842e03da39c1668270019",
+                "tool_id": "f8bc6b6f6a8d3d21bc3c9b81f249f5db",
                 "arguments": {"query": "x"},
             },
         }
     )
     assert call is not None
     assert call.command == (
-        "hermes.mcp_call_tool 9f9d9f4eaa4842e03da39c1668270019"
+        "hermes.mcp_call_tool f8bc6b6f6a8d3d21bc3c9b81f249f5db"
     )
     props = hermes._command_properties(call.command)
     assert props.parse_confident is False
