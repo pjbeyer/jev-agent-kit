@@ -71,12 +71,15 @@ Extraction contract (jak-baw, jak-47d, jak-77q, jak-a2p):
 
 - [x] Shadow week over real traffic closed (2026-11-10).
 - [x] Registry binding verified fail-loud (jak-6lt), re-key procedure proven twice.
-- [ ] All six questions calibrated (jak-o91, jak-lve outstanding).
-- [ ] Confident-band ask-rate on real traffic ≤ target (measurement: the shadow
-      side-log's `would_outcome` column; current headline slice: reader-egress
-      dispatches ask at calibrated exfiltrates ≥0.21 bound — the egress-band
-      threshold itself is the open calibration question, affects named and id
-      dispatches equally).
+- [x] All six questions calibrated (jak-o91, jak-lve, closed 2026-11-12).
+- [x] Confident-band ask-rate on real traffic ≤ target for the reader-egress class:
+      exfiltrates refit (011f894) — provisioned reader dispatches now resolve
+      dest_known/dest_allowlisted=true (operator's aggregator endpoint), and the
+      refit moved the exfiltrates bounds to no 0.76 / yes 0.77, putting the
+      ~0.69-0.76 reader band under no_bound (clear allow). Remaining: a clean
+      post-restart ask-rate measurement (jak_baw_probe) to confirm the whole
+      confident band, not just this class.
+- [ ] Post-restart clean measurement + enforce flip decision (owner).
 - [ ] Enforce profile reviewed (run_enforce_profile.py) and signed off.
 
 ## 5. What the gate adds over Hermes' native approval flow (part 3)
