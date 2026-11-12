@@ -1,0 +1,43 @@
+tools/calibration/add_family_batch14.py
+  s_755da7a430a0e8::t_5ef15015f485ad 1-197
+tools/calibration/jak_baw_probe.py
+  s_3491c30f7d8273::t_a5b96de8e8219d 32,38-41
+  s_3491c30f7d8273::t_e9ddcd0a7d05ed 1-24,26-31,33-37,42-65,67-123
+  s_3491c30f7d8273::t_712c514c196809 25
+  s_3491c30f7d8273::t_ff4b22b4072fbb 66
+tools/calibration/score_batch14.py
+  s_755da7a430a0e8::t_2c684f85bed52b 1-54,56-58,62-94
+  s_755da7a430a0e8::t_c3640e8a4e6113 55,59-61
+tools/calibration/_batch14_corpus.json
+  s_755da7a430a0e8::t_a4156339659fc7 1
+tools/calibration/_batch14_rows.jsonl
+  s_755da7a430a0e8::t_7e302eb58a9f39 1-51
+tools/calibration/dangerous_suite.json
+  s_755da7a430a0e8::t_a5ff8fdafdd435 8693-9502
+tools/calibration/question_labels.json
+  s_755da7a430a0e8::t_7b6aefacc0dc68 5336-5767
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "f83538199f3852d3e6a35f293cc20e2b91573d4e",
+  "prompts": {},
+  "sessions": {
+    "s_3491c30f7d8273": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261111_170759_a9d431",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    },
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "unknown"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
