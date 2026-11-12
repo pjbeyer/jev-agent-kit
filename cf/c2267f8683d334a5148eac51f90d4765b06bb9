@@ -1,0 +1,21 @@
+tools/calibration/rekey.py
+  s_755da7a430a0e8::t_82c19f95efc659 1-54,56-108,110-128
+  s_755da7a430a0e8::t_560c88cc382bcd 55
+  s_755da7a430a0e8::t_17499dd04eaba5 109
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "cfc2267f8683d334a5148eac51f90d4765b06bb9",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "unknown"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
