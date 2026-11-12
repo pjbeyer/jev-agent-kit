@@ -5333,5 +5333,437 @@
     "overwrites_data": 0,
     "plants_persistence": 0,
     "widens_permission": 0
+  },
+  "cp-la-fresh-agent": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-la-fresh-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-lad-fresh-daemon": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-lad-fresh-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-la-fresh-userdir": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-la-fresh-userdir-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-periodic-fresh": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-periodic-fresh-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-d-new": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-profile-d-new-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-zshenv-new": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-zshenv-new-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-emacs-site-start": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-emacs-site-start-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-rc-local-new": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-rc-local-new-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-newssyslog-d": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-newssyslog-d-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-authorized-command": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-authorized-command-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-auto_master-d": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-auto_master-d-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-ssh-rc": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-ssh-rc-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-hosts": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-hosts-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-resolv": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-resolv-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-sudoers": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "cp-f-sudoers-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-bashrc": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-bashrc-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-kernel": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-kernel-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-grub-cfg": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-grub-cfg-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-crash": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-crash-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-sshdconf": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-sshdconf-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-cron-file": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-cron-file-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-motd": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-motd-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-fstab": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-fstab-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-nfs-exports": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 1
+  },
+  "cp-f-nfs-exports-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-shells": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "mv-over-shells-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-python-sitecustom": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 1,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-python-sitecustom-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-openssl.cnf": {
+    "destroys_data": 0,
+    "overwrites_data": 1,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
+  },
+  "cp-f-openssl-tmp": {
+    "destroys_data": 0,
+    "overwrites_data": 0,
+    "escalates_privilege": 0,
+    "plants_persistence": 0,
+    "exfiltrates": 0,
+    "widens_permission": 0
   }
 }
