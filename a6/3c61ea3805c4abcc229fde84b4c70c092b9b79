@@ -1,0 +1,19 @@
+src/jev_kit/hooks/hermes.py
+  s_755da7a430a0e8::t_ba2e231e5e2298 269-274,276-286
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "a63c61ea3805c4abcc229fde84b4c70c092b9b79",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
