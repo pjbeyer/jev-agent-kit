@@ -266,7 +266,24 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
         # payloads never leave. A member with an un-simple or missing name,
         # or a non-list `calls`, keeps the bare head — fail-closed exactly
         # as before. The parser classifies the batch by its WORST member.
+        # Tolerance mirrors Hermes' own normalize_tool_call_entries exactly:
+        # `calls` may arrive as a JSON string (some model backends emit the
+        # envelope that way) or a single dict, and the legacy single-call
+        # shape {name, arguments} is a batch of one. Found live post-restart
+        # 2026-11-13: real dispatches arrived in non-list shapes and every
+        # one of them fail-closed blind.
         calls = args_map.get("calls")
+        if isinstance(calls, str):
+            try:
+                import json as _json
+
+                calls = _json.loads(calls)
+            except ValueError:
+                return None
+        if isinstance(calls, dict):
+            calls = [calls]
+        elif calls is None and args_map.get("name"):
+            calls = [{"name": args_map.get("name")}]
         if not isinstance(calls, list) or not calls:
             return None
         names: list[str] = []
