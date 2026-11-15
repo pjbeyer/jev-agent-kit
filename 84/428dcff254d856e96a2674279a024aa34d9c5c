@@ -1,0 +1,21 @@
+tools/calibration/_postrestart_report.py
+  s_755da7a430a0e8::t_23b65e474610be 1-58
+tools/calibration/_postrestart_final.py
+  s_755da7a430a0e8::t_ff6acff7788ef1 1-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "84428dcff254d856e96a2674279a024aa34d9c5c",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
