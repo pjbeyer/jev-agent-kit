@@ -1,0 +1,63 @@
+tools/calibration/_friction_drivers.py
+  s_755da7a430a0e8::t_f7bdeb9d236339 58
+  s_755da7a430a0e8::t_659d12966efbf1 1-57,59-69
+tools/calibration/_replay_pinners.py
+  s_755da7a430a0e8::t_388be9ef2c8205 1-51
+tools/calibration/_replay_mcp_asks.py
+  s_755da7a430a0e8::t_687b3ce207c7bb 1-48
+tools/calibration/score_batch16.py
+  s_755da7a430a0e8::t_27317864fbd653 1-57
+tools/calibration/_destexists_conflicts.py
+  s_755da7a430a0e8::t_63a1cf929f97e1 1-49
+tools/calibration/_replay_new_bounds.py
+  s_755da7a430a0e8::t_3c9f66f223dafb 1-86
+tools/calibration/fold_batch16.py
+  s_755da7a430a0e8::t_5b9ccd3fa61ee5 1,7-14,16,21-22,25,27-28
+  s_755da7a430a0e8::t_d4b5b675a82761 2-6,15,17-20,23-24,26,29-30
+tools/calibration/_replay_calibrate.py
+  s_755da7a430a0e8::t_07766c60607689 1-37,40-47,52-57
+  s_755da7a430a0e8::t_6c78ef9ac25b50 38-39,48-51
+tools/calibration/_friction_inspect.py
+  s_755da7a430a0e8::t_3698ef2b4c924f 1-31
+src/jev_kit/mcp_tools.py
+  s_755da7a430a0e8::t_e05ead6eed66e8 60
+  s_755da7a430a0e8::t_ff2a1acd27f5af 198-202
+tools/calibration/_overwrites_pin.py
+  s_755da7a430a0e8::t_c5cc47dd41039a 1-43
+tools/calibration/_friction_receipts3.py
+  s_755da7a430a0e8::t_455b854abfb156 1-45
+tools/calibration/add_family_batch16.py
+  s_755da7a430a0e8::t_067d8e4333e2dc 1-159
+tools/calibration/rescore_overwrites_positives.py
+  s_755da7a430a0e8::t_cfbd03460dd0b1 1-41,47-79
+  s_755da7a430a0e8::t_d66c5f0dd1cdca 42-46
+tools/calibration/_friction_receipts2.py
+  s_755da7a430a0e8::t_b53694d4815ca2 1-55
+tools/calibration/fold_rescore_ow.py
+  s_755da7a430a0e8::t_23ebc527e231d5 1-38
+tools/calibration/_replay_v2.py
+  s_755da7a430a0e8::t_209a6945e58f77 1-15,18-81
+  s_755da7a430a0e8::t_a3b3feccc66f09 16-17
+tools/calibration/_friction_receipts.py
+  s_755da7a430a0e8::t_c39a60f17044fa 1-55
+tools/calibration/dangerous_suite.json
+  s_755da7a430a0e8::t_7eae2d7afc6acb 2-10776
+tools/calibration/question_labels.json
+  s_755da7a430a0e8::t_6d99e56e8f9ecb 2-6512
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "a68d7b9633e41b138d606f5cce3c3cf43733571b",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
