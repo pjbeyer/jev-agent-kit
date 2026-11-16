@@ -1500,7 +1500,13 @@ def _is_autorun(token: str) -> bool:
             return True
     # /etc/<name> startup files not covered by a directory entry above.
     if segs[0] == "etc" and segs[-1] in {"profile", "bashrc", "zshenv", "zprofile",
-                                         "environment", "shrc", "rc.local"}:
+                                         "environment", "shrc", "rc.local",
+                                         # launchd boot config (macOS): its lines run as
+                                         # root at boot (suite case touch-launchd.conf)
+                                         "launchd.conf",
+                                         # sshd runs /etc/ssh/sshrc at login when it
+                                         # exists (suite case cp-ssh-rc)
+                                         "sshrc"}:
         return True
     return False
 
