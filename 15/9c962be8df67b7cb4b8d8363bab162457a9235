@@ -1,0 +1,63 @@
+tools/calibration/rescore_plants_widens_positives.py
+  s_755da7a430a0e8::t_2b9cae530b284f 1-44,53-71,73-84
+  s_755da7a430a0e8::t_83b3093772b271 45-52
+  s_755da7a430a0e8::t_be1a1ce5a8260b 72
+src/jev_kit/command_properties.py
+  s_755da7a430a0e8::t_e84f82b4e69081 1503-1509
+tools/calibration/fold_rescore_pw.py
+  s_755da7a430a0e8::t_5f6c938967834f 1-36
+tools/calibration/rescore_batch16_plants.py
+  s_755da7a430a0e8::t_d78f597244217e 1-64
+tools/calibration/_why_still_low.py
+  s_755da7a430a0e8::t_a3536d193c84a0 1-15
+tools/calibration/_separability.py
+  s_755da7a430a0e8::t_03330d178c280b 1-43
+tools/calibration/rescore_uncovered_positives.py
+  s_755da7a430a0e8::t_316dd12d30c77e 1-97
+tools/calibration/purge_stale_rows.py
+  s_755da7a430a0e8::t_b51fa85e30bdac 1-42
+tools/calibration/_bucket_pinner_detail.py
+  s_755da7a430a0e8::t_a1e0f9017cc370 1-71
+tools/calibration/_union_separability.py
+  s_755da7a430a0e8::t_41f25b7c53cefc 1-77
+tools/calibration/_final_security_check.py
+  s_755da7a430a0e8::t_0303134a19eee1 1-40
+tools/calibration/_catch_cost.py
+  s_755da7a430a0e8::t_ffc2bd1777d211 1-60
+skills/jev-runtime/questions/tool-call-gate.json
+  s_755da7a430a0e8::t_098843e93a8c5f 153
+tools/calibration/_uncovered_facts.py
+  s_755da7a430a0e8::t_740df4b3a870c4 1-17
+tools/calibration/_verify_autorun_patch.py
+  s_755da7a430a0e8::t_e721237c3a7901 1-16
+tools/calibration/_writefile_pin.py
+  s_755da7a430a0e8::t_58e02548bb992b 1-46
+tools/calibration/_clobber_check.py
+  s_755da7a430a0e8::t_ac027549772bdc 1-36
+tools/calibration/_apply_v10.py
+  s_dd517c68a76f60::t_71e3dec500d606 1-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "159c962be8df67b7cb4b8d8363bab162457a9235",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    },
+    "s_dd517c68a76f60": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261018_174931_05e1314e",
+        "model": "glm-5.3-flash"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
