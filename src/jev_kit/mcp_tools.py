@@ -57,6 +57,7 @@ READERS: frozenset[str] = frozenset(
         "notion_personal-notion-get-self",
         "notion_personal-notion-get-comments",
         "notion_personal-notion-get-file-download-urls",
+        "notion_personal-notion-get-users",
         "notion_personal-notion-query-data-sources",
         "notion_personal-notion-ai-search",
         "notion_personal-notion-calendar-list-calendar-resources",
@@ -194,6 +195,11 @@ TOOL_IDS: dict[str, str] = {
     "651d790c69ae5f7e5ea175cac28be4ad": "superblocks-get_application_summary",
     "9f9d9f4eaa4842e03da39c1668270019": "obscura-browser_get_attribute",
     "cddfe918379acec98e417668f965d578": "superblocks-get_application_deployment_history",
+    # OBS 2026-11-15: two more notion readers observed live in the shadow log
+    # (workspace member directory; signed download-URL resolution for fetch-cited
+    # files — both reads of the operator's own workspace, no write surface).
+    "a1979bc294562984182b11c5278ad051": "notion_personal-notion-get-users",
+    "3c99a2650eb41a11b8d1cbfacf78108f": "notion_personal-notion-get-file-download-urls",
 }
 
 
