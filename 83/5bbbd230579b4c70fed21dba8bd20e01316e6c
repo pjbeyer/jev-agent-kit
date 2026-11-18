@@ -1,0 +1,44 @@
+tests/test_command_sequence.py
+  s_755da7a430a0e8::t_e0a855954aa347 144
+  s_755da7a430a0e8::t_3d228f4e07f0ef 152-156
+src/jev_kit/hermes_tools.py
+  s_755da7a430a0e8::t_747886c46be0e8 141
+src/jev_kit/command_properties.py
+  s_755da7a430a0e8::t_c958007c924fbb 1558-1559
+  s_755da7a430a0e8::t_f61b02fb45163b 668-676
+  s_755da7a430a0e8::t_c4baccd9452dc5 92
+  s_755da7a430a0e8::t_59d4f899ab34b4 1677-1697
+  s_755da7a430a0e8::t_a1efb6d2d572de 1873
+tools/calibration/_commit_msg_r3.txt
+  s_755da7a430a0e8::t_fabc5ed7c6a55b 1-37
+README.md
+  s_755da7a430a0e8::t_fae74239694da8 215,246
+tools/calibration/_add_agentcfg_clause.py
+  s_755da7a430a0e8::t_f4a8f261436070 1-28
+skills/jev-runtime/questions/tool-call-gate.json
+  s_755da7a430a0e8::t_c2b73a11af44dd 108,144,156
+  s_755da7a430a0e8::t_d4b53297ce28ac 4,65-67,167
+src/jev_kit/hooks/hermes.py
+  s_755da7a430a0e8::t_12339f6e7283b2 335-352,358-359
+  s_755da7a430a0e8::t_92e16d38f965b6 353-357
+skills/jev-runtime/references/evidence-contracts.md
+  s_755da7a430a0e8::t_ef09e6d68735d1 14
+tests/test_command_properties_gate.py
+  s_755da7a430a0e8::t_a385e2108c6271 310
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "development:1.7.6",
+  "base_commit_sha": "835bbbd230579b4c70fed21dba8bd20e01316e6c",
+  "prompts": {},
+  "sessions": {
+    "s_755da7a430a0e8": {
+      "agent_id": {
+        "tool": "hermes",
+        "id": "20261112_125200_aad02b",
+        "model": "smart-router"
+      },
+      "human_author": "Phil Beyer <6152278+pjbeyer@users.noreply.github.com>"
+    }
+  }
+}
