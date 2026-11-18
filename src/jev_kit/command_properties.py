@@ -89,6 +89,7 @@ PROPERTY_NAMES: tuple[str, ...] = (
     "grants_privileged_group",
     "grants_setuid",
     "validates_only",
+    "targets_agent_config_dir",
 )
 
 STATE_PREFIX = "cmd_"
@@ -663,6 +664,15 @@ def _analyze_program(program: str, args: list[str], found: _Found, depth: int) -
                 # A blind write (payload-only operation, no path operand) can never
                 # be proved safe: unconfident, the questions never judge nothing.
                 found.unsure("writer_target_unknown")
+                return
+            if tool == "skill_manage":
+                # Owner decision B (jak-7c9): skill_manage's destination IS the
+                # agent skill store by construction, whatever the operands say.
+                # The fact records that the write is host-managed; the questions
+                # weigh it. Operands are the skill names (no path tokens), so the
+                # generic path checks do not apply and planted-code does not scan
+                # them — the STORE decides the effect, not the name string.
+                found.hit("targets_agent_config_dir")
                 return
             _check_planted_code("cp", args, found)
             return
@@ -1545,6 +1555,8 @@ def _check_path_token(token: str, found: _Found) -> None:
             found.hit("targets_home_directory")
         if _is_regenerable(cand):
             found.hit("targets_regenerable_path")
+        if _is_agent_skill_store(cand):
+            found.hit("targets_agent_config_dir")
         if _absolute(cand) is not None:
             found.hit("targets_absolute_path")
         if _is_autorun(cand):
@@ -1660,6 +1672,27 @@ def _is_regenerable(token: str) -> bool:
         return False
     return any(seg in _REGENERABLE_HIDDEN or seg.lower() in _REGENERABLE_BARE
                for seg in segs if seg not in skip)
+
+
+def _is_agent_skill_store(token: str) -> bool:
+    """A path into the agent's own skill store, judged after lexical resolution.
+
+    Fires `targets_agent_config_dir`: the segment pair (`.hermes`, `skills`) covers both
+    the root store (`~/.hermes/skills`) and per-profile stores (`~/.hermes/profiles/<name>
+    /skills`). Scoped to the skill store ONLY, not all of `~/.hermes` -- the config tree
+    also holds receipts, registries and scripts that stay gated. Owner decision B
+    (2026-11-18): writes here are governed by the host's own approval flow, so the gate
+    treats the destination as host-managed rather than adding a duplicate prompt.
+    Relative paths do not resolve without a working directory, so they stay False.
+    """
+    resolved = _absolute(token)
+    if resolved is None:
+        return False
+    _, segs = resolved
+    for i, seg in enumerate(segs):
+        if seg == ".hermes" and "skills" in segs[i + 1:]:
+            return True
+    return False
 
 
 def _is_home(token: str) -> bool:
@@ -1837,6 +1870,7 @@ _MODELED = frozenset({
     "rm", "rmdir", "unlink", "remove-item", "ri", "del", "erase", "rd",
     "cp", "mv", "ln", "copy-item", "cpi", "copy", "move-item", "mi", "move",
     "ls", "dir", "cat", "type", "echo", "pwd", "head", "tail", "wc", "grep", "mkdir", "touch",
+    "cd",
     "find", "which", "whoami", "uniq", "stat", "tree", "du", "df",
     "get-childitem", "gci", "get-content", "gc", "get-location", "write-output",
     "select-string", "curl", "wget", "iwr", "irm", "invoke-webrequest", "invoke-restmethod",

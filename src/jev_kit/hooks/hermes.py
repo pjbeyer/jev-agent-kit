@@ -332,6 +332,31 @@ def _nonshell_pseudo_command(tool_name: str, args_map: dict[str, Any]) -> str | 
                 return None
             names.append(target)
         return f"{hermes_tools.PREFIX}mcp_call_tool " + " ".join(names)
+    if tool_name == "skill_manage":
+        # jak-7c9 (owner decision B, 2026-11-18): the tool's effect IS a write into
+        # the agent skill store, so the operation NAMES ride as operands — the same
+        # rule as the tool_call batch form. Each operation's simple `name` rides;
+        # the payload body (content/old_string/new_string) never leaves. An
+        # operations value that is not a list of dicts with simple names, or a
+        # missing one, keeps the bare head and fails closed as before. The parser
+        # fires targets_agent_config_dir on the head itself (the store is the
+        # tool's destination by construction).
+        ops = args_map.get("operations")
+        if not isinstance(ops, list) or not ops:
+            return None
+        names: list[str] = []
+        for entry in ops:
+            if not isinstance(entry, dict):
+                return None
+            target = _simple_arg(entry.get("name"))
+            if not target:
+                # A member without a simple name cannot ride; the modeled bare
+                # head fails closed in the parser (writer_target_unknown) while
+                # staying parseable — never the unprefixed tool name, which no
+                # parser branch reads.
+                return hermes_tools.PREFIX + "skill_manage"
+            names.append(target)
+        return hermes_tools.PREFIX + "skill_manage " + " ".join(names)
     if tool_name not in hermes_tools.MODELED:
         return None
     # Payload-aware CODE_EXEC modeling (jak-47d): for execute_code only, the

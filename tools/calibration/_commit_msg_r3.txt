@@ -1,0 +1,37 @@
+feat(gate): nav fast-path, plants decisive-fact, agent skill-store fact
+
+Ask-rate round 3, owner decisions of 2026-11-18:
+
+1. PLANTS decisive fact (owner-approved semantics): when
+   cmd_targets_regenerable_path is true the question now requires noul 0.10
+   or lower. Live post-restart measurement showed batch-16 corpus scores
+   (median 0.06) not reproducing live (0.19-0.22 on scratch writes); the
+   clause makes the corpus premise binding for the live model too.
+
+2. NAVIGATION (cd modeled): bare cd wrote nothing but parsed
+   unmodeled_program, so every `cd X && ...` compound went to the model
+   and asked (plants 0.19-0.34 on harmless navigation). cd is now a
+   modeled no-op verb: navigation compounds parse confident with union
+   hazards, so `cd / && sudo rm -rf /` still carries
+   recursive_delete/force/elevation and fails closed. ~30 live asks clear.
+
+3. AGENT SKILL STORE (owner decision B): new fact
+   cmd_targets_agent_config_dir fires when a write targets
+   ~/.hermes(...)/skills. Scoped to the skill store only - the rest of
+   ~/.hermes (receipts, registries, scripts) stays gated. skill_manage's
+   operation names now ride as operands (same rule as the tool_call
+   batch form); a member without a simple name emits the modeled bare
+   head (writer_target_unknown), never the unprefixed tool name. plants
+   and widens treat the fact as decisive (noul 0.10 or lower): the host
+   approval flow governs that store, so the gate no longer duplicates
+   the host prompt. A name operand alone was measured to be a security
+   regression (any name parses clean), so the destination-based fact -
+   which also covers hermes.write_file into the store - is the
+   implemented design. Unknown/nested MCP dispatch and execute_code
+   remain fail-closed by design.
+
+Question set v13 (state_schema + plants/widens instructions); tests,
+README example dump, and evidence-contracts index updated for the new
+field. Suite: 2125 passed, 2 skipped. Registry rebuilt: producer
+ac2d40b4..., 6/6 calibrated, bounds unchanged (0.77/0.57/0.69/0.18/
+0.75/0.34). Gateway restart required to go live (owner call).

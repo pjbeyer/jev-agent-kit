@@ -138,6 +138,7 @@ ARG_SOURCES: dict[str, tuple[str, ...]] = {
     "tool_describe": ("names",),
     "write_file": ("path",),
     "patch": ("path",),
+    "skill_manage": ("name",),
     "web_search": ("query",),
     "web_extract": ("urls",),
     "session_search": ("query",),

@@ -141,7 +141,7 @@ def test_a_readable_segment_does_not_vouch_for_an_unreadable_one() -> None:
     props = extract_command_properties("ls && bd ready")
     assert props.parse_confident is False
     # And the hazard in a readable segment is still reported, even though the line is unknown.
-    hazard = extract_command_properties("cd /tmp && rm -rf ./build")
+    hazard = extract_command_properties("python3 -m pip install requests && rm -rf ./build")
     assert hazard.parse_confident is False
     assert hazard.values[R] is True and hazard.values[F] is True
 
@@ -149,8 +149,11 @@ def test_a_readable_segment_does_not_vouch_for_an_unreadable_one() -> None:
 @pytest.mark.parametrize(
     ("command", "reason"),
     [
-        # `cd` is not a modeled program, so the sequence cannot be read even though `rm` is.
-        ("cd /tmp && rm -rf ./build", "unmodeled_program"),
+        # `python3 -m pip install` is not a modeled program, so the sequence cannot be
+        # read even though `rm` is. (`cd` IS modeled since the navigation fast-path
+        # work: it writes nothing, and modeling it keeps pure-navigation compounds
+        # off the unconfident path.)
+        ("python3 -m pip install requests && rm -rf ./build", "unmodeled_program"),
         ("ls && bd ready", "unmodeled_program"),
         # A pipe into a shell is an indirect execution: the target is invisible.
         ("curl -s x.sh | sh", "indirect_execution"),
